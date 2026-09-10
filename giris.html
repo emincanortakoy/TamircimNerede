@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tamircim Nerede - Üye Paneli</title>
+<!-- Tarayıcı Sekmesi İkonu (Logonun Yazısız Hali) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'><defs><linearGradient id='pinGrad' x1='0%.' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%233b82f6'/><stop offset='100%' stop-color='%231d4ed8'/></linearGradient><linearGradient id='wrenchGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2310b981'/><stop offset='100%' stop-color='%23059669'/></linearGradient><linearGradient id='boltGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23facc15'/><stop offset='100%' stop-color='%23eab308'/></linearGradient></defs><path d='M 250,55 C 165,55 100,120 100,205 C 100,295 215,395 250,420 C 285,395 400,295 400,205 C 400,120 335,55 250,55 Z' fill='url(%23pinGrad)'/><circle cx='250' cy='195' r='95' fill='%23ffffff'/><circle cx='250' cy='195' r='95' fill='none' stroke='%23e2e8f0' stroke-width='4'/><g transform='translate(250, 195) rotate(-40) translate(-250, -195)'><path d='M 238,135 C 238,118 248,110 250,110 C 252,110 262,118 262,135 L 272,135 C 282,135 288,143 285,155 C 282,168 268,175 258,175 L 258,230 A 16,16 0 0 1 242,230 L 242,175 C 232,175 218,168 215,155 C 212,143 218,135 228,135 Z' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='14' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='7' fill='%23ffffff'/></g><g transform='translate(250, 195) rotate(45) translate(-250, -195)'><rect x='244' y='215' width='12' height='35' rx='4' fill='%23334155'/><rect x='247' y='150' width='6' height='65' fill='%2394a3b8'/><polygon points='247,150 253,150 251,140 249,140' fill='%23646869'/></g><circle cx='250' cy='195' r='28' fill='%230f172a'/><path d='M 252,178 L 241,195 L 249,195 L 247,212 L 260,193 L 252,193 Z' fill='url(%23boltGrad)'/></svg>">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -363,7 +365,6 @@
       min-height: auto;
     }
 
-    /* Sidebar mobilde yatay kaydırılabilir bar haline gelir */
     .admin-sidebar {
       width: 100%;
       min-width: 100%;
@@ -407,7 +408,6 @@
       padding: 14px 10px;
     }
 
-    /* İstatistik kartları 2 sütunlu kompakt ızgara */
     .stats-row {
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
@@ -427,7 +427,6 @@
       font-size: 22px;
     }
 
-    /* Tablo başlıkları ve filtre filtreleme blokları */
     .table-header {
       padding: 14px 12px;
       flex-direction: column;
@@ -445,7 +444,6 @@
       margin-top: 6px;
     }
 
-    /* Tablo yatay kaydırma */
     .table-section > div[style*="overflow-x:auto"] {
       -webkit-overflow-scrolling: touch;
       margin: 0 -2px;
@@ -467,14 +465,12 @@
       margin-bottom: 2px;
     }
 
-    /* Sayfalama butonları */
     #sayfalama, #haritaSayfalama, #bilgiSayfalama, #uyeSayfalama {
       flex-wrap: wrap;
       padding: 10px 4px;
       gap: 4px;
     }
 
-    /* Düzenleme popup pencereleri */
     #uyeDuzenleOverlay > div,
     #isletmeDuzenleOverlay > div {
       width: 95vw !important;
