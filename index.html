@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tamircim Nerede</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+  #map {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* 
+     HASSAS KONUMLANDIRMA YAPISI:
+     Kök element (wrapper) tam 0x0 boyutundadır ve farenin tıkladığı koordinata oturur.
+  */
+  .pin-wrapper {
+    position: relative;
+    width: 0px !important;
+    height: 0px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    pointer-events: visible !important;
+  }
+
+  /* Pin gövdesi, 0x0 noktasının tam üzerinde durur; alt ucu koordinata milimetrik kilitlenir */
+  .custom-map-pin {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    transform: translate(-50%, 0);
+    width: 32px;
+    height: 44px;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: auto;
+  }
+  .custom-map-pin svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Pin içindeki cihaz ikonu */
+  .pin-device-icon {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .pin-device-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  #profilBtn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background 0.2s;
+    border: none;
+    color: #fff;
+  }
+
+  #profilBtn:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+  }
+
+  #profilMenu {
+    display: none;
+    position: fixed;
+    top: 66px;
+    right: 16px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 1500;
+    overflow: hidden;
+    min-width: 150px;
+  }
+
+  #profilMenu.active {
+    display: block;
+  }
+
+  #profilMenu a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    font: 500 14px/1 'Segoe UI', Arial, sans-serif;
+    transition: background 0.2s;
+  }
+
+  #profilMenu a:hover {
+    background: #f0f0f0;
+  }
+
+  #kayitModalOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #kayitModalOverlay.active {
+    display: flex;
+  }
+
+  #kayitModal {
+    position: relative;
+    width: 340px;
+    max-width: 90vw;
+    background: #8cabdb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  #kayitModalClose {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+
+  #kayitModalClose:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  #girisModalOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #girisModalOverlay.active {
+    display: flex;
+  }
+
+  #girisModal {
+    position: relative;
+    width: 340px;
+    max-width: 90vw;
+    background: #8cabdb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  #girisModalClose {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+
+  #girisModalClose:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 64px;
+    z-index: 1000;
+    background: rgba(186, 195, 209, 0.85);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #sidebar:hover,
+  #sidebar.expanded {
+    width: 275px;
+  }
+
+  .sidebar-inner {
+    width: 275px;
+    height: calc(100% - 64px);
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .sidebar-drag-handle {
+    display: none;
+  }
+
+  .sidebar-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .filter-section {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.25s ease, width 0.25s ease;
+  }
+
+  #sidebar:hover .filter-section,
+  #sidebar.expanded .filter-section {
+    opacity: 1;
+    width: auto;
+  }
+
+  .filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: #1f2937;
+    font: 500 13px/1.4 'Segoe UI', Arial, sans-serif;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .filter-header:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .filter-arrow {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+    color: #666;
+  }
+
+  .filter-section.open .filter-arrow {
+    transform: rotate(180deg);
+  }
+
+  .filter-body {
+    max-height: 0;
+    overflow: hidden hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .filter-section.open .filter-body {
+    max-height: 300px;
+    overflow: hidden auto;
+  }
+
+  .filter-section.open .filter-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .filter-section.open .filter-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+  }
+
+  .filter-section.open .filter-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+
+  #cihazMarkasiBody {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 8px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 8px 24px;
+    color: #444;
+    font: 400 12px/1.4 'Segoe UI', Arial, sans-serif;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  .filter-option:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .filter-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    accent-color: #bac3d1;
+    cursor: pointer;
+    margin: 0;
+    outline: none;
+    border: 2px solid #999;
+    border-radius: 3px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    position: relative;
+  }
+
+  .filter-option input[type="checkbox"]:checked {
+    background: #bac3d1;
+    border-color: #bac3d1;
+  }
+
+  .filter-option input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: -1px;
+    left: 2px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .filter-empty {
+    padding: 8px 12px 8px 24px;
+    color: #888;
+    font: italic 400 12px/1.4 'Segoe UI', Arial, sans-serif;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    color: #1f2937;
+    font: 400 14px/1.4 'Segoe UI', Arial, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .sidebar-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.25s ease, width 0.25s ease;
+  }
+
+  #sidebar:hover .sidebar-label,
+  #sidebar.expanded .sidebar-label {
+    opacity: 1;
+    width: auto;
+  }
+
+  #addTamirci {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #2196f3;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  #sidebar:hover #addTamirci,
+  #sidebar.expanded #addTamirci {
+    width: 243px;
+    border-radius: 12px;
+    transform: none;
+    left: 16px;
+    gap: 8px;
+  }
+
+  #addTamirci:hover {
+    background: #1976d2;
+  }
+
+  #addTamirci .btn-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font: 500 13px/1 'Segoe UI', Arial, sans-serif;
+    transition: opacity 0.25s ease, width 0.25s ease;
+  }
+
+  #sidebar:hover #addTamirci .btn-label,
+  #sidebar.expanded #addTamirci .btn-label {
+    opacity: 1;
+    width: auto;
+  }
+
+  .sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .sidebar-icon {
+    width: 24px;
+    text-align: center;
+    flex: 0 0 24px;
+  }
+
+  #searchBox {
+    display: none;
+  }
+
+  #desktopSearch {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 28px;
+    background: #f2f2f2;
+    font: 400 15px/1 'Segoe UI', Arial, sans-serif;
+    color: #333;
+    outline: none;
+    box-sizing: border-box;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  #desktopSearch::placeholder {
+    color: #888;
+  }
+
+  #modalOverlay, #kosullarModalOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #modalOverlay.active, #kosullarModalOverlay.active {
+    display: flex;
+  }
+
+  #modalMenu, #kosullarModal {
+    position: relative;
+    width: 540px;
+    max-width: 92vw;
+    background: #8cabdb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  #modalMenu {
+    width: 340px;
+    max-width: 90vw;
+  }
+
+  #modalClose {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+
+  #modalClose:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .modal-tabs {
+    display: flex;
+    padding-right: 36px;
+  }
+
+  .modal-tab {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    background: transparent;
+    font: 600 14px/1 'Segoe UI', Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+
+  .modal-tab.active {
+    color: #fff;
+    border-bottom-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-content {
+    padding: 24px;
+    min-height: 180px;
+    color: #fff;
+    font: 400 14px/1.6 'Segoe UI', Arial, sans-serif;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .modal-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 6px;
+    font: 500 13px/1 'Segoe UI', Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font: 400 14px/1 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .form-input::placeholder {
+    color: #999;
+  }
+
+  .form-section-title {
+    font: 600 13px/1 'Segoe UI', Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+
+  .form-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 8px;
+  }
+
+  .form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    color: rgba(255, 255, 255, 0.85);
+    font: 400 12px/1 'Segoe UI', Arial, sans-serif;
+    cursor: pointer;
+  }
+
+  .form-checkbox input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    accent-color: #fff;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  #formKosullar {
+    accent-color: #4caf50;
+  }
+
+  .form-empty {
+    color: rgba(255, 255, 255, 0.5);
+    font: italic 400 12px/1 'Segoe UI', Arial, sans-serif;
+    padding: 4px 0;
+  }
+
+  #kosullarModal .kosullar-title {
+    font: 700 15px/1.3 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+    padding: 20px 24px 6px;
+    text-align: center;
+  }
+
+  #kosullarModal .kosullar-body {
+    padding: 16px 24px 24px;
+    max-height: 65vh;
+    overflow-y: auto;
+    color: rgba(255,255,255,0.92);
+    font: 400 13px/1.7 'Segoe UI', Arial, sans-serif;
+  }
+
+  #kosullarModal .kosullar-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  #kosullarModal .kosullar-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+
+  #kosullarModal .kosullar-body h4 {
+    margin: 18px 0 6px;
+    font: 700 14px/1.3 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 4px;
+  }
+
+  #kosullarModal .kosullar-body h4:first-child {
+    margin-top: 0;
+  }
+
+  #kosullarModal .kosullar-body ul {
+    margin: 6px 0 12px;
+    padding-left: 20px;
+  }
+
+  #kosullarModal .kosullar-body li {
+    margin-bottom: 6px;
+  }
+
+  #kosullarModal .kosullar-body li b {
+    color: #fff;
+  }
+
+  #kosullarModal .kosullar-body .bolum {
+    margin-bottom: 16px;
+  }
+
+  #kosullarModal #kosullarModalClose {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  #kosullarModal #kosullarModalClose:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  @media (max-width: 768px) {
+    #desktopSearch {
+      display: none;
+    }
+
+    .sidebar-drag-handle {
+      display: block;
+    }
+
+    .filter-section.open .filter-body {
+      max-height: 350px;
+      overflow: hidden auto;
+    }
+
+    .filter-section.open .yetkili-servis-body {
+      max-height: none;
+      overflow: visible;
+    }
+
+    .filter-section.open {
+      overflow: visible;
+    }
+
+    .filter-section.open #cihazTuruBody {
+      max-height: 100px;
+      overflow: hidden auto;
+    }
+
+    .filter-section.open #cihazMarkasiBody {
+      max-height: 100px;
+      overflow: hidden auto;
+    }
+
+    #cihazTuruBody::-webkit-scrollbar,
+    #cihazMarkasiBody::-webkit-scrollbar,
+    .yetkili-servis-body::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    #cihazTuruBody::-webkit-scrollbar-thumb,
+    #cihazMarkasiBody::-webkit-scrollbar-thumb,
+    .yetkili-servis-body::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+    }
+
+    .filter-section.open .filter-body::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .filter-section.open .filter-body::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    #cihazMarkasiBody {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #sidebar {
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 64px;
+      border-radius: 16px 16px 0 0;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-bottom: none;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
+      touch-action: none;
+      max-width: 100%;
+      min-width: 100%;
+      overflow: visible;
+    }
+
+    .sidebar-inner {
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+      height: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar-inner::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .sidebar-inner::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+    }
+
+    .sidebar-items {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      height: 64px;
+      flex-shrink: 0;
+      padding: 0 8px;
+      width: 100%;
+    }
+
+    .sidebar-item {
+      position: relative;
+      width: 100%;
+      display: block;
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    .sidebar-icon {
+      position: absolute;
+      left: 16px;
+    }
+
+    .sidebar-label {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+
+    #sidebar.expanded .sidebar-items {
+      padding: 16px;
+      gap: 4px;
+    }
+
+    #searchBox {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 4px auto 6px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 28px;
+      background: #f2f2f2;
+      font: 400 15px/1 'Segoe UI', Arial, sans-serif;
+      color: #333;
+      outline: none;
+      box-sizing: border-box;
+      opacity: 1;
+      transition: opacity 0.25s ease, margin 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #searchBox::placeholder {
+      color: #888;
+    }
+
+    #sidebar.expanded #searchBox {
+      opacity: 1;
+      width: calc(100% - 32px);
+      margin: 16px auto 8px;
+      padding: 14px 20px;
+      pointer-events: auto;
+    }
+
+    .sidebar-label {
+      opacity: 1;
+      width: auto;
+    }
+
+    .sidebar-drag-handle {
+      width: 70px;
+      height: 20px;
+      background: transparent;
+      border-radius: 100px;
+      margin: 0 auto;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-drag-handle::after {
+      content: '';
+      width: 70px;
+      height: 5px;
+      background: #646869;
+      border-radius: 100px;
+    }
+
+    #sidebar.expanded .sidebar-drag-handle {
+      margin: 8px auto 12px;
+    }
+
+    #addTamirci {
+      position: relative;
+      bottom: auto;
+      left: auto;
+      transform: none;
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+      border-radius: 0;
+      margin-top: auto;
+      box-sizing: border-box;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    #sidebar.expanded #addTamirci {
+      opacity: 1;
+      height: 45px;
+      width: 45px;
+      overflow: visible;
+      pointer-events: auto;
+      border-radius: 10px;
+      margin: 16px auto;
+      left: auto;
+      transform: none;
+    }
+
+    #addTamirci .btn-label {
+      opacity: 1;
+      width: auto;
+    }
+  }
+
+  /* DETAY PANELİ STİLLERİ */
+  .detail-panel {
+    position: fixed;
+    top: 20px;
+    right: -420px;
+    bottom: 20px;
+    width: 360px;
+    max-width: calc(100vw - 40px);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    z-index: 1200;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  .detail-panel.active { 
+    right: 20px; 
+  }
+  .drag-handle-bar { display: none; }
+  
+  .panel-header {
+    padding: 16px 20px 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .close-btn {
+    background: #f1f3f5; border: none; cursor: pointer;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #495057; transition: background 0.2s;
+  }
+  .close-btn:hover { background: #e9ecef; }
+  
+  .detail-badge {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; padding: 4px 10px; border-radius: 999px;
+    background: #e7f5ff; color: #1971c2;
+  }
+  .detail-badge.authorized { background: #ebfbee; color: #2f9e44; }
+  
+  .panel-body { padding: 10px 20px; overflow-y: auto; flex: 1; }
+  .business-title {
+    font-size: 1.35rem; font-weight: 800; color: #1a1f36;
+    margin: 0 0 16px 0; line-height: 1.3;
+  }
+  .section-block { margin-bottom: 16px; }
+  .section-subtitle {
+    display: block; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; color: #868e96; margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12px; background: #f8f9fa; border: 1px solid #dee2e6;
+    color: #495057; padding: 4px 9px; border-radius: 8px;
+  }
+  .tag-primary { background: #eef2ff; border-color: #c7d2fe; font-weight: 600; color: #3730a3; }
+  
+  .info-box {
+    background: #f8f9fa; border-radius: 12px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .info-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #495057;
+  }
+  .text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  
+  .panel-footer {
+    padding: 14px 20px; border-top: 1px solid #f1f3f5;
+    display: flex; gap: 10px; background: #fff;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; text-decoration: none; border-radius: 12px;
+    font-weight: 600; font-size: 14px; transition: all 0.2s ease; cursor: pointer;
+  }
+  .btn-primary {
+    flex: 1; background: #0ca678; color: #fff; padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(12, 166, 120, 0.25);
+  }
+  .btn-primary:hover { background: #099268; }
+  .btn-secondary { width: 46px; background: #f1f3f5; color: #495057; }
+  .btn-secondary:hover { background: #e9ecef; }
+
+  @media (max-width: 768px) {
+    .detail-panel {
+      top: auto; right: 0 !important; left: 0;
+      bottom: -100%; width: 100vw; max-width: 100vw;
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+      max-height: 75vh;
+      z-index: 2500;
+    }
+    .detail-panel.active { bottom: 0; }
+    .drag-handle-bar {
+      display: block; width: 40px; height: 5px;
+      background: #dee2e6; border-radius: 999px; margin: 10px auto 4px auto;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<input type="text" id="desktopSearch" placeholder="Tamirci Ara">
+<div id="profilBtn">👤</div>
+<div id="profilMenu">
+  <a href="#" id="girisYapLink">Giriş Yap</a>
+  <a href="#" id="kayitLink">Üye Ol</a>
+  <a href="#" id="kullaniciPaneli" style="display:none;">Kullanıcı Paneli</a>
+  <a href="#" id="cikisYap" style="display:none;">Çıkış Yap</a>
+</div>
+
+<div id="girisModalOverlay">
+  <div id="girisModal">
+    <button id="girisModalClose">✕</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-gtab="giris">Giriş Yap</button>
+      <button class="modal-tab" data-gtab="kayit">Üye Ol</button>
+    </div>
+    <div class="modal-content">
+      <div class="form-group">
+        <label class="form-label">E-posta <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="girisEposta" placeholder="E-posta adresinizi giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="girisSifre" placeholder="Şifrenizi giriniz">
+      </div>
+      <div id="girisHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">E-posta veya şifre hatalıdır.</div>
+      <div style="margin-top:8px;">
+        <button id="girisYapBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Giriş Yap</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="kayitModalOverlay">
+  <div id="kayitModal">
+    <button id="kayitModalClose">✕</button>
+    <div class="modal-tabs">
+      <button class="modal-tab" data-gtab="giris">Giriş Yap</button>
+      <button class="modal-tab active" data-gtab="kayit">Üye Ol</button>
+    </div>
+    <div class="modal-content">
+      <div class="form-group">
+        <label class="form-label">Ad Soyad <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="kayitAdSoyad" placeholder="Adınızı ve soyadınızı giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="kayitEposta" placeholder="E-posta adresinizi giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="kayitSifre" placeholder="Şifrenizi giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifreyi Onayla <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="kayitSifreTekrar" placeholder="Şifrenizi tekrar giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-checkbox" style="padding: 6px 0; align-items: flex-start; line-height: 1.4;">
+          <input type="checkbox" id="kayitOnay" style="margin-top: 2px;">
+          <span><span style="color:#ff5050;">*</span> Ad, soyad ve e-posta bilgilerimin hesap oluşturma ve doğrulama süreçleri amacıyla işlenmesine ilişkin <a href="#" id="kayitAydinlatmaLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Aydınlatma Metni</a>’ni okudum, onaylıyorum.</span>
+        </label>
+      </div>
+      <div id="kayitHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">Lütfen gerekli yerleri doldurunuz.</div>
+      <div style="margin-top:8px;">
+        <button id="kayitOlBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Üye Ol</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sidebar">
+  <div class="sidebar-inner">
+    <div id="mobileDragHandle" class="sidebar-drag-handle"></div>
+    <input type="text" id="searchBox" placeholder="Tamirci Ara">
+    <div class="filter-section">
+      <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>Cihaz Türü</span>
+        <span class="filter-arrow">▼</span>
+      </div>
+      <div class="filter-body" id="cihazTuruBody">
+        <label class="filter-option"><input type="checkbox" value="telefon"> Telefon</label>
+        <label class="filter-option"><input type="checkbox" value="masaustu"> Masaüstü Bilgisayar</label>
+        <label class="filter-option"><input type="checkbox" value="dizustu"> Dizüstü Bilgisayar</label>
+        <label class="filter-option"><input type="checkbox" value="tablet"> Tablet</label>
+        <label class="filter-option"><input type="checkbox" value="televizyon"> Televizyon</label>
+        <label class="filter-option"><input type="checkbox" value="klima"> Klima</label>
+        <label class="filter-option"><input type="checkbox" value="beyazEsya"> Beyaz Eşya</label>
+        <label class="filter-option"><input type="checkbox" value="diger"> Diğer</label>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>Cihaz Markası</span>
+        <span class="filter-arrow">▼</span>
+      </div>
+      <div class="filter-body" id="cihazMarkasiBody">
+        <div class="filter-empty">Lütfen Cihaz Türü Seçiniz</div>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>Yetkili Servis</span>
+        <span class="filter-arrow">▼</span>
+      </div>
+      <div class="filter-body yetkili-servis-body" id="yetkiliServisBody">
+        <label class="filter-option"><input type="checkbox" value="Yetkili Servis"> Yetkili Servis</label>
+        <label class="filter-option"><input type="checkbox" value="Özel Servis"> Özel Servis</label>
+        <div style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.08);border-radius:6px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(0,0,0,0.65);">
+          <b>Bilgilendirme:</b> Sitedeki servis statüleri kullanıcı ve işletme beyanlarına dayanır. Cihazınızı teslim etmeden önce yetki ve garanti koşullarını ilgili işletmeden veya üreticiden teyit etmenizi rica ederiz.
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-items">
+    </div>
+    <button id="addTamirci">+<span class="btn-label">İşletme Tanımla</span></button>
+  </div>
+</div>
+
+<div id="modalOverlay">
+  <div id="modalMenu">
+    <button id="modalClose">✕</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="1">İşletme sahibiyim</button>
+      <button class="modal-tab" data-tab="2">Site kullanıcısıyım</button>
+    </div>
+    <div class="modal-content" id="modalContent">
+      <div class="form-group">
+        <label class="form-label">İşletme Adı <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="formIsletmeAdi" placeholder="İşletme adını giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="labelTelefon">Telefon <span style="color:#ff5050;">*</span></label>
+        <input type="tel" class="form-input" id="formTelefon" placeholder="Telefon numaranızı giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="labelEposta">Şirket E-postası <span style="color:#ff5050;">*</span></label>
+        <input type="email" class="form-input" id="formEposta" placeholder="Şirket E-postası adresinizi giriniz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Servis verilen cihaz türleri <span style="color:#ff5050;">*</span></label>
+        <div class="form-checkbox-grid" id="formCihazTuru">
+          <label class="form-checkbox"><input type="checkbox" value="telefon"> Telefon</label>
+          <label class="form-checkbox"><input type="checkbox" value="masaustu"> Masaüstü Bilgisayar</label>
+          <label class="form-checkbox"><input type="checkbox" value="dizustu"> Dizüstü Bilgisayar</label>
+          <label class="form-checkbox"><input type="checkbox" value="tablet"> Tablet</label>
+          <label class="form-checkbox"><input type="checkbox" value="televizyon"> Televizyon</label>
+          <label class="form-checkbox"><input type="checkbox" value="klima"> Klima</label>
+          <label class="form-checkbox"><input type="checkbox" value="beyazEsya"> Beyaz Eşya</label>
+          <label class="form-checkbox"><input type="checkbox" value="diger"> Diğer</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Markalar <span style="color:#ff5050;">*</span></label>
+        <div class="form-checkbox-grid" id="formMarkalar">
+          <div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-checkbox" style="padding: 8px 0;">
+          <input type="checkbox" id="formYetkili"> <span id="labelYetkili">Yetkili Servis misiniz?</span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-checkbox" style="padding: 8px 0;">
+          <input type="checkbox" id="formOnay"> <span><span style="color:#ff5050;">*</span> Kişisel verilerimin (İsim, Soyisim, E-posta Adresi, Telefon Numarası) dükkan doğrulama, üyelik süreçleri ve platformda yayınlanma amaçlarıyla işlenmesine <a href="#" id="aydinlatmaLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Aydınlatma Metni</a> kapsamında rıza gösteriyorum.</span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-checkbox" style="padding: 8px 0;">
+          <input type="checkbox" id="formKosullar"> <span style="color:#ff5050;">*</span> <span><a href="#" id="kosullarLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Kullanım Koşulları ve Sorumluluk Reddi Metni</a>'ni okudum, kabul ediyorum.</span>
+        </label>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.1);border-radius:8px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(255,255,255,0.8);">
+        <b>Not:</b> Haritada işaretlediğiniz yer teknik servisin konumu olarak belirlenecektir. Konum belirlemek için bilgisayarda iseniz sağ fare tuşunu kullanınız, telefon veya tablette iseniz ekrana basılı tutunuz.
+      </div>
+      <div id="formUyari" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">
+        Lütfen gerekli yerleri doldurunuz.
+      </div>
+      <div style="margin-top:16px;">
+        <button id="isletmeEkleBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">İşletme Ekle</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="kosullarModalOverlay">
+  <div id="kosullarModal">
+    <button id="kosullarModalClose">✕</button>
+    <div class="kosullar-title">TAMİRCİM NEREDE – AYDINLATMA METNİ, GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI</div>
+    <div class="kosullar-body">
+      <div class="bolum">
+        <h4>1. Veri Sorumlusu</h4>
+        6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla Tamircim Nerede Platform Yöneticisi (“Platform”) tarafından aşağıda izah edilen kapsam ve şartlarda işlenmektedir.
+      </div>
+
+      <div class="bolum">
+        <h4>2. İşlenen Veriler, Amaçları ve Gizlilik Derecesi</h4>
+        Platformumuzda veriler iki ayrı kategoride işlenir:
+        <br><br>
+        <b>A. Bireysel Üyelik Verileri (Gizli Kalacak Veriler):</b>
+        <ul>
+          <li><b>İşlenen Veriler:</b> Ad, Soyad, Kişisel E-posta Adresi.</li>
+          <li><b>İşleme Amacı:</b> Üyelik hesabı oluşturulması, e-posta adresi doğrulaması (aktivasyon), hesap güvenliğinin sağlanması, yetkisiz girişlerin önlenmesi ve gerektiğinde hesap bildirimlerinin iletilmesi.</li>
+          <li><b>Gizlilik ve Paylaşım:</b> Bu veriler kesinlikle 3. şahıslarla, diğer kullanıcılarla veya ticari taraflarla paylaşılmaz. Bu bilgilere yalnızca platformun teknik ve operasyonel yönetiminden sorumlu olan yetkili sistem yöneticisi erişebilir.</li>
+        </ul>
+        <b>B. İşletme Tanımlama Verileri (Kamuya Açık Veriler):</b>
+        <ul>
+          <li><b>İşlenen Veriler:</b> İşletme Adı, İşletme İletişim Telefon Numarası, İşletme İletişim E-posta Adresi, İşletme Adresi/Harita Konumu, Tamir Edilen Cihaz ve Marka Bilgileri.</li>
+          <li><b>İşleme ve Yayın Amacı:</b> Platformun ana fonksiyonu olan harita tabanlı dizin hizmetinin yürütülmesi, dükkan profilinin harita üzerinde konumlandırılması ve hizmet almak isteyen 3. kişi kullanıcıların doğrudan işletmeyle iletişime geçebilmesinin sağlanması.</li>
+          <li><b>Erişim Durumu:</b> Bu kapsamda girilen tüm işletme bilgileri, web sitesini ziyaret eden tüm 3. kişilerin erişimine açık şekilde haritada ve dükkan detay sayfalarında yayınlanır.</li>
+        </ul>
+      </div>
+
+      <div class="bolum">
+        <h4>3. Hukuki Sebepler ve Veri Toplama Yöntemi</h4>
+        Kişisel verileriniz; web sitemiz üzerindeki üyelik ve dükkan ekleme formları aracılığıyla dijital ortamda toplanmaktadır. Verileriniz, KVKK’nın 5. maddesinde yer alan “ilgili kişinin açık rızası”, “bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması” ve “veri sorumlusunun meşru menfaatleri” hukuki sebeplerine dayalı olarak otomatik yollarla işlenir.
+      </div>
+
+      <div class="bolum">
+        <h4>4. Sorumluluk Reddi ve Hizmet Şartları</h4>
+        <ul>
+          <li><b>Yer Sağlayıcı Konumu:</b> Platformumuz, 5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi ve Bu Yayınlar Yoluyla İşlenen Suçlarla Mücadele Edilmesi Hakkında Kanun kapsamında "Yer Sağlayıcı" niteliğindedir. Platform üzerinde yer alan işletme bilgileri, kullanıcı ve işletme beyanlarına dayanır.</li>
+          <li><b>Servis ve Garanti Durumu Bilgilendirmesi:</b> Sitede yer alan "Yetkili Servis" veya "Teknik Servis" ayrımları yalnızca genel bilgilendirme amacıyla sunulmaktadır. Platformumuz bu bilgilerin doğruluğunu, güncelliğini veya garanti geçerliliğini taahhüt etmez. Kullanıcılar, cihazlarını teslim etmeden önce ilgili servisin yetki ve garanti koşullarını üretici firmadan veya işletmeden bizzat teyit etmekle yükümlüdür.</li>
+          <li><b>Hizmet Kalitesi ve Uyuşmazlıklar:</b> Platform, hizmet almak isteyen kullanıcılar ile bağımsız işletmeleri buluşturan bir dizindir. Tamir işlemlerinin kalitesinden, parça orijinalliğinden, ücretlendirmelerden, cihazlarda oluşabilecek hasarlardan veya taraflar arasındaki uyuşmazlıklardan platformumuz hiçbir hukuki ve cezai sorumluluk kabul etmez.</li>
+        </ul>
+      </div>
+
+      <div class="bolum">
+        <h4>5. İçerik Kaldırma ve Düzeltme Talepleri</h4>
+        Haritada kendi işletmesinin izinsiz veya hatalı listelendiğini düşünen işletme sahipleri ya da kullanıcılar, dükkanın sistemden tamamen silinmesi veya güncellenmesi taleplerini <b>emincanortakoy@gmail.com</b> adresine iletebilirler. Talepler en geç 48 saat içerisinde incelenerek gerekli işlem yapılır.
+      </div>
+
+      <div class="bolum">
+        <h4>6. KVKK Kapsamındaki Haklarınız</h4>
+        KVKK’nın 11. maddesi kapsamında; verilerinizin işlenip işlenmediğini öğrenme, yanlış verilerin düzeltilmesini isteme, üyeliğinizi sonlandırarak verilerinizin sistemden kalıcı olarak silinmesini talep etme hakkına sahipsiniz. Tüm taleplerinizi doğrudan <b>emincanortakoy@gmail.com</b> adresi üzerinden sistem yöneticisine ulaştırabilirsiniz.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAY PANELİ HTML -->
+<aside id="repairman-detail-panel" class="detail-panel" aria-hidden="true">
+  <div class="drag-handle-bar"></div>
+  <div class="panel-header">
+    <span id="detail-type-badge" class="detail-badge">Özel Servis</span>
+    <button id="close-panel-btn" class="close-btn" aria-label="Kapat">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <h2 id="detail-title" class="business-title"></h2>
+    <div class="section-block">
+      <span class="section-subtitle">Hizmet Verilen Cihaz</span>
+      <div id="detail-devices" class="tags-container"></div>
+    </div>
+    <div class="section-block">
+      <span class="section-subtitle">Hizmet Verilen Markalar</span>
+      <div id="detail-brands" class="tags-container"></div>
+    </div>
+    <div class="section-block info-box">
+      <div class="info-row">
+        <span>✉️</span>
+        <span id="detail-email" class="text-truncate"></span>
+      </div>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <a id="detail-call-btn" href="tel:" class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.72 11.72 0 003.68.59 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.59 3.68a1 1 0 01-.24 1.02l-2.23 2.09z"/>
+      </svg>
+      <span>Hemen Ara</span>
+    </a>
+    <a id="detail-nav-btn" href="#" target="_blank" class="btn btn-secondary" title="Google Haritalar'da Aç">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+      </svg>
+    </a>
+  </div>
+</aside>
+
+<script src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
+<script>
+  const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+  const POI_LAYERS = ['poi_r20', 'poi_r7', 'poi_r1'];
+
+  let map;
+
+  async function buildStyle() {
+    const res = await fetch(STYLE_URL);
+    const style = await res.json();
+    style.layers = style.layers.filter((l) => !POI_LAYERS.includes(l.id));
+    return style;
+  }
+
+  let currentMarker = null;
+  let isletmeMarkerlari = [];
+
+  // Vektörel SVG ikonları (Çamaşır makinesi & Klima)
+  const ICONS = {
+    washingMachine: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="2" width="18" height="20" rx="3"></rect>
+        <circle cx="12" cy="13" r="5"></circle>
+        <path d="M12 11a2 2 0 0 1 2 2"></path>
+        <circle cx="7" cy="6" r="1" fill="#1e293b"></circle>
+        <circle cx="10" cy="6" r="1" fill="#1e293b"></circle>
+      </svg>`,
+    airConditioner: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="9" rx="2"></rect>
+        <line x1="6" y1="10" x2="18" y2="10"></line>
+        <path d="M6 18c.5-1 1.5-1 2 0s1.5 1 2 0"></path>
+        <path d="M14 18c.5-1 1.5-1 2 0s1.5 1 2 0"></path>
+      </svg>`
+  };
+
+  // Cihaz türüne göre pin rengi ve ikonunu belirleyen fonksiyon
+  function getDeviceStyle(deviceTypes) {
+    if (!deviceTypes) return { icon: '📍', color: '#e11d48' };
+    const list = Array.isArray(deviceTypes) ? deviceTypes : [deviceTypes];
+    const text = list.join(' ').toLowerCase();
+
+    if (text.includes('klima')) {
+      return { icon: ICONS.airConditioner, color: '#0284c7' };
+    }
+    if (text.includes('beyaz') || text.includes('esya') || text.includes('eşya')) {
+      return { icon: ICONS.washingMachine, color: '#059669' };
+    }
+    if (text.includes('telefon') || text.includes('tablet')) {
+      return { icon: '📱', color: '#7c3aed' };
+    }
+    if (text.includes('dizustu') || text.includes('dizüstü') || text.includes('laptop')) {
+      return { icon: '💻', color: '#d97706' };
+    }
+    if (text.includes('masaustu') || text.includes('masaüstü') || text.includes('bilgisayar')) {
+      return { icon: '🖥️', color: '#d97706' };
+    }
+    if (text.includes('televizyon') || text.includes('tv')) {
+      return { icon: '📺', color: '#4f46e5' };
+    }
+    return { icon: '🔧', color: '#e11d48' };
+  }
+
+  // 0x0 boyutlu çapa (wrapper) içinde milimetrik kilitli Marker HTML üretici
+  function createMarkerElement(iconContent, pinColor = '#e11d48') {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'pin-wrapper';
+    
+    const pin = document.createElement('div');
+    pin.className = 'custom-map-pin';
+    pin.innerHTML = `
+      <svg viewBox="0 0 32 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 28 16 28s16-16 16-28C32 7.163 24.837 0 16 0z" fill="${pinColor}"/>
+        <circle cx="16" cy="16" r="11" fill="#FFFFFF"/>
+      </svg>
+      <div class="pin-device-icon">${iconContent}</div>
+    `;
+
+    wrapper.appendChild(pin);
+    return wrapper;
+  }
+
+  function addMarker(lngLat) {
+    if (currentMarker) {
+      currentMarker.remove();
+    }
+    const el = createMarkerElement('📍', '#e11d48');
+    
+    currentMarker = new maplibregl.Marker({ element: el })
+      .setLngLat(lngLat)
+      .addTo(map);
+  }
+
+  function setupMapEvents() {
+    const canvas = map.getCanvas();
+
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const lngLat = map.unproject([e.clientX - rect.left, e.clientY - rect.top]);
+      addMarker(lngLat);
+    });
+
+    let longPressTimer = null;
+    let touchStartPos = null;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      touchStartPos = { x: touch.clientX, y: touch.clientY };
+
+      longPressTimer = setTimeout(() => {
+        const lngLat = map.unproject([touch.clientX - rect.left, touch.clientY - rect.top]);
+        addMarker(lngLat);
+        longPressTimer = null;
+      }, 600);
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!longPressTimer || !touchStartPos) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - touchStartPos.x;
+      const dy = touch.clientY - touchStartPos.y;
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+      touchStartPos = null;
+    });
+
+    map.on('click', (e) => {
+      const originalEvt = e.originalEvent;
+      if (originalEvt && originalEvt._markerClicked) return;
+      closeRepairmanDetail();
+    });
+  }
+
+  function loadApprovedBusinesses() {
+    isletmeMarkerlari.forEach(m => m.remove());
+    isletmeMarkerlari = [];
+
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const onaylilar = isletmeler.filter(i => i.onay_durumu === 'onaylandi' && i.konum);
+
+    onaylilar.forEach(i => {
+      const deviceList = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
+      const styleInfo = getDeviceStyle(deviceList);
+      const el = createMarkerElement(styleInfo.icon, styleInfo.color);
+
+      const markerData = {
+        name: i.isletme_adi || 'İsimsiz Servis',
+        serviceType: i.yetkili_servis_ozel_servis || 'Özel Servis',
+        phone: i.telefon || '',
+        email: i.e_posta || 'Belirtilmemiş',
+        devices: deviceList,
+        brands: Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []),
+        lat: i.konum.enlem,
+        lng: i.konum.boylam
+      };
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e._markerClicked = true;
+        openRepairmanDetail(markerData);
+      });
+
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([i.konum.boylam, i.konum.enlem])
+        .addTo(map);
+
+      marker._businessData = markerData;
+      isletmeMarkerlari.push(marker);
+    });
+  }
+
+  // ==========================================
+  // FİLTRELEME & ARAMA FONKSİYONLARI
+  // ==========================================
+  const DEVICE_MAPPING = {
+    telefon: 'telefon',
+    masaustu: 'masaüstü',
+    dizustu: 'dizüstü',
+    tablet: 'tablet',
+    televizyon: 'televizyon',
+    klima: 'klima',
+    beyazEsya: 'beyaz eşya',
+    diger: 'diğer'
+  };
+
+  function applyFiltersAndSearch(zoomToResult = false) {
+    const desktopSearchVal = document.getElementById('desktopSearch').value.trim().toLocaleLowerCase('tr');
+    const mobileSearchVal = document.getElementById('searchBox') ? document.getElementById('searchBox').value.trim().toLocaleLowerCase('tr') : '';
+    const searchQuery = desktopSearchVal || mobileSearchVal;
+
+    const selectedDeviceKeys = [];
+    document.querySelectorAll('#cihazTuruBody input[type="checkbox"]:checked').forEach(cb => {
+      selectedDeviceKeys.push(cb.value);
+    });
+
+    const selectedBrands = [];
+    document.querySelectorAll('#cihazMarkasiBody input[type="checkbox"]:checked').forEach(cb => {
+      const brandName = cb.parentElement.textContent.trim().toLocaleLowerCase('tr');
+      if (brandName) selectedBrands.push(brandName);
+    });
+
+    const selectedStatuses = [];
+    document.querySelectorAll('#yetkiliServisBody input[type="checkbox"]:checked').forEach(cb => {
+      selectedStatuses.push(cb.value);
+    });
+
+    let firstMatchedMarker = null;
+
+    isletmeMarkerlari.forEach(marker => {
+      const data = marker._businessData;
+      if (!data) return;
+
+      const businessName = (data.name || '').toLocaleLowerCase('tr');
+      const businessDevices = (data.devices || []).map(d => d.toLocaleLowerCase('tr'));
+      const businessBrands = (data.brands || []).map(b => b.toLocaleLowerCase('tr'));
+      const businessStatus = data.serviceType || 'Özel Servis';
+
+      let matchesSearch = true;
+      if (searchQuery) {
+        matchesSearch = businessName.includes(searchQuery) ||
+                        businessBrands.some(b => b.includes(searchQuery)) ||
+                        businessDevices.some(d => d.includes(searchQuery));
+      }
+
+      let matchesDevice = true;
+      if (selectedDeviceKeys.length > 0) {
+        matchesDevice = selectedDeviceKeys.some(key => {
+          const mappedName = DEVICE_MAPPING[key];
+          return businessDevices.some(d => d.includes(mappedName));
+        });
+      }
+
+      let matchesBrand = true;
+      if (selectedBrands.length > 0) {
+        matchesBrand = selectedBrands.some(brand => businessBrands.includes(brand));
+      }
+
+      let matchesStatus = true;
+      if (selectedStatuses.length > 0) {
+        matchesStatus = selectedStatuses.includes(businessStatus);
+      }
+
+      const isVisible = matchesSearch && matchesDevice && matchesBrand && matchesStatus;
+      const markerEl = marker.getElement();
+
+      if (isVisible) {
+        markerEl.style.display = 'block';
+        if (!firstMatchedMarker) firstMatchedMarker = marker;
+      } else {
+        markerEl.style.display = 'none';
+      }
+    });
+
+    if (zoomToResult && firstMatchedMarker && map) {
+      const targetPos = firstMatchedMarker.getLngLat();
+      map.flyTo({
+        center: [targetPos.lng, targetPos.lat],
+        zoom: 15,
+        duration: 1200,
+        essential: true
+      });
+      openRepairmanDetail(firstMatchedMarker._businessData);
+    }
+  }
+
+  const desktopSearchInput = document.getElementById('desktopSearch');
+  const mobileSearchInput = document.getElementById('searchBox');
+
+  [desktopSearchInput, mobileSearchInput].forEach(input => {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      if (input === desktopSearchInput && mobileSearchInput) mobileSearchInput.value = e.target.value;
+      if (input === mobileSearchInput && desktopSearchInput) desktopSearchInput.value = e.target.value;
+      applyFiltersAndSearch(false);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyFiltersAndSearch(true);
+      }
+    });
+  });
+
+  document.querySelectorAll('#yetkiliServisBody input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => applyFiltersAndSearch(false));
+  });
+
+  function openRepairmanDetail(data) {
+    const panel = document.getElementById('repairman-detail-panel');
+    if (!panel) return;
+
+    // Başlık
+    const titleEl = document.getElementById('detail-title');
+    if (titleEl) titleEl.innerText = data.name || 'İsimsiz Servis';
+
+    // Rozet
+    const badge = document.getElementById('detail-type-badge');
+    if (badge) {
+      badge.innerText = data.serviceType || 'Özel Servis';
+      if (data.serviceType === 'Yetkili Servis') {
+        badge.classList.add('authorized');
+      } else {
+        badge.classList.remove('authorized');
+      }
+    }
+
+    // Cihazlar
+    const deviceContainer = document.getElementById('detail-devices');
+    if (deviceContainer) {
+      deviceContainer.innerHTML = '';
+      (data.devices || []).forEach(device => {
+        const span = document.createElement('span');
+        span.className = 'tag tag-primary';
+        span.innerText = device;
+        deviceContainer.appendChild(span);
+      });
+    }
+
+    // Markalar
+    const brandContainer = document.getElementById('detail-brands');
+    if (brandContainer) {
+      brandContainer.innerHTML = '';
+      (data.brands || []).forEach(brand => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.innerText = brand;
+        brandContainer.appendChild(span);
+      });
+    }
+
+    // İletişim Bilgileri
+    const emailEl = document.getElementById('detail-email');
+    if (emailEl) emailEl.innerText = data.email || 'Belirtilmemiş';
+    
+    // Aksiyon Butonları
+    const callBtn = document.getElementById('detail-call-btn');
+    if (callBtn) {
+      callBtn.href = data.phone ? ('tel:' + data.phone) : '#';
+      callBtn.style.display = data.phone ? 'inline-flex' : 'none';
+    }
+
+    const navBtn = document.getElementById('detail-nav-btn');
+    if (navBtn) navBtn.href = 'https://www.google.com/maps/dir/?api=1&destination=' + data.lat + ',' + data.lng;
+
+    // Haritayı zoom-in animasyonu ile yumuşakça merkeze alıp yaklaştır
+    if (map && data.lng && data.lat) {
+      map.flyTo({
+        center: [data.lng, data.lat],
+        zoom: 15,
+        duration: 1200,
+        essential: true
+      });
+    }
+
+    panel.classList.add('active');
+    panel.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeRepairmanDetail() {
+    const panel = document.getElementById('repairman-detail-panel');
+    if (panel) {
+      panel.classList.remove('active');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  document.getElementById('close-panel-btn').addEventListener('click', closeRepairmanDetail);
+
+  buildStyle().then((style) => {
+    map = new maplibregl.Map({
+      container: 'map',
+      style: style,
+      center: [35.33, 37.0],
+      zoom: 6,
+      attributionControl: true,
+      maxPitch: 0,
+      pitchWithRotate: false,
+      dragRotate: false
+    });
+    setupMapEvents();
+    map.on('load', () => {
+      POI_LAYERS.forEach((id) => {
+        if (map.getLayer(id)) map.removeLayer(id);
+      });
+      loadApprovedBusinesses();
+    });
+  }).catch(() => {
+    map = new maplibregl.Map({
+      container: 'map',
+      style: STYLE_URL,
+      center: [35.33, 37.0],
+      zoom: 6,
+      maxPitch: 0,
+      pitchWithRotate: false,
+      dragRotate: false
+    });
+    setupMapEvents();
+    map.on('load', () => {
+      POI_LAYERS.forEach((id) => {
+        if (map.getLayer(id)) map.removeLayer(id);
+      });
+      loadApprovedBusinesses();
+    });
+  });
+
+  const sidebar = document.getElementById('sidebar');
+
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    if (isMobile()) return;
+    if (e.clientX <= 16) {
+      sidebar.classList.add('expanded');
+    } else if (!sidebar.matches(':hover')) {
+      sidebar.classList.remove('expanded');
+    }
+  });
+
+  let touchStartY = 0;
+  let sidebarStartHeight = 0;
+  let sidebarDragging = false;
+  const SIDEBAR_MIN = 64;
+  const SIDEBAR_MAX = 430;
+  const dragHandle = document.getElementById('mobileDragHandle');
+
+  if (dragHandle) {
+    dragHandle.addEventListener('touchstart', (e) => {
+      if (!isMobile()) return;
+      touchStartY = e.touches[0].clientY;
+      sidebarStartHeight = sidebar.offsetHeight;
+      sidebarDragging = true;
+      sidebar.style.transition = 'none';
+    }, { passive: true });
+
+    document.addEventListener('touchstart', (e) => {
+      if (!isMobile() || sidebarDragging) return;
+      const handleRect = dragHandle.getBoundingClientRect();
+      const touchY = e.touches[0].clientY;
+      const touchX = e.touches[0].clientX;
+      if (Math.abs(touchY - handleRect.top - handleRect.height / 2) < 20 && touchX > handleRect.left - 30 && touchX < handleRect.right + 30) {
+        touchStartY = touchY;
+        sidebarStartHeight = sidebar.offsetHeight;
+        sidebarDragging = true;
+        sidebar.style.transition = 'none';
+      }
+    }, { passive: true });
+  }
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isMobile() || !sidebarDragging) return;
+    e.preventDefault();
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchStartY - touchY;
+    let newHeight = sidebarStartHeight + deltaY;
+    newHeight = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, newHeight));
+    sidebar.style.height = newHeight + 'px';
+
+    if (newHeight > SIDEBAR_MIN + 30) {
+      sidebar.classList.add('expanded');
+    } else {
+      sidebar.classList.remove('expanded');
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', () => {
+    sidebarDragging = false;
+    sidebar.style.transition = '';
+  });
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const addTamirciBtn = document.getElementById('addTamirci');
+  const modalTabs = document.querySelectorAll('#modalOverlay .modal-tab');
+
+  let aktifTab = '1';
+
+  function switchTabUI(tabId) {
+    aktifTab = tabId;
+    const labelTel = document.getElementById('labelTelefon');
+    const labelMail = document.getElementById('labelEposta');
+    const labelYetkili = document.getElementById('labelYetkili');
+
+    if (tabId === '2') {
+      if (labelTel) labelTel.innerHTML = 'Telefon <span style="font-size:11px;opacity:0.75;">(Opsiyonel)</span>';
+      if (labelMail) labelMail.innerHTML = 'Şirket E-postası <span style="font-size:11px;opacity:0.75;">(Opsiyonel)</span>';
+      if (labelYetkili) labelYetkili.textContent = 'Yetkili Servis mi?';
+    } else {
+      if (labelTel) labelTel.innerHTML = 'Telefon <span style="color:#ff5050;">*</span>';
+      if (labelMail) labelMail.innerHTML = 'Şirket E-postası <span style="color:#ff5050;">*</span>';
+      if (labelYetkili) labelYetkili.textContent = 'Yetkili Servis misiniz?';
+    }
+  }
+
+  addTamirciBtn.addEventListener('click', () => {
+    const oturum = localStorage.getItem('aktifOturum');
+    if (!oturum) {
+      alert('İşletme tanımlayabilmek için önce üye olmalısınız.');
+      return;
+    }
+    modalOverlay.classList.add('active');
+    modalTabs.forEach(t => t.classList.remove('active'));
+    modalTabs[0].classList.add('active');
+    switchTabUI('1');
+    formSifirla();
+  });
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('active');
+    }
+  });
+
+  document.getElementById('modalClose').addEventListener('click', () => {
+    modalOverlay.classList.remove('active');
+  });
+
+  modalTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      modalTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      switchTabUI(tab.dataset.tab);
+    });
+  });
+
+  function formSifirla() {
+    const inputIsletme = document.getElementById('formIsletmeAdi');
+    const inputTelefon = document.getElementById('formTelefon');
+    const inputEposta = document.getElementById('formEposta');
+    if (inputIsletme) { inputIsletme.value = ''; inputIsletme.style.border = 'none'; }
+    if (inputTelefon) { inputTelefon.value = ''; inputTelefon.style.border = 'none'; }
+    if (inputEposta) { inputEposta.value = ''; inputEposta.style.border = 'none'; }
+
+    document.querySelectorAll('#formCihazTuru input[type="checkbox"]').forEach(cb => cb.checked = false);
+    const formMarkalar = document.getElementById('formMarkalar');
+    if (formMarkalar) formMarkalar.innerHTML = '<div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>';
+
+    const formYetkili = document.getElementById('formYetkili');
+    if (formYetkili) formYetkili.checked = false;
+    const formOnay = document.getElementById('formOnay');
+    if (formOnay) formOnay.checked = false;
+    const formKosullar = document.getElementById('formKosullar');
+    if (formKosullar) formKosullar.checked = false;
+  }
+
+  function setupFormEvents() {
+    const formCihazTuru = document.getElementById('formCihazTuru');
+    const formMarkalar = document.getElementById('formMarkalar');
+    if (!formCihazTuru || !formMarkalar) return;
+
+    const kosullarLink = document.getElementById('kosullarLink');
+    if (kosullarLink) {
+      kosullarLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('kosullarModalOverlay').classList.add('active');
+      });
+    }
+
+    const aydinlatmaLink = document.getElementById('aydinlatmaLink');
+    if (aydinlatmaLink) {
+      aydinlatmaLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('kosullarModalOverlay').classList.add('active');
+      });
+    }
+
+    const formCheckboxes = formCihazTuru.querySelectorAll('input[type="checkbox"]');
+
+    function updateFormBrands() {
+      const selected = [];
+      formCheckboxes.forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
+      });
+
+      const digerSelected = selected.includes('diger');
+      const otherSelected = selected.filter(s => s !== 'diger');
+
+      if (selected.length === 0) {
+        formMarkalar.innerHTML = '<div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>';
+        return;
+      }
+
+      let html = '';
+
+      if (otherSelected.length > 0) {
+        const brands = new Set();
+        otherSelected.forEach(type => {
+          if (brandData[type]) {
+            brandData[type].forEach(b => brands.add(b));
+          }
+        });
+        const sorted = [...brands].sort();
+        html += sorted.map(b =>
+          `<label class="form-checkbox"><input type="checkbox"> ${b}</label>`
+        ).join('');
+      }
+
+      if (!digerSelected) {
+        html += `<label class="form-checkbox"><input type="checkbox"> Diğer</label>`;
+      }
+
+      if (digerSelected) {
+        html += `<div class="form-group" style="margin-top:8px;grid-column:1/-1;">
+          <input type="text" class="form-input" placeholder="Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz">
+        </div>`;
+      }
+
+      formMarkalar.innerHTML = html;
+    }
+
+    formCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateFormBrands);
+    });
+
+    const isletmeEkleBtn = document.getElementById('isletmeEkleBtn');
+    if (isletmeEkleBtn) {
+      isletmeEkleBtn.addEventListener('click', function() {
+        const inputIsletme = document.getElementById('formIsletmeAdi');
+        const inputTelefon = document.getElementById('formTelefon');
+        const inputEposta = document.getElementById('formEposta');
+        const cihazTuru = document.getElementById('formCihazTuru');
+        const formMarkalar = document.getElementById('formMarkalar');
+        const formOnay = document.getElementById('formOnay');
+        const formKosullar = document.getElementById('formKosullar');
+        const formUyari = document.getElementById('formUyari');
+
+        let bos = false;
+
+        if (!inputIsletme.value.trim()) {
+          inputIsletme.style.border = '2px solid #ff5050';
+          bos = true;
+        } else {
+          inputIsletme.style.border = 'none';
+        }
+
+        const telVal = inputTelefon.value.trim();
+        if (aktifTab === '1') {
+          if (!telVal || !/^\d+$/.test(telVal)) {
+            inputTelefon.style.border = '2px solid #ff5050';
+            bos = true;
+          } else {
+            inputTelefon.style.border = 'none';
+          }
+        } else {
+          if (telVal && !/^\d+$/.test(telVal)) {
+            inputTelefon.style.border = '2px solid #ff5050';
+            bos = true;
+          } else {
+            inputTelefon.style.border = 'none';
+          }
+        }
+
+        const epostaVal = inputEposta.value.trim();
+        if (aktifTab === '1') {
+          if (!epostaVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(epostaVal)) {
+            inputEposta.style.border = '2px solid #ff5050';
+            bos = true;
+          } else {
+            inputEposta.style.border = 'none';
+          }
+        } else {
+          if (epostaVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(epostaVal)) {
+            inputEposta.style.border = '2px solid #ff5050';
+            bos = true;
+          } else {
+            inputEposta.style.border = 'none';
+          }
+        }
+
+        const cihazChecked = cihazTuru ? cihazTuru.querySelectorAll('input[type="checkbox"]:checked').length > 0 : false;
+        if (!cihazChecked) bos = true;
+
+        const markaChecked = formMarkalar ? formMarkalar.querySelectorAll('input[type="checkbox"]:checked').length > 0 : false;
+        if (!markaChecked) bos = true;
+
+        if (formOnay && !formOnay.checked) bos = true;
+        if (formKosullar && !formKosullar.checked) bos = true;
+
+        if (!currentMarker) {
+          formUyari.textContent = 'Lütfen haritada yer işaretleyiniz.';
+          formUyari.style.display = 'block';
+          setTimeout(() => { formUyari.style.display = 'none'; }, 4000);
+        } else if (bos) {
+          formUyari.textContent = 'Lütfen gerekli yerleri doldurunuz.';
+          formUyari.style.display = 'block';
+          setTimeout(() => { formUyari.style.display = 'none'; }, 4000);
+        } else {
+          formUyari.style.display = 'none';
+
+          const seciliCihazTurleri = [];
+          cihazTuru.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            seciliCihazTurleri.push(cb.parentElement.textContent.trim());
+          });
+
+          const seciliMarkalar = [];
+          formMarkalar.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            seciliMarkalar.push(cb.parentElement.textContent.trim());
+          });
+
+          const yetkiliServis = document.getElementById('formYetkili') && document.getElementById('formYetkili').checked;
+          const konum = currentMarker ? currentMarker.getLngLat() : null;
+          const oturum = JSON.parse(localStorage.getItem('aktifOturum') || '{}');
+
+          const isletme = {
+            isletme_adi: inputIsletme.value.trim(),
+            ekleyen_tipi: aktifTab === '1' ? 'isletme_sahibi' : 'site_kullanicisi',
+            ad_soyad: oturum.ad || '',
+            telefon: telVal || '',
+            e_posta: epostaVal || '',
+            cihaz_turu: seciliCihazTurleri,
+            markalar: seciliMarkalar,
+            yetkili_servis_ozel_servis: yetkiliServis ? 'Yetkili Servis' : 'Özel Servis',
+            konum: konum ? { enlem: konum.lat, boylam: konum.lng } : null,
+            onay_durumu: 'beklemede',
+            tarih: new Date().toISOString(),
+            kayit_eposta: oturum.e_posta || ''
+          };
+
+          const mevcutIsletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+          mevcutIsletmeler.push(isletme);
+          localStorage.setItem('isletmeler', JSON.stringify(mevcutIsletmeler));
+
+          alert('İşletme ekleme talebiniz alınmıştır. Lütfen onaylanmasını bekleyiniz.');
+          modalOverlay.classList.remove('active');
+          formSifirla();
+        }
+      });
+    }
+  }
+
+  setupFormEvents();
+
+  const brandData = {
+    telefon: ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Oppo', 'Vivo', 'Realme', 'Honor', 'General Mobile', 'Casper', 'Reeder', 'Omix', 'Vestel'],
+    masaustu: ['MSI', 'ASUS', 'Nvidia', 'AMD', 'Intel', 'Gigabyte', 'ASROCK', 'NZXT'],
+    dizustu: ['Apple', 'Lenovo', 'HP', 'ASUS', 'MSI', 'Monster', 'Acer', 'Huawei', 'Dell'],
+    tablet: ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Lenovo', 'Casper'],
+    televizyon: ['Samsung', 'LG', 'Philips', 'Sony'],
+    klima: ['Daikin', 'Mitsubishi', 'Toshiba', 'Arçelik', 'LG', 'Samsung', 'Baymak', 'Demirdöküm', 'Altus'],
+    beyazEsya: ['Arçelik', 'Beko', 'Vestel', 'Altus', 'Profilo', 'Bosch', 'Siemens', 'Samsung', 'LG', 'Miele', 'Gaggenau']
+  };
+
+  const cihazTuruCheckboxes = document.querySelectorAll('#cihazTuruBody input[type="checkbox"]');
+  const cihazMarkasiBody = document.getElementById('cihazMarkasiBody');
+
+  function updateBrands() {
+    const selected = [];
+    cihazTuruCheckboxes.forEach(cb => {
+      if (cb.checked) selected.push(cb.value);
+    });
+
+    const digerSelected = selected.includes('diger');
+    const otherSelected = selected.filter(s => s !== 'diger');
+
+    if (selected.length === 0) {
+      cihazMarkasiBody.innerHTML = '<div class="filter-empty">Lütfen Cihaz Türü Seçiniz</div>';
+      applyFiltersAndSearch(false);
+      return;
+    }
+
+    let html = '';
+
+    if (otherSelected.length > 0) {
+      const brands = new Set();
+      otherSelected.forEach(type => {
+        if (brandData[type]) {
+          brandData[type].forEach(b => brands.add(b));
+        }
+      });
+      const sorted = [...brands].sort();
+      html += sorted.map(b =>
+        `<label class="filter-option"><input type="checkbox"> ${b}</label>`
+      ).join('');
+    }
+
+    if (selected.length > 0) {
+      html += `<label class="filter-option"><input type="checkbox"> Diğer</label>`;
+    }
+
+    cihazMarkasiBody.innerHTML = html;
+
+    cihazMarkasiBody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => applyFiltersAndSearch(false));
+    });
+
+    applyFiltersAndSearch(false);
+  }
+
+  cihazTuruCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateBrands);
+  });
+
+  document.getElementById('kosullarModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  document.getElementById('kosullarModalClose').addEventListener('click', function() {
+    document.getElementById('kosullarModalOverlay').classList.remove('active');
+  });
+
+  // Üye Ol modalındaki Aydınlatma Metni linkine tıklandığında bilgilendirme modalını aç
+  const kayitAydinlatmaLink = document.getElementById('kayitAydinlatmaLink');
+  if (kayitAydinlatmaLink) {
+    kayitAydinlatmaLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('kosullarModalOverlay').classList.add('active');
+    });
+  }
+
+  function oturumKontrol() {
+    const oturum = localStorage.getItem('aktifOturum');
+    const girisYap = document.getElementById('girisYapLink');
+    const kayitLink = document.getElementById('kayitLink');
+    const kullaniciPaneli = document.getElementById('kullaniciPaneli');
+    const cikisYap = document.getElementById('cikisYap');
+
+    if (oturum) {
+      girisYap.style.display = 'none';
+      kayitLink.style.display = 'none';
+      kullaniciPaneli.style.display = 'block';
+      cikisYap.style.display = 'block';
+    } else {
+      girisYap.style.display = 'block';
+      kayitLink.style.display = 'block';
+      kullaniciPaneli.style.display = 'none';
+      cikisYap.style.display = 'none';
+    }
+  }
+
+  oturumKontrol();
+
+  document.getElementById('cikisYap').addEventListener('click', function(e) {
+    e.preventDefault();
+    localStorage.removeItem('aktifOturum');
+    oturumKontrol();
+    document.getElementById('profilMenu').classList.remove('active');
+  });
+
+  document.getElementById('kullaniciPaneli').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('profilMenu').classList.remove('active');
+    window.location.href = 'giris.html';
+  });
+
+  document.getElementById('profilBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('profilMenu').classList.toggle('active');
+  });
+
+  document.addEventListener('click', function(e) {
+    const profilMenu = document.getElementById('profilMenu');
+    if (!profilMenu.contains(e.target) && e.target.id !== 'profilBtn') {
+      profilMenu.classList.remove('active');
+    }
+  });
+
+  document.getElementById('kayitLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('profilMenu').classList.remove('active');
+    document.getElementById('kayitModalOverlay').classList.add('active');
+  });
+
+  document.getElementById('girisYapLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('profilMenu').classList.remove('active');
+    document.getElementById('girisModalOverlay').classList.add('active');
+  });
+
+  document.getElementById('girisModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  document.getElementById('girisModalClose').addEventListener('click', function() {
+    document.getElementById('girisModalOverlay').classList.remove('active');
+  });
+
+  document.querySelectorAll('#girisModal .modal-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('#girisModal .modal-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      if (this.dataset.gtab === 'kayit') {
+        document.getElementById('girisModalOverlay').classList.remove('active');
+        document.getElementById('kayitModalOverlay').classList.add('active');
+      }
+    });
+  });
+
+  document.querySelectorAll('#kayitModal .modal-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('#kayitModal .modal-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      if (this.dataset.gtab === 'giris') {
+        document.getElementById('kayitModalOverlay').classList.remove('active');
+        document.getElementById('girisModalOverlay').classList.add('active');
+      }
+    });
+  });
+
+  document.getElementById('kayitModalClose').addEventListener('click', function() {
+    document.getElementById('kayitModalOverlay').classList.remove('active');
+  });
+
+  document.getElementById('kayitModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  function sifrele(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  function kullanicilariOku() {
+    return JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+  }
+
+  function kullanicilariKaydet(veriler) {
+    localStorage.setItem('kullanicilar', JSON.stringify(veriler));
+  }
+
+  document.getElementById('girisYapBtn').addEventListener('click', function() {
+    const eposta = document.getElementById('girisEposta').value.trim();
+    const sifre = document.getElementById('girisSifre').value.trim();
+    const hata = document.getElementById('girisHata');
+
+    if (!eposta || !sifre) {
+      hata.textContent = 'Lütfen e-posta ve şifrenizi giriniz.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+      return;
+    }
+
+    const mevcutlar = kullanicilariOku();
+    const sifreliSifre = sifrele(sifre);
+    const bulunan = mevcutlar.find(k => k.e_posta === eposta && k.sifre === sifreliSifre);
+
+    if (bulunan) {
+      localStorage.setItem('aktifOturum', JSON.stringify(bulunan));
+      oturumKontrol();
+      document.getElementById('girisModalOverlay').classList.remove('active');
+      document.getElementById('girisEposta').value = '';
+      document.getElementById('girisSifre').value = '';
+    } else {
+      hata.textContent = 'E-posta veya şifre hatalıdır.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+    }
+  });
+
+  document.getElementById('kayitOlBtn').addEventListener('click', function() {
+    const adSoyad = document.getElementById('kayitAdSoyad').value.trim();
+    const eposta = document.getElementById('kayitEposta').value.trim();
+    const sifre = document.getElementById('kayitSifre').value.trim();
+    const sifreTekrar = document.getElementById('kayitSifreTekrar').value.trim();
+    const onayChecked = document.getElementById('kayitOnay').checked;
+    const hata = document.getElementById('kayitHata');
+
+    if (!adSoyad || !eposta || !sifre || !sifreTekrar || !onayChecked) {
+      hata.textContent = 'Lütfen gerekli yerleri doldurunuz ve onay kutusunu işaretleyiniz.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+      return;
+    }
+
+    if (sifre !== sifreTekrar) {
+      hata.textContent = 'Şifreler eşleşmiyor.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+      return;
+    }
+
+    const mevcutlar = kullanicilariOku();
+
+    const epostaVar = mevcutlar.some(k => k.e_posta === eposta);
+    if (epostaVar) {
+      hata.textContent = 'Bu e-posta adresi zaten kayıtlıdır.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+      return;
+    }
+
+    const yeniKullanici = {
+      ad: adSoyad,
+      e_posta: eposta,
+      sifre: sifrele(sifre),
+      yetki: 'uye'
+    };
+
+    mevcutlar.push(yeniKullanici);
+    kullanicilariKaydet(mevcutlar);
+
+    localStorage.setItem('aktifOturum', JSON.stringify(yeniKullanici));
+    oturumKontrol();
+
+    document.getElementById('kayitModalOverlay').classList.remove('active');
+    alert('Üyeliğiniz oluşturuldu! Giriş yapabilirsiniz.');
+
+    document.getElementById('kayitAdSoyad').value = '';
+    document.getElementById('kayitEposta').value = '';
+    document.getElementById('kayitSifre').value = '';
+    document.getElementById('kayitSifreTekrar').value = '';
+    document.getElementById('kayitOnay').checked = false;
+  });
+
+  // ESC Tuşuna basıldığında açık olan tüm menü ve modalları kapat
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      // 1. Modalları kapat
+      const modallar = [
+        document.getElementById('girisModalOverlay'),
+        document.getElementById('kayitModalOverlay'),
+        document.getElementById('modalOverlay'),
+        document.getElementById('kosullarModalOverlay')
+      ];
+      modallar.forEach(modal => {
+        if (modal) modal.classList.remove('active');
+      });
+
+      // 2. Detay panelini kapat
+      closeRepairmanDetail();
+
+      // 3. Profil menüsünü kapat
+      const profilMenu = document.getElementById('profilMenu');
+      if (profilMenu) profilMenu.classList.remove('active');
+    }
+  });
+</script>
+</body>
+</html>

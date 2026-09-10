@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tamircim Nerede - Üye Paneli</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #loginBox {
+    background: #16213e;
+    padding: 40px 36px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    width: 380px;
+    max-width: 90vw;
+  }
+
+  #loginBox h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 20px;
+    color: #e2e8f0;
+  }
+
+  .login-field { margin-bottom: 18px; }
+
+  .login-field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #94a3b8;
+  }
+
+  .login-field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .login-field input:focus { border-color: #3b82f6; }
+  .login-field input.error { border-color: #ef4444; }
+
+  #loginBtn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+
+  #loginBtn:hover { background: #2563eb; }
+
+  #loginError {
+    display: none;
+    margin-top: 14px;
+    padding: 10px;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  #adminPanel {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    background: #0f172a;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  #adminPanel.visible {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .admin-header {
+    background: #16213e;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  .admin-header h1 { font-size: 18px; color: #e2e8f0; }
+
+  #cikisBtn {
+    padding: 8px 16px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  #cikisBtn:hover { background: #1e293b; color: #fff; }
+
+  .admin-body {
+    display: flex;
+    min-height: calc(100vh - 60px);
+  }
+
+  .admin-sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: #16213e;
+    border-right: 1px solid #1e293b;
+    padding: 16px 0;
+  }
+
+  .admin-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .admin-sidebar-item:hover {
+    background: rgba(59,130,246,0.08);
+    color: #e2e8f0;
+  }
+
+  .admin-sidebar-item.active {
+    background: rgba(59,130,246,0.12);
+    color: #3b82f6;
+    border-left-color: #3b82f6;
+  }
+
+  .admin-sidebar-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .admin-main {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+  }
+
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-top: 4px;
+  }
+
+  .table-section {
+    background: #16213e;
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+    overflow: hidden;
+  }
+
+  .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .table-header h3 { font-size: 15px; color: #e2e8f0; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #1e293b;
+    background: #0f172a;
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #cbd5e1;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  tr:hover td { background: rgba(30,41,59,0.5); }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-beklemede { background: rgba(250,204,21,0.15); color: #facc15; }
+  .badge-onaylandi { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .badge-reddedildi { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+  .btn-onayla {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #22c55e;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 4px;
+  }
+
+  .btn-reddet {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .btn-sil {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .btn-sil:hover { background: #dc2626; }
+
+  .filter-btn {
+    padding: 4px 12px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background: #0f172a;
+    color: #94a3b8;
+    font: 500 12px/1 'Segoe UI', Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { background: #1e293b; color: #fff; }
+
+  .filter-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+  }
+
+  .empty-msg {
+    padding: 40px;
+    text-align: center;
+    color: #475569;
+    font-size: 14px;
+  }
+
+  .harita-container {
+    width: 100%;
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+    margin-bottom: 24px;
+  }
+
+  /* YALNIZCA MOBİL DÜZENLEMELER */
+  @media (max-width: 768px) {
+    body {
+      padding: 12px 8px;
+      align-items: flex-start;
+    }
+
+    #loginBox {
+      width: 100%;
+      max-width: 95vw;
+      padding: 28px 20px;
+      margin: 40px auto;
+      border-radius: 14px;
+    }
+
+    .admin-header {
+      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .admin-header h1 {
+      font-size: 15px;
+      max-width: calc(100% - 90px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #cikisBtn {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .admin-body {
+      flex-direction: column;
+      min-height: auto;
+    }
+
+    /* Sidebar mobilde yatay kaydırılabilir bar haline gelir */
+    .admin-sidebar {
+      width: 100%;
+      min-width: 100%;
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      border-right: none;
+      border-bottom: 1px solid #1e293b;
+      padding: 6px 8px;
+      gap: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .admin-sidebar-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border-left: none;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      font-size: 13px;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .admin-sidebar-item span {
+      display: inline !important;
+    }
+
+    .admin-sidebar-item.active {
+      border-bottom-color: #3b82f6;
+      border-left-color: transparent;
+    }
+
+    .admin-main {
+      padding: 14px 10px;
+    }
+
+    /* İstatistik kartları 2 sütunlu kompakt ızgara */
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      padding: 14px 12px;
+      border-radius: 10px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 10px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 22px;
+    }
+
+    /* Tablo başlıkları ve filtre filtreleme blokları */
+    .table-header {
+      padding: 14px 12px;
+      flex-direction: column;
+      align-items: stretch !important;
+      gap: 12px;
+    }
+
+    .table-header > div {
+      width: 100% !important;
+      justify-content: space-between;
+    }
+
+    .table-header input[type="text"] {
+      width: 100% !important;
+      margin-top: 6px;
+    }
+
+    /* Tablo yatay kaydırma */
+    .table-section > div[style*="overflow-x:auto"] {
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -2px;
+    }
+
+    table {
+      font-size: 12px;
+      min-width: 600px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    .btn-onayla, .btn-reddet, .btn-sil {
+      padding: 5px 9px;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    /* Sayfalama butonları */
+    #sayfalama, #haritaSayfalama, #bilgiSayfalama, #uyeSayfalama {
+      flex-wrap: wrap;
+      padding: 10px 4px;
+      gap: 4px;
+    }
+
+    /* Düzenleme popup pencereleri */
+    #uyeDuzenleOverlay > div,
+    #isletmeDuzenleOverlay > div {
+      width: 95vw !important;
+      max-width: 95vw !important;
+      padding: 18px 14px !important;
+      max-height: 88vh !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+  <h2>Tamircim Nerede Üye Girişi</h2>
+  <div class="login-field">
+    <label>E-posta</label>
+    <input type="text" id="username" placeholder="E-posta adresinizi giriniz">
+  </div>
+  <div class="login-field">
+    <label>Şifre</label>
+    <input type="password" id="password" placeholder="Şifrenizi giriniz">
+  </div>
+  <button id="loginBtn">Giriş Yap</button>
+  <div id="loginError">E-posta veya şifre hatalıdır.</div>
+  <a href="index.html" style="display:block;text-align:center;margin-top:12px;color:#94a3b8;font:500 13px/1 'Segoe UI',Arial,sans-serif;text-decoration:none;transition:color 0.2s;" onmouseover="this.color='#fff'" onmouseout="this.color='#94a3b8'">← Haritaya Dön</a>
+</div>
+
+<div id="adminPanel">
+  <div class="admin-header">
+    <h1 id="adminBaslik">Tamircim Nerede — Admin Paneli</h1>
+    <button id="cikisBtn">Çıkış Yap</button>
+  </div>
+  <div class="admin-body">
+      <div class="admin-sidebar">
+        <div class="admin-sidebar-item active" data-tab="basvurular">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+          <span>İşletme Başvuruları</span>
+        </div>
+        <div class="admin-sidebar-item" data-tab="harita">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Haritadaki İşletmeler</span>
+        </div>
+        <div class="admin-sidebar-item" data-tab="bilgilerim" style="display:none;" id="sidebarBilgilerim">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <span>İşletme Bilgilerim</span>
+        </div>
+        <div class="admin-sidebar-item" data-tab="uyeler" style="display:none;" id="sidebarUyeler">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <span>Üye Bilgileri</span>
+        </div>
+      </div>
+    <div class="admin-main">
+      <div class="tab-content active" id="tabBasvurular">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Toplam Başvuru</div>
+            <div class="stat-value" id="statToplam">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bekleyen</div>
+            <div class="stat-value" id="statBekleyen">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Onaylanan</div>
+            <div class="stat-value" id="statOnaylanan">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Reddedilen</div>
+            <div class="stat-value" id="statReddedilen">0</div>
+          </div>
+        </div>
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;">İşletme Başvuruları</h3>
+              <input type="text" id="filtreIsletmeAra" placeholder="İşletme Ara..." oninput="aktifSayfa=1;tabloyuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+              <button class="filter-btn active" onclick="basvuruFiltrele('tumu', this)">Tümü</button>
+              <button class="filter-btn" onclick="basvuruFiltrele('beklemede', this)">Beklemede</button>
+              <button class="filter-btn" onclick="basvuruFiltrele('onaylandi', this)">Onaylandı</button>
+              <button class="filter-btn" onclick="basvuruFiltrele('reddedildi', this)">Reddedildi</button>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Cihaz Türü</label>
+                <select id="filtreCihazTuru" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="filtreMarkalariGuncelle()">
+                  <option value="">Tümü</option>
+                  <option value="Telefon">Telefon</option>
+                  <option value="Masaüstü Bilgisayar">Masaüstü Bilgisayar</option>
+                  <option value="Dizüstü Bilgisayar">Dizüstü Bilgisayar</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="Televizyon">Televizyon</option>
+                  <option value="Klima">Klima</option>
+                  <option value="Beyaz Eşya">Beyaz Eşya</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Marka</label>
+                <select id="filtreMarka" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="tabloyuYukle()">
+                  <option value="">Tümü</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Servis Türü</label>
+                <select id="filtreServisTuru" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="aktifSayfa=1;tabloyuYukle()">
+                  <option value="">Tümü</option>
+                  <option value="Yetkili Servis">Yetkili Servis</option>
+                  <option value="Özel Servis">Özel Servis</option>
+                </select>
+              </div>
+            </div>
+          </div>
+           <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Ad Soyad</th>
+                  <th>Telefon</th>
+                  <th>E-posta</th>
+                  <th>Cihaz Türü</th>
+                  <th>Markalar</th>
+                  <th>Servis Türü</th>
+                  <th>Konum</th>
+                  <th>Durum</th>
+                  <th>Tarih</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div id="emptyMsg" class="empty-msg">Henüz başvuru bulunmamaktadır.</div>
+          </div>
+          <div id="sayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tabHarita">
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;">Haritadaki Onaylı İşletmeler</h3>
+              <input type="text" id="haritaAra" placeholder="İşletme Ara..." oninput="haritaSayfa=1;haritaTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Cihaz Türü</label>
+                <select id="haritaFiltreCihaz" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="haritaFiltreMarkaGuncelle()">
+                  <option value="">Tümü</option>
+                  <option value="Telefon">Telefon</option>
+                  <option value="Masaüstü Bilgisayar">Masaüstü Bilgisayar</option>
+                  <option value="Dizüstü Bilgisayar">Dizüstü Bilgisayar</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="Televizyon">Televizyon</option>
+                  <option value="Klima">Klima</option>
+                  <option value="Beyaz Eşya">Beyaz Eşya</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Marka</label>
+                <select id="haritaFiltreMarka" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="haritaSayfa=1;haritaTablosuYukle()">
+                  <option value="">Tümü</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Servis Türü</label>
+                <select id="haritaFiltreServis" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="haritaSayfa=1;haritaTablosuYukle()">
+                  <option value="">Tümü</option>
+                  <option value="Yetkili Servis">Yetkili Servis</option>
+                  <option value="Özel Servis">Özel Servis</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Ad Soyad</th>
+                  <th>Telefon</th>
+                  <th>E-posta</th>
+                  <th>Cihaz Türü</th>
+                  <th>Markalar</th>
+                  <th>Servis Türü</th>
+                  <th>Konum</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="haritaTableBody"></tbody>
+            </table>
+            <div id="haritaEmptyMsg" class="empty-msg">Haritada onaylı işletme bulunmamaktadır.</div>
+          </div>
+          <div id="haritaSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tabBilgilerim">
+        <div class="stats-row" id="bilgilerimStats">
+          <div class="stat-card">
+            <div class="stat-label">Toplam Başvuru</div>
+            <div class="stat-value" id="bilgToplam">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bekleyen</div>
+            <div class="stat-value" id="bilgBekleyen">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Onaylanan</div>
+            <div class="stat-value" id="bilgOnaylanan">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Reddedilen</div>
+            <div class="stat-value" id="bilgReddedilen">0</div>
+          </div>
+        </div>
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;">İşletme Bilgilerim</h3>
+              <input type="text" id="bilgiAra" placeholder="İşletme Ara..." oninput="bilgiSayfa=1;bilgilerimTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+              <button class="filter-btn active" onclick="bilgiFiltrele('tumu', this)">Tümü</button>
+              <button class="filter-btn" onclick="bilgiFiltrele('beklemede', this)">Beklemede</button>
+              <button class="filter-btn" onclick="bilgiFiltrele('onaylandi', this)">Onaylandı</button>
+              <button class="filter-btn" onclick="bilgiFiltrele('reddedildi', this)">Reddedildi</button>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Cihaz Türü</label>
+                <select id="bilgiFiltreCihaz" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="bilgiFiltreMarkaGuncelle()">
+                  <option value="">Tümü</option>
+                  <option value="Telefon">Telefon</option>
+                  <option value="Masaüstü Bilgisayar">Masaüstü Bilgisayar</option>
+                  <option value="Dizüstü Bilgisayar">Dizüstü Bilgisayar</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="Televizyon">Televizyon</option>
+                  <option value="Klima">Klima</option>
+                  <option value="Beyaz Eşya">Beyaz Eşya</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Marka</label>
+                <select id="bilgiFiltreMarka" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="bilgiSayfa=1;bilgilerimTablosuYukle()">
+                  <option value="">Tümü</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Servis Türü</label>
+                <select id="bilgiFiltreServis" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="bilgiSayfa=1;bilgilerimTablosuYukle()">
+                  <option value="">Tümü</option>
+                  <option value="Yetkili Servis">Yetkili Servis</option>
+                  <option value="Özel Servis">Özel Servis</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Telefon</th>
+                  <th>E-posta</th>
+                  <th>Cihaz Türü</th>
+                  <th>Markalar</th>
+                  <th>Servis Türü</th>
+                  <th>Konum</th>
+                  <th>Durum</th>
+                  <th>Tarih</th>
+                </tr>
+              </thead>
+              <tbody id="bilgilerimTableBody"></tbody>
+            </table>
+            <div id="bilgilerimEmptyMsg" class="empty-msg">Henüz işletme başvurunuz bulunmamaktadır.</div>
+          </div>
+          <div id="bilgiSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tabUyeler">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Toplam Üye</div>
+            <div class="stat-value" id="uyeStatToplam">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Üye</div>
+            <div class="stat-value" id="uyeStatUye">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Owner</div>
+            <div class="stat-value" id="uyeStatOwner">0</div>
+          </div>
+        </div>
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;">Üye Bilgileri</h3>
+              <input type="text" id="uyeAra" placeholder="Ad Soyad Ara..." oninput="uyeSayfa=1;uyeleriYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ad Soyad</th>
+                  <th>E-posta</th>
+                  <th>Şifre</th>
+                  <th>Yetki</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="uyelerTableBody"></tbody>
+            </table>
+            <div id="uyelerEmptyMsg" class="empty-msg">Kayıtlı üye bulunmamaktadır.</div>
+          </div>
+          <div id="uyeSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="uyeDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
+  <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;">
+    <button id="uyeDuzenleKapat" style="position:absolute;top:10px;right:12px;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">✕</button>
+    <h3 style="color:#fff;margin:0 0 16px;font:600 18px/1 'Segoe UI',Arial,sans-serif;">Üye Bilgilerini Düzenle</h3>
+    <div style="margin-bottom:12px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Ad Soyad</label>
+      <input type="text" id="duzAd" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">E-posta</label>
+      <input type="text" id="duzEposta" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Şifre</label>
+      <input type="text" id="duzSifre" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Yetki</label>
+      <select id="duzYetki" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+        <option value="uye">Üye</option>
+        <option value="owner">Owner</option>
+      </select>
+    </div>
+    <button id="duzKaydet" style="width:100%;padding:10px;border:none;border-radius:8px;background:#22c55e;color:#fff;font:600 14px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Kaydet</button>
+  </div>
+</div>
+
+<div id="isletmeDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
+  <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;max-height:80vh;overflow-y:auto;">
+    <button onclick="isletmeDuzenleKapat()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">✕</button>
+    <h3 style="color:#fff;margin:0 0 16px;font:600 18px/1 'Segoe UI',Arial,sans-serif;">İşletme Bilgilerini Düzenle</h3>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">İşletme Adı</label>
+      <input type="text" id="duzIsletmeAdi" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Ad Soyad</label>
+      <input type="text" id="duzIsletmeAdSoyad" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Telefon</label>
+      <input type="text" id="duzIsletmeTelefon" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">E-posta</label>
+      <input type="text" id="duzIsletmeEposta" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Cihaz Türleri (virgülle ayırın)</label>
+      <input type="text" id="duzIsletmeCihaz" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Markalar (virgülle ayırın)</label>
+      <input type="text" id="duzIsletmeMarka" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Servis Türü</label>
+      <select id="duzIsletmeServis" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+        <option value="Yetkili Servis">Yetkili Servis</option>
+        <option value="Özel Servis">Özel Servis</option>
+      </select>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Onay Durumu</label>
+      <select id="duzIsletmeDurum" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+        <option value="beklemede">Beklemede</option>
+        <option value="onaylandi">Onaylandı</option>
+        <option value="reddedildi">Reddedildi</option>
+      </select>
+    </div>
+    <button id="isletmeDuzenleKaydet" style="width:100%;padding:10px;border:none;border-radius:8px;background:#22c55e;color:#fff;font:600 14px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Kaydet</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
+<script>
+  let kullanicilarDB = [];
+  let adminMap = null;
+  let adminMarkers = [];
+
+  const adminKullanici = {
+    "isim_soyisim": "Emincan Ortaköy",
+    "e_posta": "emincanlarRL",
+    "sifre": "procuTR123#123",
+    "yetki": "owner"
+  };
+
+  function girisKullanicilariOku() {
+    return JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+  }
+
+  const brandData = {
+    telefon: ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Oppo', 'Vivo', 'Realme', 'Honor', 'General Mobile', 'Casper', 'Reeder', 'Omix', 'Vestel'],
+    masaustu: ['MSI', 'ASUS', 'Nvidia', 'AMD', 'Intel', 'Gigabyte', 'ASROCK', 'NZXT'],
+    dizustu: ['Apple', 'Lenovo', 'HP', 'ASUS', 'MSI', 'Monster', 'Acer', 'Huawei', 'Dell'],
+    tablet: ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Lenovo', 'Casper'],
+    televizyon: ['Samsung', 'LG', 'Philips', 'Sony'],
+    klima: ['Daikin', 'Mitsubishi', 'Toshiba', 'Arçelik', 'LG', 'Samsung', 'Baymak', 'Demirdöküm', 'Altus'],
+    beyazEsya: ['Arçelik', 'Beko', 'Vestel', 'Altus', 'Profilo', 'Bosch', 'Siemens', 'Samsung', 'LG', 'Miele', 'Gaggenau']
+  };
+
+  const cihazToKey = {
+    'Telefon': 'telefon', 'Masaüstü Bilgisayar': 'masaustu', 'Dizüstü Bilgisayar': 'dizustu',
+    'Tablet': 'tablet', 'Televizyon': 'televizyon', 'Klima': 'klima', 'Beyaz Eşya': 'beyazEsya'
+  };
+
+  function filtreMarkalariGuncelle() {
+    aktifSayfa = 1;
+    const seciliCihaz = document.getElementById('filtreCihazTuru').value;
+    const markaSelect = document.getElementById('filtreMarka');
+    const onceki = markaSelect.value;
+    markaSelect.innerHTML = '<option value="">Tümü</option>';
+
+    if (!seciliCihaz || seciliCihaz === 'Diğer') {
+      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
+      tabloyuYukle();
+      return;
+    }
+
+    const key = cihazToKey[seciliCihaz];
+    const brands = new Set();
+    if (key && brandData[key]) {
+      brandData[key].forEach(b => brands.add(b));
+    }
+    const sorted = [...brands].sort();
+    sorted.forEach(b => {
+      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
+    });
+    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+
+    markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
+    tabloyuYukle();
+  }
+
+  kullanicilarDB = [adminKullanici, ...girisKullanicilariOku()];
+
+  const loginBox = document.getElementById('loginBox');
+  const adminPanel = document.getElementById('adminPanel');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginError = document.getElementById('loginError');
+  const cikisBtn = document.getElementById('cikisBtn');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+
+  loginBtn.addEventListener('click', girisYap);
+  passwordInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') girisYap(); });
+  usernameInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') girisYap(); });
+
+  let aktifKullanici = null;
+
+  function girisYap() {
+    const kullanici = usernameInput.value.trim();
+    const sifre = passwordInput.value.trim();
+    const sifreliSifre = btoa(unescape(encodeURIComponent(sifre)));
+
+    kullanicilarDB = [adminKullanici, ...girisKullanicilariOku()];
+
+    const bulunan = kullanicilarDB.find(k => k.e_posta === kullanici && (k.sifre === sifre || k.sifre === sifreliSifre));
+
+    if (bulunan) {
+      aktifKullanici = bulunan;
+      loginBox.style.display = 'none';
+      document.getElementById('adminBaslik').textContent = 'Tamircim Nerede — ' + (bulunan.isim_soyisim || bulunan.ad || '' );
+      adminPanel.classList.add('visible');
+
+      if (bulunan.yetki === 'uye') {
+        document.querySelector('[data-tab="basvurular"]').style.display = 'none';
+        document.querySelector('[data-tab="harita"]').style.display = 'none';
+        document.getElementById('sidebarBilgilerim').style.display = '';
+
+        document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('sidebarBilgilerim').classList.add('active');
+        document.getElementById('tabBilgilerim').classList.add('active');
+
+        bilgilerimTablosuYukle(bulunan.e_posta);
+      } else {
+        document.querySelector('[data-tab="basvurular"]').style.display = '';
+        document.querySelector('[data-tab="harita"]').style.display = '';
+        document.getElementById('sidebarBilgilerim').style.display = 'none';
+        document.getElementById('sidebarUyeler').style.display = '';
+
+        document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelector('[data-tab="basvurular"]').classList.add('active');
+        document.getElementById('tabBasvurular').classList.add('active');
+
+        tabloyuYukle();
+        uyeleriYukle();
+      }
+    } else {
+      loginError.style.display = 'block';
+      usernameInput.classList.add('error');
+      passwordInput.classList.add('error');
+      setTimeout(() => {
+        loginError.style.display = 'none';
+        usernameInput.classList.remove('error');
+        passwordInput.classList.remove('error');
+      }, 3000);
+    }
+  }
+
+  let bilgiKullaniciEposta = null;
+
+  function bilgiFiltrele(filtre, btn) {
+    bilgiAktifFiltre = filtre;
+    bilgiSayfa = 1;
+    document.querySelectorAll('#tabBilgilerim .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    bilgilerimTablosuYukle();
+  }
+
+  function bilgiFiltreMarkaGuncelle() {
+    bilgiSayfa = 1;
+    const seciliCihaz = document.getElementById('bilgiFiltreCihaz').value;
+    const markaSelect = document.getElementById('bilgiFiltreMarka');
+    const onceki = markaSelect.value;
+    markaSelect.innerHTML = '<option value="">Tümü</option>';
+
+    if (!seciliCihaz || seciliCihaz === 'Diğer') {
+      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
+      bilgilerimTablosuYukle();
+      return;
+    }
+
+    const key = cihazToKey[seciliCihaz];
+    const brands = new Set();
+    if (key && brandData[key]) {
+      brandData[key].forEach(b => brands.add(b));
+    }
+    const sorted = [...brands].sort();
+    sorted.forEach(b => {
+      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
+    });
+    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+    markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
+    bilgilerimTablosuYukle();
+  }
+
+  function bilgilerimTablosuYukle(kullaniciEposta) {
+    if (kullaniciEposta) bilgiKullaniciEposta = kullaniciEposta;
+    const ep = bilgiKullaniciEposta;
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    let benimIsletmelerim = isletmeler.filter(i => i.kayit_eposta === ep)
+      .sort((a, b) => {
+        const oncelik = { 'beklemede': 0, 'reddedildi': 1, 'onaylandi': 2 };
+        return (oncelik[a.onay_durumu] ?? 3) - (oncelik[b.onay_durumu] ?? 3);
+      });
+
+    document.getElementById('bilgToplam').textContent = benimIsletmelerim.length;
+    document.getElementById('bilgBekleyen').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'beklemede').length;
+    document.getElementById('bilgOnaylanan').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'onaylandi').length;
+    document.getElementById('bilgReddedilen').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'reddedildi').length;
+
+    const aramaMetni = document.getElementById('bilgiAra') ? document.getElementById('bilgiAra').value.trim().toLowerCase() : '';
+    const filtreCihaz = document.getElementById('bilgiFiltreCihaz') ? document.getElementById('bilgiFiltreCihaz').value : '';
+    const filtreMarka = document.getElementById('bilgiFiltreMarka') ? document.getElementById('bilgiFiltreMarka').value : '';
+    const filtreServis = document.getElementById('bilgiFiltreServis') ? document.getElementById('bilgiFiltreServis').value : '';
+
+    if (bilgiAktifFiltre !== 'tumu') {
+      benimIsletmelerim = benimIsletmelerim.filter(i => i.onay_durumu === bilgiAktifFiltre);
+    }
+    if (aramaMetni) {
+      benimIsletmelerim = benimIsletmelerim.filter(i => {
+        const ad = (i.isletme_adi || '').toLowerCase();
+        return ad.includes(aramaMetni);
+      });
+    }
+    if (filtreCihaz) {
+      benimIsletmelerim = benimIsletmelerim.filter(i => {
+        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
+        if (filtreCihaz === 'Diğer') {
+          const bilinenCihazlar = Object.values(cihazToKey);
+          return cihazlar.some(c => !bilinenCihazlar.includes(c));
+        }
+        return cihazlar.some(c => c === filtreCihaz);
+      });
+    }
+    if (filtreMarka) {
+      benimIsletmelerim = benimIsletmelerim.filter(i => {
+        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
+        if (filtreMarka === 'Diğer') {
+          const tumMarkalar = Object.values(brandData).flat();
+          return markalar.some(m => !tumMarkalar.includes(m));
+        }
+        return markalar.some(m => m === filtreMarka);
+      });
+    }
+    if (filtreServis) {
+      benimIsletmelerim = benimIsletmelerim.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
+    }
+
+    const tbody = document.getElementById('bilgilerimTableBody');
+    const emptyMsg = document.getElementById('bilgilerimEmptyMsg');
+
+    if (benimIsletmelerim.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('bilgiSayfalama').innerHTML = '';
+      return;
+    }
+
+    const toplamSayfa = Math.ceil(benimIsletmelerim.length / sayfaBasina);
+    if (bilgiSayfa > toplamSayfa) bilgiSayfa = toplamSayfa;
+    const baslangic = (bilgiSayfa - 1) * sayfaBasina;
+    const sayfaVerisi = benimIsletmelerim.slice(baslangic, baslangic + sayfaBasina);
+
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(i => {
+      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : (i.cihaz_turu || '-');
+      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : (i.markalar || '-');
+      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
+      let badgeClass = 'badge-beklemede', badgeText = 'Beklemede';
+      if (i.onay_durumu === 'onaylandi') { badgeClass = 'badge-onaylandi'; badgeText = 'Onaylandı'; }
+      if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
+      const tarih = i.tarih ? new Date(i.tarih).toLocaleDateString('tr-TR') : '-';
+      return `<tr>
+        <td>${i.isletme_adi}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
+        <td>${cihazStr}</td><td>${markaStr}</td><td>${i.yetkili_servis_ozel_servis}</td><td>${konumStr}</td>
+        <td><span class="badge ${badgeClass}">${badgeText}</span></td><td>${tarih}</td>
+      </tr>`;
+    }).join('');
+
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(1)" ${bilgiSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${bilgiSayfa-1})" ${bilgiSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===bilgiSayfa?'active':''}" onclick="bilgiSayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${bilgiSayfa+1})" ${bilgiSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${toplamSayfa})" ${bilgiSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('bilgiSayfalama').innerHTML = sayfaHTML;
+  }
+
+  function bilgiSayfaGit(sayfa) {
+    bilgiSayfa = sayfa;
+    bilgilerimTablosuYukle();
+  }
+
+  function cozdur(str) {
+    try { return decodeURIComponent(escape(atob(str))); } catch (e) { return str; }
+  }
+
+  function sifrele(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  let duzenlenenUyeIdx = null;
+
+  function uyeleriYukle() {
+    let uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const tbody = document.getElementById('uyelerTableBody');
+    const emptyMsg = document.getElementById('uyelerEmptyMsg');
+
+    document.getElementById('uyeStatToplam').textContent = uyeler.length;
+    document.getElementById('uyeStatUye').textContent = uyeler.filter(u => u.yetki === 'uye').length;
+    document.getElementById('uyeStatOwner').textContent = uyeler.filter(u => u.yetki === 'owner').length;
+
+    const aramaMetni = document.getElementById('uyeAra') ? document.getElementById('uyeAra').value.trim().toLowerCase() : '';
+    if (aramaMetni) {
+      uyeler = uyeler.filter(u => {
+        const ad = (u.ad || '').toLowerCase();
+        return ad.includes(aramaMetni);
+      });
+    }
+
+    if (uyeler.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('uyeSayfalama').innerHTML = '';
+      return;
+    }
+
+    const toplamSayfa = Math.ceil(uyeler.length / sayfaBasina);
+    if (uyeSayfa > toplamSayfa) uyeSayfa = toplamSayfa;
+    const baslangic = (uyeSayfa - 1) * sayfaBasina;
+    const sayfaVerisi = uyeler.slice(baslangic, baslangic + sayfaBasina);
+
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(u => {
+      const sifreCoz = cozdur(u.sifre);
+      const badgeClass = u.yetki === 'owner' ? 'badge-onaylandi' : 'badge-beklemede';
+      const orijinalIdx = uyeler.indexOf(u);
+      return `<tr>
+        <td>${u.ad || '-'}</td>
+        <td>${u.e_posta || '-'}</td>
+        <td>${sifreCoz}</td>
+        <td><span class="badge ${badgeClass}">${u.yetki || 'uye'}</span></td>
+        <td>
+          <button class="btn-onayla" onclick="uyeDuzenle(${orijinalIdx})">Düzenle</button>
+          <button class="btn-reddet" onclick="uyeSil(${orijinalIdx})">Sil</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(1)" ${uyeSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${uyeSayfa-1})" ${uyeSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===uyeSayfa?'active':''}" onclick="uyeSayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${uyeSayfa+1})" ${uyeSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${toplamSayfa})" ${uyeSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('uyeSayfalama').innerHTML = sayfaHTML;
+  }
+
+  function uyeSayfaGit(sayfa) {
+    uyeSayfa = sayfa;
+    uyeleriYukle();
+  }
+
+  function uyeSil(idx) {
+    if (!confirm('Bu üyeyi silmek istediğinizden emin misiniz?')) return;
+    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    uyeler.splice(idx, 1);
+    localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+    uyeleriYukle();
+  }
+
+  function uyeDuzenle(idx) {
+    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const uye = uyeler[idx];
+    if (!uye) return;
+
+    duzenlenenUyeIdx = idx;
+    document.getElementById('duzAd').value = uye.ad || '';
+    document.getElementById('duzEposta').value = uye.e_posta || '';
+    document.getElementById('duzSifre').value = cozdur(uye.sifre);
+    document.getElementById('duzYetki').value = uye.yetki || 'uye';
+    document.getElementById('uyeDuzenleOverlay').style.display = 'flex';
+  }
+
+  document.getElementById('uyeDuzenleKapat').addEventListener('click', function() {
+    document.getElementById('uyeDuzenleOverlay').style.display = 'none';
+  });
+
+  document.getElementById('uyeDuzenleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  document.getElementById('duzKaydet').addEventListener('click', function() {
+    if (duzenlenenUyeIdx === null) return;
+    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    uyeler[duzenlenenUyeIdx].ad = document.getElementById('duzAd').value.trim();
+    uyeler[duzenlenenUyeIdx].e_posta = document.getElementById('duzEposta').value.trim();
+    uyeler[duzenlenenUyeIdx].sifre = sifrele(document.getElementById('duzSifre').value.trim());
+    uyeler[duzenlenenUyeIdx].yetki = document.getElementById('duzYetki').value;
+    localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+    document.getElementById('uyeDuzenleOverlay').style.display = 'none';
+    uyeleriYukle();
+  });
+
+  cikisBtn.addEventListener('click', function() {
+    aktifKullanici = null;
+    adminPanel.classList.remove('visible');
+    loginBox.style.display = 'block';
+    usernameInput.value = '';
+    passwordInput.value = '';
+
+    document.querySelector('[data-tab="basvurular"]').style.display = '';
+    document.querySelector('[data-tab="harita"]').style.display = '';
+    document.getElementById('sidebarBilgilerim').style.display = 'none';
+    document.getElementById('sidebarUyeler').style.display = 'none';
+  });
+
+  document.querySelectorAll('.admin-sidebar-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1)).classList.add('active');
+
+      if (this.dataset.tab === 'harita') {
+        initAdminMap();
+      }
+    });
+  });
+
+  let aktifFiltre = 'tumu';
+
+  function basvuruFiltrele(filtre, btn) {
+    aktifFiltre = filtre;
+    aktifSayfa = 1;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    tabloyuYukle();
+  }
+
+  let aktifSayfa = 1;
+  let haritaSayfa = 1;
+  let bilgiSayfa = 1;
+  let bilgiAktifFiltre = 'tumu';
+  let uyeSayfa = 1;
+  const sayfaBasina = 10;
+
+  function tabloyuYukle() {
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+
+    const aramaMetni = document.getElementById('filtreIsletmeAra') ? document.getElementById('filtreIsletmeAra').value.trim().toLowerCase() : '';
+    const filtreCihaz = document.getElementById('filtreCihazTuru') ? document.getElementById('filtreCihazTuru').value : '';
+    const filtreMarka = document.getElementById('filtreMarka') ? document.getElementById('filtreMarka').value : '';
+    const filtreServis = document.getElementById('filtreServisTuru') ? document.getElementById('filtreServisTuru').value : '';
+
+    let filtreli = isletmeler;
+
+    if (aktifFiltre !== 'tumu') {
+      filtreli = filtreli.filter(i => i.onay_durumu === aktifFiltre);
+    }
+
+    if (aramaMetni) {
+      filtreli = filtreli.filter(i => {
+        const ad = (i.isletme_adi || '').toLowerCase();
+        const eposta = (i.e_posta || '').toLowerCase();
+        const kayit = (i.kayit_eposta || '').toLowerCase();
+        return ad.includes(aramaMetni) || eposta.includes(aramaMetni) || kayit.includes(aramaMetni);
+      });
+    }
+
+    if (filtreCihaz) {
+      filtreli = filtreli.filter(i => {
+        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
+        if (filtreCihaz === 'Diğer') {
+          const bilinenCihazlar = Object.values(cihazToKey);
+          return cihazlar.some(c => !bilinenCihazlar.includes(c));
+        }
+        return cihazlar.some(c => c === filtreCihaz);
+      });
+    }
+
+    if (filtreMarka) {
+      filtreli = filtreli.filter(i => {
+        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
+        if (filtreMarka === 'Diğer') {
+          const tumMarkalar = Object.values(brandData).flat();
+          return markalar.some(m => !tumMarkalar.includes(m));
+        }
+        return markalar.some(m => m === filtreMarka);
+      });
+    }
+
+    if (filtreServis) {
+      filtreli = filtreli.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
+    }
+
+    const sirali = filtreli.map((i) => ({ i, idx: isletmeler.indexOf(i) }))
+      .sort((a, b) => {
+        const oncelik = { 'beklemede': 0, 'reddedildi': 1, 'onaylandi': 2 };
+        return (oncelik[a.i.onay_durumu] ?? 3) - (oncelik[b.i.onay_durumu] ?? 3);
+      });
+    const tbody = document.getElementById('tableBody');
+    const emptyMsg = document.getElementById('emptyMsg');
+
+    document.getElementById('statToplam').textContent = isletmeler.length;
+    document.getElementById('statBekleyen').textContent = isletmeler.filter(i => i.onay_durumu === 'beklemede').length;
+    document.getElementById('statOnaylanan').textContent = isletmeler.filter(i => i.onay_durumu === 'onaylandi').length;
+    document.getElementById('statReddedilen').textContent = isletmeler.filter(i => i.onay_durumu === 'reddedildi').length;
+
+    if (filtreli.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('sayfalama').innerHTML = '';
+      return;
+    }
+
+    const toplamSayfa = Math.ceil(sirali.length / sayfaBasina);
+    if (aktifSayfa > toplamSayfa) aktifSayfa = toplamSayfa;
+    const baslangic = (aktifSayfa - 1) * sayfaBasina;
+    const sayfaVerisi = sirali.slice(baslangic, baslangic + sayfaBasina);
+
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(({ i, idx }) => {
+      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : i.cihaz_turu;
+      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : i.markalar;
+      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
+      let badgeClass = 'badge-beklemede', badgeText = 'Beklemede';
+      if (i.onay_durumu === 'onaylandi') { badgeClass = 'badge-onaylandi'; badgeText = 'Onaylandı'; }
+      if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
+      const tarih = i.tarih ? new Date(i.tarih).toLocaleDateString('tr-TR') : '-';
+      const islemBtns = i.onay_durumu === 'beklemede'
+        ? `<button class="btn-onayla" onclick="durumGuncelle(${idx},'onaylandi')">Onayla</button><button class="btn-reddet" onclick="durumGuncelle(${idx},'reddedildi')">Reddet</button>`
+        : '-';
+      return `<tr>
+        <td>${i.isletme_adi}</td><td>${i.ad_soyad}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
+        <td>${cihazStr}</td><td>${markaStr}</td><td>${i.yetkili_servis_ozel_servis}</td><td>${konumStr}</td>
+        <td><span class="badge ${badgeClass}">${badgeText}</span></td><td>${tarih}</td><td>${islemBtns}</td>
+      </tr>`;
+    }).join('');
+
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(1)" ${aktifSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${aktifSayfa-1})" ${aktifSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===aktifSayfa?'active':''}" onclick="sayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${aktifSayfa+1})" ${aktifSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${toplamSayfa})" ${aktifSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('sayfalama').innerHTML = sayfaHTML;
+  }
+
+  function sayfaGit(sayfa) {
+    aktifSayfa = sayfa;
+    tabloyuYukle();
+  }
+
+  function durumGuncelle(idx, yeniDurum) {
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    isletmeler[idx].onay_durumu = yeniDurum;
+    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+    tabloyuYukle();
+    haritaTablosuYukle();
+  }
+
+  function initAdminMap() {
+    haritaTablosuYukle();
+  }
+
+  function haritaIsletmeleriYukle() {
+    adminMarkers.forEach(m => m.remove());
+    adminMarkers = [];
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const onaylilar = isletmeler.filter(i => i.onay_durumu === 'onaylandi' && i.konum);
+    onaylilar.forEach(i => {
+      const el = document.createElement('div');
+      el.style.cssText = 'width:28px;height:38px;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));';
+      el.innerHTML = '<svg viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 27 15 27s15-15.75 15-27C30 6.716 23.284 0 15 0z" fill="#c0392b"/><circle cx="15" cy="14" r="6" fill="#fff"/></svg>';
+      const popup = new maplibregl.Popup({ offset: 25, closeButton: true }).setHTML(
+        '<div style="padding:8px;font-family:Segoe UI,Arial,sans-serif;">' +
+        '<b>' + i.isletme_adi + '</b><br>' +
+        '<span style="font-size:12px;color:#555;">' + i.ad_soyad + '</span><br>' +
+        '<span style="font-size:12px;color:#555;">' + i.telefon + '</span><br>' +
+        '<span style="font-size:11px;color:#888;">' + i.yetkili_servis_ozel_servis + '</span></div>'
+      );
+      const marker = new maplibregl.Marker({ element: el, offset: [0, -19] })
+        .setLngLat([i.konum.boylam, i.konum.enlem])
+        .setPopup(popup)
+        .addTo(adminMap);
+      adminMarkers.push(marker);
+    });
+    haritaTablosuYukle();
+  }
+
+  function haritaFiltreMarkaGuncelle() {
+    haritaSayfa = 1;
+    const seciliCihaz = document.getElementById('haritaFiltreCihaz').value;
+    const markaSelect = document.getElementById('haritaFiltreMarka');
+    const onceki = markaSelect.value;
+    markaSelect.innerHTML = '<option value="">Tümü</option>';
+
+    if (!seciliCihaz || seciliCihaz === 'Diğer') {
+      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
+      haritaTablosuYukle();
+      return;
+    }
+
+    const key = cihazToKey[seciliCihaz];
+    const brands = new Set();
+    if (key && brandData[key]) {
+      brandData[key].forEach(b => brands.add(b));
+    }
+    const sorted = [...brands].sort();
+    sorted.forEach(b => {
+      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
+    });
+    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+    markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
+    haritaTablosuYukle();
+  }
+
+  function haritaTablosuYukle() {
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    let onaylilar = isletmeler.filter(i => i.onay_durumu === 'onaylandi');
+
+    const aramaMetni = document.getElementById('haritaAra') ? document.getElementById('haritaAra').value.trim().toLowerCase() : '';
+    const filtreCihaz = document.getElementById('haritaFiltreCihaz') ? document.getElementById('haritaFiltreCihaz').value : '';
+    const filtreMarka = document.getElementById('haritaFiltreMarka') ? document.getElementById('haritaFiltreMarka').value : '';
+    const filtreServis = document.getElementById('haritaFiltreServis') ? document.getElementById('haritaFiltreServis').value : '';
+
+    if (aramaMetni) {
+      onaylilar = onaylilar.filter(i => {
+        const ad = (i.isletme_adi || '').toLowerCase();
+        return ad.includes(aramaMetni);
+      });
+    }
+    if (filtreCihaz) {
+      onaylilar = onaylilar.filter(i => {
+        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
+        if (filtreCihaz === 'Diğer') {
+          const bilinenCihazlar = Object.values(cihazToKey);
+          return cihazlar.some(c => !bilinenCihazlar.includes(c));
+        }
+        return cihazlar.some(c => c === filtreCihaz);
+      });
+    }
+    if (filtreMarka) {
+      onaylilar = onaylilar.filter(i => {
+        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
+        if (filtreMarka === 'Diğer') {
+          const tumMarkalar = Object.values(brandData).flat();
+          return markalar.some(m => !tumMarkalar.includes(m));
+        }
+        return markalar.some(m => m === filtreMarka);
+      });
+    }
+    if (filtreServis) {
+      onaylilar = onaylilar.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
+    }
+
+    const tbody = document.getElementById('haritaTableBody');
+    const emptyMsg = document.getElementById('haritaEmptyMsg');
+
+    if (onaylilar.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('haritaSayfalama').innerHTML = '';
+      return;
+    }
+
+    const toplamSayfa = Math.ceil(onaylilar.length / sayfaBasina);
+    if (haritaSayfa > toplamSayfa) haritaSayfa = toplamSayfa;
+    const baslangic = (haritaSayfa - 1) * sayfaBasina;
+    const sayfaVerisi = onaylilar.slice(baslangic, baslangic + sayfaBasina);
+
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(i => {
+      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : i.cihaz_turu;
+      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : i.markalar;
+      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
+      const orijinalIdx = isletmeler.indexOf(i);
+      return `<tr>
+        <td>${i.isletme_adi}</td><td>${i.ad_soyad}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
+        <td>${cihazStr}</td><td>${markaStr}</td><td>${i.yetkili_servis_ozel_servis}</td><td>${konumStr}</td>
+        <td><button class="btn-onayla" onclick="isletmeDuzenle(${orijinalIdx})">Düzenle</button><button class="btn-sil" onclick="isletmeSil(${orijinalIdx})">Sil</button></td>
+      </tr>`;
+    }).join('');
+
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(1)" ${haritaSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${haritaSayfa-1})" ${haritaSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===haritaSayfa?'active':''}" onclick="haritaSayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${haritaSayfa+1})" ${haritaSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${toplamSayfa})" ${haritaSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('haritaSayfalama').innerHTML = sayfaHTML;
+  }
+
+  function haritaSayfaGit(sayfa) {
+    haritaSayfa = sayfa;
+    haritaTablosuYukle();
+  }
+
+  function isletmeSil(idx) {
+    if (!confirm('Bu işletmeyi silmek istediğinizden emin misiniz?')) return;
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    isletmeler.splice(idx, 1);
+    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+    tabloyuYukle();
+    haritaIsletmeleriYukle();
+  }
+
+  let duzenlenenIsletmeIdx = null;
+
+  function isletmeDuzenle(idx) {
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const i = isletmeler[idx];
+    if (!i) return;
+    duzenlenenIsletmeIdx = idx;
+    document.getElementById('duzIsletmeAdi').value = i.isletme_adi || '';
+    document.getElementById('duzIsletmeTelefon').value = i.telefon || '';
+    document.getElementById('duzIsletmeEposta').value = i.e_posta || '';
+    document.getElementById('duzIsletmeAdSoyad').value = i.ad_soyad || '';
+    const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
+    document.getElementById('duzIsletmeCihaz').value = cihazlar.join(', ');
+    const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
+    document.getElementById('duzIsletmeMarka').value = markalar.join(', ');
+    document.getElementById('duzIsletmeServis').value = i.yetkili_servis_ozel_servis || 'Özel Servis';
+    const durumSelect = document.getElementById('duzIsletmeDurum');
+    if (durumSelect) durumSelect.value = i.onay_durumu || 'beklemede';
+    document.getElementById('isletmeDuzenleOverlay').style.display = 'flex';
+  }
+
+  function isletmeDuzenleKapat() {
+    duzenlenenIsletmeIdx = null;
+    document.getElementById('isletmeDuzenleOverlay').style.display = 'none';
+  }
+
+  document.getElementById('isletmeDuzenleKaydet').addEventListener('click', function() {
+    if (duzenlenenIsletmeIdx === null) return;
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const i = isletmeler[duzenlenenIsletmeIdx];
+    i.isletme_adi = document.getElementById('duzIsletmeAdi').value.trim();
+    i.telefon = document.getElementById('duzIsletmeTelefon').value.trim();
+    i.e_posta = document.getElementById('duzIsletmeEposta').value.trim();
+    i.ad_soyad = document.getElementById('duzIsletmeAdSoyad').value.trim();
+    const cihazRaw = document.getElementById('duzIsletmeCihaz').value.trim();
+    i.cihaz_turu = cihazRaw ? cihazRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const markaRaw = document.getElementById('duzIsletmeMarka').value.trim();
+    i.markalar = markaRaw ? markaRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    i.yetkili_servis_ozel_servis = document.getElementById('duzIsletmeServis').value;
+    const durumSelect = document.getElementById('duzIsletmeDurum');
+    if (durumSelect) i.onay_durumu = durumSelect.value;
+    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+    isletmeDuzenleKapat();
+    tabloyuYukle();
+    haritaTablosuYukle();
+    haritaIsletmeleriYukle();
+  });
+
+  document.getElementById('isletmeDuzenleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) isletmeDuzenleKapat();
+  });
+</script>
+
+</body>
+</html>
