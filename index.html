@@ -1466,6 +1466,43 @@
 
 <script src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
 <script>
+  // -- SQLite Backend Entegrasyonu --
+  const originalGetItem = Storage.prototype.getItem;
+  const originalSetItem = Storage.prototype.setItem;
+
+  Storage.prototype.getItem = function(key) {
+    if (key === 'isletmeler' || key === 'kullanicilar') {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:3000/api/store/' + key, false);
+        xhr.send(null);
+        if (xhr.status === 200 && xhr.responseText) {
+            return xhr.responseText;
+        }
+      } catch (e) {
+        console.error('SQLite connection error:', e);
+      }
+      return originalGetItem.call(this, key) || '[]';
+    }
+    return originalGetItem.call(this, key);
+  };
+
+  Storage.prototype.setItem = function(key, value) {
+    if (key === 'isletmeler' || key === 'kullanicilar') {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:3000/api/store/' + key, false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(value);
+      } catch (e) {
+        console.error('SQLite connection error:', e);
+      }
+      originalSetItem.call(this, key, value);
+      return;
+    }
+    originalSetItem.call(this, key, value);
+  };
+  // ---------------------------------
   window.addEventListener('load', () => {
     setTimeout(() => {
       const splash = document.getElementById('splashScreen');
@@ -2466,7 +2503,6 @@
     oturumKontrol();
 
     document.getElementById('kayitModalOverlay').classList.remove('active');
-    alert('Üyeliğiniz oluşturuldu! Giriş yapabilirsiniz.');
 
     document.getElementById('kayitAdSoyad').value = '';
     document.getElementById('kayitEposta').value = '';
