@@ -444,6 +444,12 @@
       margin-top: 6px;
     }
 
+    .filter-buttons {
+      display: grid !important;
+      grid-template-columns: auto auto;
+      justify-content: start;
+    }
+
     .table-section > div[style*="overflow-x:auto"] {
       -webkit-overflow-scrolling: touch;
       margin: 0 -2px;
@@ -548,7 +554,7 @@
               <h3 style="margin:0;">İşletme Başvuruları</h3>
               <input type="text" id="filtreIsletmeAra" placeholder="İşletme Ara..." oninput="aktifSayfa=1;tabloyuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
-            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+            <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" onclick="basvuruFiltrele('tumu', this)">Tümü</button>
               <button class="filter-btn" onclick="basvuruFiltrele('beklemede', this)">Beklemede</button>
               <button class="filter-btn" onclick="basvuruFiltrele('onaylandi', this)">Onaylandı</button>
@@ -694,7 +700,7 @@
               <h3 style="margin:0;">İşletme Bilgilerim</h3>
               <input type="text" id="bilgiAra" placeholder="İşletme Ara..." oninput="bilgiSayfa=1;bilgilerimTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
-            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+            <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" onclick="bilgiFiltrele('tumu', this)">Tümü</button>
               <button class="filter-btn" onclick="bilgiFiltrele('beklemede', this)">Beklemede</button>
               <button class="filter-btn" onclick="bilgiFiltrele('onaylandi', this)">Onaylandı</button>
@@ -881,7 +887,7 @@
     if (key === 'isletmeler' || key === 'kullanicilar') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://localhost:3000/api/store/' + key, false);
+        xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
             return xhr.responseText;
@@ -898,7 +904,7 @@
     if (key === 'isletmeler' || key === 'kullanicilar') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:3000/api/store/' + key, false);
+        xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(value);
       } catch (e) {
@@ -1449,8 +1455,20 @@
 
   function durumGuncelle(idx, yeniDurum) {
     const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
-    isletmeler[idx].onay_durumu = yeniDurum;
-    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+    const i = isletmeler[idx];
+    if (i.onay_durumu !== yeniDurum) {
+      i.onay_durumu = yeniDurum;
+      localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+      
+      const emailToSend = i.e_posta || i.kayit_eposta;
+      if (emailToSend) {
+        fetch('http://' + window.location.hostname + ':3000/api/notify-business-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isletmeAdi: i.isletme_adi, status: yeniDurum, email: emailToSend })
+        }).catch(err => console.error('Durum bildirim maili gönderilemedi:', err));
+      }
+    }
     tabloyuYukle();
     haritaTablosuYukle();
   }
@@ -1603,6 +1621,8 @@
     isletmeler.splice(idx, 1);
     localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
     tabloyuYukle();
+    haritaTablosuYukle();
+    bilgilerimTablosuYukle();
     haritaIsletmeleriYukle();
   }
 
@@ -1636,27 +1656,69 @@
     if (duzenlenenIsletmeIdx === null) return;
     const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
     const i = isletmeler[duzenlenenIsletmeIdx];
+    
     i.isletme_adi = document.getElementById('duzIsletmeAdi').value.trim();
     i.telefon = document.getElementById('duzIsletmeTelefon').value.trim();
     i.e_posta = document.getElementById('duzIsletmeEposta').value.trim();
     i.ad_soyad = document.getElementById('duzIsletmeAdSoyad').value.trim();
+    
     const cihazRaw = document.getElementById('duzIsletmeCihaz').value.trim();
     i.cihaz_turu = cihazRaw ? cihazRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    
     const markaRaw = document.getElementById('duzIsletmeMarka').value.trim();
     i.markalar = markaRaw ? markaRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    
     i.yetkili_servis_ozel_servis = document.getElementById('duzIsletmeServis').value;
+    
     const durumSelect = document.getElementById('duzIsletmeDurum');
-    if (durumSelect) i.onay_durumu = durumSelect.value;
+    let durumDegisti = false;
+    let yeniDurum = '';
+    
+    if (durumSelect) {
+      if (i.onay_durumu !== durumSelect.value) {
+        durumDegisti = true;
+        yeniDurum = durumSelect.value;
+      }
+      i.onay_durumu = durumSelect.value;
+    }
+    
     localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
     isletmeDuzenleKapat();
     tabloyuYukle();
     haritaTablosuYukle();
     haritaIsletmeleriYukle();
+    
+    if (durumDegisti) {
+      const emailToSend = i.e_posta || i.kayit_eposta;
+      if (emailToSend) {
+        fetch('http://' + window.location.hostname + ':3000/api/notify-business-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isletmeAdi: i.isletme_adi, status: yeniDurum, email: emailToSend })
+        }).catch(err => console.error('Durum bildirim maili gönderilemedi:', err));
+      }
+    }
   });
 
   document.getElementById('isletmeDuzenleOverlay').addEventListener('click', function(e) {
     if (e.target === this) isletmeDuzenleKapat();
   });
+  // Otomatik çıkış kontrolü (hesap silinme durumu)
+  setInterval(async () => {
+    if (aktifKullanici && aktifKullanici.e_posta !== 'emincanlarRL') {
+      try {
+        const res = await fetch('http://' + window.location.hostname + ':3000/api/store/kullanicilar');
+        if (res.ok) {
+          const kullanicilar = await res.json();
+          if (!kullanicilar.find(x => x.e_posta === aktifKullanici.e_posta)) {
+            aktifKullanici = null;
+            alert('Hesabınız sistemden silindiği için oturumunuz otomatik olarak sonlandırıldı.');
+            window.location.reload();
+          }
+        }
+      } catch (e) { }
+    }
+  }, 5000);
 </script>
 
 </body>

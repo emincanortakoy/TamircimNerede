@@ -814,8 +814,8 @@
     }
 
     .filter-section.open .yetkili-servis-body {
-      max-height: none;
-      overflow: visible;
+      max-height: 250px;
+      overflow: hidden auto;
     }
 
     .filter-section.open {
@@ -885,7 +885,7 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      overflow-y: auto;
+      overflow-y: hidden;
       overflow-x: hidden;
     }
 
@@ -1251,6 +1251,21 @@
   </div>
 </div>
 
+<div id="dogrulamaModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2500; justify-content:center; align-items:center;">
+  <div id="dogrulamaModal" style="position:relative; width:340px; max-width:90vw; background:#8cabdb; border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+    <button id="dogrulamaModalClose" style="position:absolute; top:8px; right:8px; width:28px; height:28px; border:none; background:rgba(0,0,0,0.1); color:#fff; border-radius:50%; font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</button>
+    <div style="padding:20px; text-align:center;">
+      <h3 style="color:#fff; margin-bottom:10px;">E-posta Doğrulama</h3>
+      <p style="color:#fff; font-size:13px; margin-bottom:16px;">Lütfen <b id="dogrulamaEpostaText"></b> adresine gönderilen 6 haneli kodu giriniz.</p>
+      <div class="form-group" style="margin-bottom:16px;">
+        <input type="text" class="form-input" id="dogrulamaKoduInput" placeholder="6 Haneli Kod" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px; font-weight:bold;">
+      </div>
+      <div id="dogrulamaHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">Kod hatalı.</div>
+      <button id="dogrulamaBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Doğrula</button>
+    </div>
+  </div>
+</div>
+
 <div id="sidebar">
   <div class="sidebar-inner">
     <div id="mobileDragHandle" class="sidebar-drag-handle"></div>
@@ -1474,7 +1489,7 @@
     if (key === 'isletmeler' || key === 'kullanicilar') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://localhost:3000/api/store/' + key, false);
+        xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
             return xhr.responseText;
@@ -1491,7 +1506,7 @@
     if (key === 'isletmeler' || key === 'kullanicilar') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:3000/api/store/' + key, false);
+        xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(value);
       } catch (e) {
@@ -1857,11 +1872,15 @@
     if (navBtn) navBtn.href = 'https://www.google.com/maps/dir/?api=1&destination=' + data.lat + ',' + data.lng;
 
     if (map && data.lng && data.lat) {
+      const isMobile = window.innerWidth <= 768;
+      const yOffset = isMobile ? -(window.innerHeight * 0.25) : 0;
+      
       map.flyTo({
         center: [data.lng, data.lat],
         zoom: 15,
         duration: 1200,
-        essential: true
+        essential: true,
+        offset: [0, yOffset]
       });
     }
 
@@ -2232,6 +2251,13 @@
           const mevcutIsletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
           mevcutIsletmeler.push(isletme);
           localStorage.setItem('isletmeler', JSON.stringify(mevcutIsletmeler));
+          
+          // E-posta ile admin bildirimi gönder
+          fetch('http://' + window.location.hostname + ':3000/api/notify-business-request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isletme: isletme, ad_soyad: oturum.ad || '' })
+          }).catch(err => console.error('Bildirim gönderilemedi', err));
 
           alert('İşletme ekleme talebiniz alınmıştır. Lütfen onaylanmasını bekleyiniz.');
           modalOverlay.classList.remove('active');
@@ -2457,7 +2483,41 @@
     }
   });
 
-  document.getElementById('kayitOlBtn').addEventListener('click', function() {
+  let uretilenDogrulamaKodu = '';
+  let geciciYeniKullanici = null;
+
+  document.getElementById('dogrulamaModalClose').addEventListener('click', function() {
+    document.getElementById('dogrulamaModalOverlay').style.display = 'none';
+  });
+
+  document.getElementById('dogrulamaBtn').addEventListener('click', function() {
+    const girilenKod = document.getElementById('dogrulamaKoduInput').value.trim();
+    const hata = document.getElementById('dogrulamaHata');
+    
+    if (girilenKod !== uretilenDogrulamaKodu) {
+      hata.textContent = 'Girdiğiniz kod hatalı.';
+      hata.style.display = 'block';
+      setTimeout(() => { hata.style.display = 'none'; }, 4000);
+      return;
+    }
+    
+    const mevcutlar = kullanicilariOku();
+    mevcutlar.push(geciciYeniKullanici);
+    kullanicilariKaydet(mevcutlar);
+    
+    localStorage.setItem('aktifOturum', JSON.stringify(geciciYeniKullanici));
+    oturumKontrol();
+    
+    document.getElementById('dogrulamaModalOverlay').style.display = 'none';
+    
+    document.getElementById('kayitAdSoyad').value = '';
+    document.getElementById('kayitEposta').value = '';
+    document.getElementById('kayitSifre').value = '';
+    document.getElementById('kayitSifreTekrar').value = '';
+    document.getElementById('kayitOnay').checked = false;
+  });
+
+  document.getElementById('kayitOlBtn').addEventListener('click', async function() {
     const adSoyad = document.getElementById('kayitAdSoyad').value.trim();
     const eposta = document.getElementById('kayitEposta').value.trim();
     const sifre = document.getElementById('kayitSifre').value.trim();
@@ -2496,19 +2556,37 @@
       yetki: 'uye'
     };
 
-    mevcutlar.push(yeniKullanici);
-    kullanicilariKaydet(mevcutlar);
+    uretilenDogrulamaKodu = Math.floor(100000 + Math.random() * 900000).toString();
+    geciciYeniKullanici = yeniKullanici;
 
-    localStorage.setItem('aktifOturum', JSON.stringify(yeniKullanici));
-    oturumKontrol();
+    const eskiMetin = this.innerText;
+    this.innerText = 'Kod Gönderiliyor...';
+    this.disabled = true;
 
-    document.getElementById('kayitModalOverlay').classList.remove('active');
+    try {
+      const res = await fetch('http://' + window.location.hostname + ':3000/api/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: eposta, code: uretilenDogrulamaKodu })
+      });
+      const data = await res.json();
+      if(data.success) {
+        document.getElementById('kayitModalOverlay').classList.remove('active');
+        document.getElementById('dogrulamaEpostaText').innerText = eposta;
+        document.getElementById('dogrulamaKoduInput').value = '';
+        document.getElementById('dogrulamaModalOverlay').style.display = 'flex';
+      } else {
+        hata.textContent = 'E-posta gönderilemedi: ' + (data.error || '');
+        hata.style.display = 'block';
+      }
+    } catch(err) {
+      hata.textContent = 'Sunucuya bağlanılamadı.';
+      hata.style.display = 'block';
+    }
 
-    document.getElementById('kayitAdSoyad').value = '';
-    document.getElementById('kayitEposta').value = '';
-    document.getElementById('kayitSifre').value = '';
-    document.getElementById('kayitSifreTekrar').value = '';
-    document.getElementById('kayitOnay').checked = false;
+    this.innerText = eskiMetin;
+    this.disabled = false;
+    setTimeout(() => { hata.style.display = 'none'; }, 4000);
   });
 
   window.addEventListener('keydown', (e) => {
@@ -2529,6 +2607,24 @@
       if (profilMenu) profilMenu.classList.remove('active');
     }
   });
+  // Otomatik çıkış kontrolü (hesap silinme durumu)
+  setInterval(async () => {
+    const oturum = localStorage.getItem('aktifOturum');
+    if (oturum) {
+      try {
+        const parsed = JSON.parse(oturum);
+        const res = await fetch('http://' + window.location.hostname + ':3000/api/store/kullanicilar');
+        if (res.ok) {
+          const kullanicilar = await res.json();
+          if (!kullanicilar.find(x => x.e_posta === parsed.e_posta)) {
+            localStorage.removeItem('aktifOturum');
+            alert('Hesabınız sistemden silindiği için oturumunuz otomatik olarak sonlandırıldı.');
+            window.location.reload();
+          }
+        }
+      } catch (e) { }
+    }
+  }, 5000);
 </script>
 </body>
 </html>

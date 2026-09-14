@@ -10,6 +10,19 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 
+const nodemailer = require('nodemailer');
+
+// TODO: LÜTFEN KENDİ SMTP (E-POSTA) BİLGİLERİNİZİ AŞAĞIYA GİRİN
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // veya kendi SMTP adresiniz (örnek: mail.kurumsal.com)
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: 'ortakoyemincan@gmail.com', // Kendi e-postanız
+        pass: 'ldtb auek kofn kzyp' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
+    }
+});
+
 // Static files
 app.use(express.static(path.join(__dirname)));
 
@@ -56,6 +69,105 @@ app.post('/api/store/:key', (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// POST send-verification endpoint
+app.post('/api/send-verification', async (req, res) => {
+    const { email, code } = req.body;
+    
+    if (!email || !code) {
+        return res.status(400).json({ error: 'Email ve kod gereklidir.' });
+    }
+
+    try {
+        await transporter.sendMail({
+            from: '"Tamircim Nerede" <sizin.epostaniz@gmail.com>', // Gönderen görünen ad ve mail
+            to: email, // Alıcı
+            subject: 'Tamircim Nerede - Hesap Doğrulama Kodunuz', // Konu
+            text: `Merhaba,\n\nHesabınızı doğrulamak için doğrulama kodunuz: ${code}\n\nİyi günler dileriz.`, // Düz metin
+            html: `<h3>Merhaba,</h3><p>Hesabınızı doğrulamak için doğrulama kodunuz: <b>${code}</b></p><p>İyi günler dileriz.</p>` // HTML versiyonu
+        });
+        res.json({ success: true, message: 'Doğrulama e-postası gönderildi.' });
+    } catch (err) {
+        console.error('Mail gönderme hatası:', err);
+        res.status(500).json({ error: 'E-posta gönderilirken bir hata oluştu: ' + err.message });
+    }
+});
+
+// POST notify-business-request endpoint (İşletme talebi bildirim)
+app.post('/api/notify-business-request', async (req, res) => {
+    const { isletme, ad_soyad } = req.body;
+    
+    if (!isletme) {
+        return res.status(400).json({ error: 'İşletme bilgileri gereklidir.' });
+    }
+
+    const htmlContent = `
+        <h3>Yeni Bir İşletme Talebi Alındı!</h3>
+        <p><b>Talep Açan Kişi:</b> ${ad_soyad || 'Bilinmiyor'}</p>
+        <p><b>Ekleyen Tipi:</b> ${isletme.ekleyen_tipi === 'isletme_sahibi' ? 'İşletme Sahibi' : 'Site Kullanıcısı'}</p>
+        <hr/>
+        <h4>İşletme Detayları:</h4>
+        <ul>
+            <li><b>İşletme Adı:</b> ${isletme.isletme_adi}</li>
+            <li><b>Telefon:</b> ${isletme.telefon || '-'}</li>
+            <li><b>E-posta:</b> ${isletme.e_posta || '-'}</li>
+            <li><b>Cihaz Türleri:</b> ${isletme.cihaz_turu ? isletme.cihaz_turu.join(', ') : '-'}</li>
+            <li><b>Markalar:</b> ${isletme.markalar ? isletme.markalar.join(', ') : '-'}</li>
+            <li><b>Servis Tipi:</b> ${isletme.yetkili_servis_ozel_servis}</li>
+            <li><b>Konum (Enlem, Boylam):</b> ${isletme.konum ? isletme.konum.enlem + ', ' + isletme.konum.boylam : '-'}</li>
+        </ul>
+        <p>Lütfen admin panelinden bu talebi inceleyerek onaylayın veya reddedin.</p>
+    `;
+
+    try {
+        await transporter.sendMail({
+            from: '"Tamircim Nerede Bildirim" <sizin.epostaniz@gmail.com>', 
+            to: 'ortakoyemincan@gmail.com', // Kullanıcının mail adresi
+            subject: 'Yeni İşletme Talebi - ' + isletme.isletme_adi,
+            html: htmlContent
+        });
+        res.json({ success: true, message: 'Bildirim gönderildi.' });
+    } catch (err) {
+        console.error('Bildirim maili gönderme hatası:', err);
+        res.status(500).json({ error: 'Bildirim e-postası gönderilirken bir hata oluştu: ' + err.message });
+    }
+});
+
+// POST notify-business-status endpoint (İşletme onay/red bildirimi)
+app.post('/api/notify-business-status', async (req, res) => {
+    const { isletmeAdi, status, email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'E-posta adresi bulunamadı.' });
+    }
+
+    let durumMetni = status === 'onaylandi' ? 'ONAYLANDI' : (status === 'reddedildi' ? 'REDDEDİLDİ' : 'BEKLEMEYE ALINDI');
+    let mesaj = status === 'onaylandi' 
+        ? 'Tebrikler! İşletme başvurunuz admin tarafından onaylandı ve haritada yayınlanmaya başladı.' 
+        : (status === 'reddedildi' ? 'Maalesef, işletme başvurunuz admin tarafından reddedildi.' : 'İşletme başvurunuz beklemeye alındı.');
+
+    const htmlContent = `
+        <h3>İşletme Başvurusu Sonucu</h3>
+        <p>Merhaba,</p>
+        <p><b>${isletmeAdi}</b> adlı işletmeniz için yaptığınız başvuru değerlendirilmiştir.</p>
+        <p><b>Durum:</b> ${durumMetni}</p>
+        <p>${mesaj}</p>
+        <p>İyi günler dileriz.</p>
+    `;
+
+    try {
+        await transporter.sendMail({
+            from: '"Tamircim Nerede Bildirim" <sizin.epostaniz@gmail.com>', 
+            to: email, 
+            subject: 'İşletme Başvurusu Sonucu: ' + durumMetni,
+            html: htmlContent
+        });
+        res.json({ success: true, message: 'Durum bildirimi gönderildi.' });
+    } catch (err) {
+        console.error('Durum bildirim maili gönderme hatası:', err);
+        res.status(500).json({ error: 'Bildirim e-postası gönderilirken bir hata oluştu: ' + err.message });
     }
 });
 
