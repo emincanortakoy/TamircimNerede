@@ -19,5 +19,10 @@ Tamirciyi bulduktan sonra detaylı bir şekilde bilgilerini öğrenebilir, tek b
 
 Bu konuda şüpheleriniz varsa hiç merak etmeyin! Öyle elini kolunu sallayan herkes tamirci ekleyemiyor. Tamirci eklendiği zaman bir başvuru formu dolduruluyor ve Website yetkililerinin onayı olmadan tamirci eklenmiyor!
 
-### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
+## Kullandığım Teknolojiler
 
+**Frontend için:** HTML5, CSS3, JavaScript Vanilla, Maplibre GL JS
+**Backend için:** Node.js, Express.js, Nodemailer, CORS & Body-Parser
+**Veritabanı:** SQLite
+
+### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
