@@ -18,8 +18,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: 'ortakoyemincan@gmail.com', // Kendi e-postanız
-        pass: 'ldtb auek kofn kzyp' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
+        user: 'kendiepostaniz@gmail.com', // Kendi e-postanız
+        pass: '' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
     }
 });
 
