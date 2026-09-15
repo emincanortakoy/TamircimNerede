@@ -22,7 +22,11 @@ Bu konuda şüpheleriniz varsa hiç merak etmeyin! Öyle elini kolunu sallayan h
 ## Kullandığım Teknolojiler
 
 **Frontend için:** HTML5, CSS3, JavaScript Vanilla, Maplibre GL JS
+
 **Backend için:** Node.js, Express.js, Nodemailer, CORS & Body-Parser
+
 **Veritabanı:** SQLite
+
+## demo: [http://185.23.17.147:3000](http://185.23.17.147:3000)
 
 ### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
