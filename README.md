@@ -11,9 +11,7 @@ Tamirciyi bulduktan sonra detaylı bir şekilde bilgilerini öğrenebilir, tek b
 
 1-) Tek sayfadan tüm tamircileri görebilirsiniz: Google haritalar üzerinden tek tek yakınımdaki telefon tamircileri veya yakınımdaki beyaz eşya tamircileri diye aratmanız gerekir bu da zaman kaybına sebep olur
 
-2-) Tek tuşla arama seçeneği: Tamirci detaylarından tek tuşa basarak anında arama yapabilirsiniz. Google haritalar üzerinden ise tek tek numarayı girmeniz gerekir
-
-3-) Özel Servis/Yetkili Servis ayrımı: Google haritalarda sadece özel servisler (garantiyi bozan tamirciler) gözükür. Bizim websitemizde ise Firmadan gelecek olan yetkili servisleri dahi görebilirsiniz böylelikle ne kadar hızlı gelecekler veya nereden gelecekler diye düşünmenize gerek kalmaz
+2-) Özel Servis/Yetkili Servis ayrımı: Google haritalarda sadece özel servisler (garantiyi bozan tamirciler) gözükür. Bizim websitemizde ise Firmadan gelecek olan yetkili servisleri dahi görebilirsiniz böylelikle ne kadar hızlı gelecekler veya nereden gelecekler diye düşünmenize gerek kalmaz
 
 ## Spam veya sahte tamirci şüpheleri
 
