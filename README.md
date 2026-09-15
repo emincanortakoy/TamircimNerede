@@ -27,6 +27,11 @@ Bu konuda şüpheleriniz varsa hiç merak etmeyin! Öyle elini kolunu sallayan h
 
 **Veritabanı:** SQLite
 
+## Nasıl Kurulur
+
+Site dosyalarını bilgisayarınızda kurduktan sonra powershell'i açıp (veya cmd) dosya komudunda **node server.js** komudunu kullanmanız yeterlidir. 
+Ardından localhost:8000 site adresi ile (vds kullanıyorsanız <vds'in ip adresi>:8000) websiteye erişebilirsiniz!
+
 ## demo: [http://185.23.17.147:3000](http://185.23.17.147:3000)
 
 ### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
