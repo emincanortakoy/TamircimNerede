@@ -32,6 +32,29 @@ Bu konuda şüpheleriniz varsa hiç merak etmeyin! Öyle elini kolunu sallayan h
 Site dosyalarını bilgisayarınızda kurduktan sonra powershell'i açıp (veya cmd) dosya komudunda **node server.js** komudunu kullanmanız yeterlidir. 
 Ardından localhost:8000 site adresi ile (vds kullanıyorsanız <vds'in ip adresi>:8000) websiteye erişebilirsiniz!
 
+# E-posta ile bilgilendirme kurulumu
+
+Websitesinde İşletme başvuruları ile ilgili e-posta ile bilgilendirme sistemi vardır. Bunu kurmak için:
+
+1-) Bir google hesabı kurmalısınız
+
+2-) Gmail'e girip Google Hesabınızı Yönetin butonuna basmalısınız
+
+3-) Güvenlik ve oturum açma kısmından 2 aşamalı doğrulamayı aktif etmelisiniz (2 aşamalı doğrulama zaten aktif ise bu adımı geçebilirsiniz)
+
+4-) Tekrar Hesabınızı Yönetin menüsüne girip arama kısmından "Uygulama Şifreleri" diye aratın
+
+5-) Uygulama adını girin ve gelen **abcd defg hijk lmno** şeklindeki uygulama şifresini kopyalayın
+
+6-) server.js dosyasın içindeki 
+
+    auth: {
+        user: 'kendiepostaniz@gmail.com', // Kendi e-postanız
+        pass: '' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
+    }
+
+kodundaki user kısmını kendi mailiniz ile, pass kısmını ise uygulama şifresi ile değiştirin
+
 ## demo: [http://185.23.17.147:3000](http://185.23.17.147:3000)
 
 ### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
