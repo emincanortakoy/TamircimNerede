@@ -1117,6 +1117,8 @@
   .btn-secondary:hover { background: #e9ecef; }
 
   @media (max-width: 768px) {
+    #desktop-reviews-section { display: none !important; }
+    #mobile-see-reviews-btn { display: block !important; }
     .detail-panel {
       top: auto; right: 0 !important; left: 0;
       bottom: -100%; width: 100vw; max-width: 100vw;
@@ -1252,17 +1254,84 @@
 </div>
 
 <div id="dogrulamaModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2500; justify-content:center; align-items:center;">
-  <div id="dogrulamaModal" style="position:relative; width:340px; max-width:90vw; background:#8cabdb; border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+  <div id="dogrulamaModal" style="position:relative; width:340px; max-width:90vw; background:#8cabdb; border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.25); font-family: Arial, sans-serif;">
     <button id="dogrulamaModalClose" style="position:absolute; top:8px; right:8px; width:28px; height:28px; border:none; background:rgba(0,0,0,0.1); color:#fff; border-radius:50%; font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</button>
     <div style="padding:20px; text-align:center;">
       <h3 style="color:#fff; margin-bottom:10px;">E-posta Doğrulama</h3>
       <p style="color:#fff; font-size:13px; margin-bottom:16px;">Lütfen <b id="dogrulamaEpostaText"></b> adresine gönderilen 6 haneli kodu giriniz.</p>
       <div class="form-group" style="margin-bottom:16px;">
-        <input type="text" class="form-input" id="dogrulamaKoduInput" placeholder="6 Haneli Kod" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px; font-weight:bold;">
+        <input type="text" class="form-input" id="dogrulamaKoduInput" placeholder="6 Haneli Kod" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px; font-weight:bold; font-family: Arial, sans-serif;">
       </div>
-      <div id="dogrulamaHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">Kod hatalı.</div>
-      <button id="dogrulamaBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Doğrula</button>
+      <div id="dogrulamaHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 Arial,sans-serif;color:#fff;text-align:center;">Kod hatalı.</div>
+      <button id="dogrulamaBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 Arial,sans-serif;cursor:pointer;">Doğrula</button>
     </div>
+  </div>
+</div>
+<!-- YORUMLARI GÖR (MOBİL/TÜM EKRAN) MODALI -->
+<div id="reviewsModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2700; justify-content:center; align-items:center;">
+  <div style="position:relative; width:450px; max-width:90vw; background:#fff; border-radius:12px; display:flex; flex-direction:column; max-height:80vh;">
+    <div style="padding:15px 20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-family:Arial,sans-serif; color:#333; font-size:16px;" id="reviewsModalTitle">Yorumlar</h3>
+      <button onclick="closeReviewsModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:20px; overflow-y:auto; flex:1;" id="modal-reviews-list-container">
+      <div id="modal-reviews-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+    </div>
+    <div style="padding:15px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border-radius:0 0 12px 12px;">
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button id="modal-prev-reviews-btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
+        <span id="modal-reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
+        <button id="modal-next-reviews-btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+      </div>
+      <button onclick="openWriteReviewModal()" style="background:#4caf50; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Yorum Yap</button>
+    </div>
+  </div>
+</div>
+
+<!-- YORUM YAP MODALI -->
+<div id="writeReviewModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2800; justify-content:center; align-items:center;">
+  <div style="position:relative; width:400px; max-width:90vw; background:#fff; border-radius:12px; padding:20px; font-family:Arial,sans-serif;">
+    <button onclick="closeWriteReviewModal()" style="position:absolute; top:12px; right:12px; border:none; background:none; font-size:20px; cursor:pointer;">✕</button>
+    <h3 style="margin-top:0; color:#333; font-size:18px; text-align:center; margin-bottom:20px;">Değerlendirme Yap</h3>
+    
+    <div style="text-align:center; margin-bottom:15px;">
+      <div id="write-review-stars" style="display:inline-flex; font-size:36px; color:#ddd; cursor:pointer; user-select:none; position:relative;">
+        <!-- Yıldızlar JS ile doldurulacak -->
+      </div>
+      <div id="write-review-rating-text" style="font-weight:bold; font-size:16px; color:#555; margin-top:5px;">Puan Seçiniz</div>
+    </div>
+    
+    <textarea id="write-review-text" placeholder="En az 30 karakter olacak şekilde yorumunuzu buraya yazın..." style="width:100%; height:100px; border:1px solid #ccc; border-radius:8px; padding:10px; font-family:Arial,sans-serif; font-size:14px; resize:none; box-sizing:border-box; margin-bottom:5px;"></textarea>
+    <div id="write-review-char-count" style="font-size:12px; color:#777; text-align:right; margin-bottom:15px;">0 / 30</div>
+    
+    <div id="write-review-error" style="display:none; color:#dc2626; font-size:13px; margin-bottom:15px; text-align:center; background:#fee2e2; padding:8px; border-radius:6px;">Lütfen puan verin ve en az 30 karakter yorum yazın.</div>
+    
+    <button onclick="submitReview()" style="width:100%; padding:12px; background:#3b82f6; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">Gönder</button>
+  </div>
+</div>
+
+<!-- İLK GİRİŞ BİLGİLENDİRME MODALI -->
+<div id="welcomeTourOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2600; justify-content:center; align-items:center;">
+  <div style="position:relative; width:450px; max-width:90vw; background:#fff; border-radius:16px; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); font-family:Arial,sans-serif; text-align:center;">
+    <button id="welcomeTourClose" style="position:absolute; top:12px; right:12px; width:30px; height:30px; border:none; background:#eee; color:#333; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+    
+    <h3 style="color:#2c3e50; margin-top:0; margin-bottom:16px; font-size:18px; padding-right:32px;">Tamircim Nerede demo uygulamasını test ettiğiniz için teşekkür ederiz.</h3>
+    
+    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;">Bilgisayar tanıtımı</div>
+    <ul style="color:#555; font-size:14px; line-height:1.6; margin-bottom:16px; text-align:left; padding-left:20px; margin-top:0;">
+      <li>Sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
+      <li>Üstteki arama kısmıyla Tamircileri arayabilirsiniz.</li>
+      <li>Soldaki gri sekmeye imleci getirerek detaylı filtreleme kısmını açabilirsiniz</li>
+      <li>Sol alttaki buton ile de haritaya tamirci ekleyebilirsiniz</li>
+    </ul>
+    
+    <div style="color:#aaa; letter-spacing:2px; margin-bottom:16px;">-----------------------</div>
+    
+    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;">Mobil tanıtımı</div>
+    <ul style="color:#555; font-size:14px; line-height:1.6; margin-bottom:0; text-align:left; padding-left:20px; margin-top:0;">
+      <li>Yine sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
+      <li>Alttaki menüyü de geniştirerek detaylı filtreleme kısmını açabilir, tamirci ekleme butonunu görebilirsiniz</li>
+    </ul>
   </div>
 </div>
 
@@ -1447,8 +1516,9 @@
       </svg>
     </button>
   </div>
-  <div class="panel-body">
+    <div class="panel-body">
     <h2 id="detail-title" class="business-title"></h2>
+    
     <div class="section-block">
       <span class="section-subtitle">Hizmet Verilen Cihaz</span>
       <div id="detail-devices" class="tags-container"></div>
@@ -1461,6 +1531,34 @@
       <div class="info-row">
         <span>✉️</span>
         <span id="detail-email" class="text-truncate"></span>
+      </div>
+    </div>
+
+    <!-- YILDIZ VE PUAN BÖLÜMÜ -->
+    <div id="detail-rating-container" style="display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; margin-top:20px;" onclick="openReviewsModal()">
+      <div class="stars-outer" style="display:inline-block; position:relative; font-family:Arial; font-size:24px; color:#ddd; line-height:1; user-select:none;">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        <div class="stars-inner" id="detail-stars-inner" style="position:absolute; top:0; left:0; white-space:nowrap; overflow:hidden; color:#facc15;">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+      </div>
+      <span id="detail-rating-text" style="font-weight:bold; font-size:16px; color:#333;">0.0</span>
+      <span id="detail-rating-count" style="font-size:13px; color:#777;">(0)</span>
+    </div>
+    
+    <button id="mobile-see-reviews-btn" class="submit-btn" style="display:none; width:100%; margin-bottom:15px; background:#3b82f6;" onclick="openReviewsModal()">Yorumları Gör</button>
+    
+    <!-- YORUMLAR LİSTESİ (SADECE BİLGİSAYARDA) -->
+    <div id="desktop-reviews-section" style="margin-bottom:20px; border-top:1px solid #eee; padding-top:15px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="font-size:15px; margin:0; color:#333;">Yorumlar</h3>
+        <button onclick="openWriteReviewModal()" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Yorum Yap</button>
+      </div>
+      <div id="desktop-reviews-list" style="display:flex; flex-direction:column; gap:10px; min-height:100px;"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+        <button id="prev-reviews-btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
+        <span id="reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
+        <button id="next-reviews-btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
       </div>
     </div>
   </div>
@@ -1486,7 +1584,7 @@
   const originalSetItem = Storage.prototype.setItem;
 
   Storage.prototype.getItem = function(key) {
-    if (key === 'isletmeler' || key === 'kullanicilar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1503,7 +1601,7 @@
   };
 
   Storage.prototype.setItem = function(key, value) {
-    if (key === 'isletmeler' || key === 'kullanicilar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1523,9 +1621,19 @@
       const splash = document.getElementById('splashScreen');
       if (splash) {
         splash.classList.add('fade-out');
-        setTimeout(() => splash.remove(), 800);
+        setTimeout(() => {
+          splash.remove();
+          if (!localStorage.getItem('ilkGirisGosterildi')) {
+            document.getElementById('welcomeTourOverlay').style.display = 'flex';
+            localStorage.setItem('ilkGirisGosterildi', 'true');
+          }
+        }, 800);
       }
     }, 1500);
+    
+    document.getElementById('welcomeTourClose').addEventListener('click', () => {
+      document.getElementById('welcomeTourOverlay').style.display = 'none';
+    });
   });
 
   const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
@@ -1682,13 +1790,14 @@
 
       const markerData = {
         name: i.isletme_adi || 'İsimsiz Servis',
-        serviceType: i.yetkili_servis_ozel_servis || 'Özel Servis',
-        phone: i.telefon || '',
+        serviceType: i.yetkili_servis_ozel_servis,
+        phone: i.telefon || 'Belirtilmemiş',
         email: i.e_posta || 'Belirtilmemiş',
         devices: deviceList,
         brands: Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []),
         lat: i.konum.enlem,
-        lng: i.konum.boylam
+        lng: i.konum.boylam,
+        ortalama_puan: i.ortalama_puan || 0
       };
 
       el.addEventListener('click', (e) => {
@@ -1751,9 +1860,7 @@
 
       let matchesSearch = true;
       if (searchQuery) {
-        matchesSearch = businessName.includes(searchQuery) ||
-                        businessBrands.some(b => b.includes(searchQuery)) ||
-                        businessDevices.some(d => d.includes(searchQuery));
+        matchesSearch = businessName.includes(searchQuery);
       }
 
       let matchesDevice = true;
@@ -1823,9 +1930,26 @@
   function openRepairmanDetail(data) {
     const panel = document.getElementById('repairman-detail-panel');
     if (!panel) return;
+    
+    window.currentBusinessData = data;
 
     const titleEl = document.getElementById('detail-title');
     if (titleEl) titleEl.innerText = data.name || 'İsimsiz Servis';
+    
+    // Rating Updates
+    const ortalama = data.ortalama_puan || 0;
+    const ratingText = document.getElementById('detail-rating-text');
+    if (ratingText) ratingText.innerText = ortalama.toFixed(1);
+    
+    setStarFill((ortalama / 5) * 100);
+    
+    const allReviews = yorumlariOku().filter(y => y.isletme_ismi === data.name && !y.gizli);
+    const ratingCount = document.getElementById('detail-rating-count');
+    if (ratingCount) ratingCount.innerText = '(' + allReviews.length + (allReviews.length === 1 ? ' Yorum' : ' Yorum') + ')';
+    
+    if (typeof loadReviews === 'function') {
+      loadReviews(data.name, 1);
+    }
 
     const badge = document.getElementById('detail-type-badge');
     if (badge) {
@@ -2453,6 +2577,51 @@
   function kullanicilariKaydet(veriler) {
     localStorage.setItem('kullanicilar', JSON.stringify(veriler));
   }
+  
+  function yorumlariOku() {
+    return JSON.parse(localStorage.getItem('yorumlar') || '[]');
+  }
+  
+  function yorumlariKaydet(veriler) {
+    localStorage.setItem('yorumlar', JSON.stringify(veriler));
+  }
+  
+  function isimSansurle(isim) {
+    if (!isim) return 'İsimsiz';
+    return isim.split(' ').map(kelime => {
+      if (kelime.length <= 2) return kelime;
+      return kelime.substring(0, 2) + '*'.repeat(kelime.length - 2);
+    }).join(' ');
+  }
+  
+  function kufurIceriyorMu(metin) {
+    const kufurler = ['aptal', 'salak', 'gerizekalı', 'amk', 'aq', 'şerefsiz', 'piç', 'orospu'];
+    const kucukMetin = metin.toLocaleLowerCase('tr');
+    return kufurler.some(k => kucukMetin.includes(k));
+  }
+
+  function isletmeOrtalamaPuanGuncelle(isletmeIsmi) {
+    const tumYorumlar = yorumlariOku();
+    const gecerliYorumlar = tumYorumlar.filter(y => y.isletme_ismi === isletmeIsmi && !y.gizli);
+    
+    let ortalama = 0;
+    if (gecerliYorumlar.length > 0) {
+      const toplam = gecerliYorumlar.reduce((acc, y) => acc + parseFloat(y.puan), 0);
+      ortalama = Math.floor((toplam / gecerliYorumlar.length) * 10) / 10;
+    }
+    
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const islemGorecek = isletmeler.find(i => i.isletme_adi === isletmeIsmi);
+    if (islemGorecek) {
+      islemGorecek.ortalama_puan = ortalama;
+      localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+      const marker = isletmeMarkerlari.find(m => m._businessData && m._businessData.name === isletmeIsmi);
+      if (marker) {
+         marker._businessData.ortalama_puan = ortalama;
+      }
+    }
+    return ortalama;
+  }
 
   document.getElementById('girisYapBtn').addEventListener('click', function() {
     const eposta = document.getElementById('girisEposta').value.trim();
@@ -2625,6 +2794,208 @@
       } catch (e) { }
     }
   }, 5000);
+  // --- YORUM VE PUANLAMA SİSTEMİ ---
+  let currentReviewPage = 1;
+  const REVIEWS_PER_PAGE = 3;
+  let selectedReviewRating = 0;
+  
+  window.setStarFill = function(percentage) {
+    const inner = document.getElementById('detail-stars-inner');
+    if (inner) inner.style.width = percentage + '%';
+  };
+  
+  window.loadReviews = function(businessName, page = 1) {
+    currentReviewPage = page;
+    const tumYorumlar = yorumlariOku();
+    const gecerliYorumlar = tumYorumlar.filter(y => y.isletme_ismi === businessName && !y.gizli);
+    
+    gecerliYorumlar.reverse(); // Yeni yorumlar en üstte
+    
+    const totalPages = Math.ceil(gecerliYorumlar.length / REVIEWS_PER_PAGE) || 1;
+    if (currentReviewPage > totalPages) currentReviewPage = totalPages;
+    if (currentReviewPage < 1) currentReviewPage = 1;
+    
+    const startIndex = (currentReviewPage - 1) * REVIEWS_PER_PAGE;
+    const endIndex = startIndex + REVIEWS_PER_PAGE;
+    const pageReviews = gecerliYorumlar.slice(startIndex, endIndex);
+    
+    const renderReviews = (containerId) => {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+      if (gecerliYorumlar.length === 0) {
+        container.innerHTML = '<div style="color:#777; font-size:13px; text-align:center; padding:10px;">Henüz yorum yapılmamış. İlk yorumu siz yapın!</div>';
+        return;
+      }
+      
+      pageReviews.forEach(r => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;';
+        
+        let starHTML = '';
+        for(let i=1; i<=5; i++) {
+          if (i <= Math.floor(r.puan)) {
+            starHTML += '<span style="color:#facc15">★</span>';
+          } else if (i - 0.5 === r.puan) {
+            starHTML += '<span style="position:relative;display:inline-block"><span style="color:#e2e8f0">★</span><span style="position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#facc15">★</span></span>';
+          } else {
+            starHTML += '<span style="color:#e2e8f0">★</span>';
+          }
+        }
+        
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="font-weight:600; font-size:13px; color:#1e293b;">${isimSansurle(r.yorum_isim)}</div>
+            <div style="font-size:14px; letter-spacing:1px; line-height:1;">${starHTML}</div>
+          </div>
+          <div style="font-size:13px; color:#475569; line-height:1.5; word-wrap:break-word;">${r.yorum}</div>
+        `;
+        container.appendChild(div);
+      });
+    };
+    
+    renderReviews('desktop-reviews-list');
+    renderReviews('modal-reviews-list');
+    
+    const updatePagination = (pageInfoId, prevBtnId, nextBtnId) => {
+      const info = document.getElementById(pageInfoId);
+      const prev = document.getElementById(prevBtnId);
+      const next = document.getElementById(nextBtnId);
+      if(info) info.innerText = `${currentReviewPage}/${totalPages}`;
+      if(prev) prev.disabled = currentReviewPage <= 1;
+      if(next) next.disabled = currentReviewPage >= totalPages;
+    };
+    
+    updatePagination('reviews-page-info', 'prev-reviews-btn', 'next-reviews-btn');
+    updatePagination('modal-reviews-page-info', 'modal-prev-reviews-btn', 'modal-next-reviews-btn');
+  };
+  
+  window.changeReviewPage = function(delta) {
+    if (!window.currentBusinessData) return;
+    loadReviews(window.currentBusinessData.name, currentReviewPage + delta);
+  };
+  
+  window.openReviewsModal = function() {
+    if (window.innerWidth > 768) return; // Sadece mobilde modal açılır, pc'de panele tıklanmaz
+    document.getElementById('reviewsModalTitle').innerText = window.currentBusinessData.name + ' Yorumları';
+    document.getElementById('reviewsModalOverlay').style.display = 'flex';
+  };
+  
+  window.closeReviewsModal = function() {
+    document.getElementById('reviewsModalOverlay').style.display = 'none';
+  };
+  
+  window.openWriteReviewModal = function() {
+    const aktifOturum = JSON.parse(localStorage.getItem('aktifOturum'));
+    if (!aktifOturum) {
+      alert("Yorum yapmak için hesaba giriş yapmalısınız.");
+      return;
+    }
+    closeReviewsModal();
+    selectedReviewRating = 0;
+    renderWriteReviewStars();
+    document.getElementById('write-review-text').value = '';
+    document.getElementById('write-review-char-count').innerText = '0 / 30';
+    document.getElementById('write-review-error').style.display = 'none';
+    document.getElementById('writeReviewModalOverlay').style.display = 'flex';
+  };
+  
+  window.closeWriteReviewModal = function() {
+    document.getElementById('writeReviewModalOverlay').style.display = 'none';
+  };
+  
+  function renderWriteReviewStars() {
+    const container = document.getElementById('write-review-stars');
+    container.innerHTML = '';
+    for(let i=1; i<=5; i++) {
+      const star = document.createElement('div');
+      star.style.position = 'relative';
+      star.style.display = 'inline-block';
+      star.style.width = '30px';
+      star.style.textAlign = 'center';
+      
+      const starBg = document.createElement('div');
+      starBg.innerText = '★';
+      starBg.style.color = i <= Math.ceil(selectedReviewRating) && selectedReviewRating > 0 ? (i <= selectedReviewRating ? '#facc15' : '#e2e8f0') : '#e2e8f0';
+      
+      if(i - 0.5 === selectedReviewRating) {
+        const half = document.createElement('div');
+        half.innerText = '★';
+        half.style.color = '#facc15';
+        half.style.position = 'absolute';
+        half.style.left = '0';
+        half.style.top = '0';
+        half.style.width = '50%';
+        half.style.overflow = 'hidden';
+        star.appendChild(half);
+      }
+      
+      star.appendChild(starBg);
+      
+      const leftHalfClick = document.createElement('div');
+      leftHalfClick.style.position = 'absolute';
+      leftHalfClick.style.left = '0';
+      leftHalfClick.style.top = '0';
+      leftHalfClick.style.width = '50%';
+      leftHalfClick.style.height = '100%';
+      leftHalfClick.onclick = () => { selectedReviewRating = i - 0.5; renderWriteReviewStars(); };
+      
+      const rightHalfClick = document.createElement('div');
+      rightHalfClick.style.position = 'absolute';
+      rightHalfClick.style.right = '0';
+      rightHalfClick.style.top = '0';
+      rightHalfClick.style.width = '50%';
+      rightHalfClick.style.height = '100%';
+      rightHalfClick.onclick = () => { selectedReviewRating = i; renderWriteReviewStars(); };
+      
+      star.appendChild(leftHalfClick);
+      star.appendChild(rightHalfClick);
+      container.appendChild(star);
+    }
+    
+    document.getElementById('write-review-rating-text').innerText = selectedReviewRating > 0 ? selectedReviewRating + ' Puan' : 'Puan Seçiniz';
+  }
+  
+  document.getElementById('write-review-text').addEventListener('input', function(e) {
+    const len = e.target.value.length;
+    const count = document.getElementById('write-review-char-count');
+    count.innerText = len + ' / 30';
+    if(len >= 30) count.style.color = '#16a34a';
+    else count.style.color = '#777';
+  });
+  
+  window.submitReview = function() {
+    const text = document.getElementById('write-review-text').value.trim();
+    if (selectedReviewRating === 0 || text.length < 30) {
+      document.getElementById('write-review-error').style.display = 'block';
+      return;
+    }
+    
+    const aktifOturum = JSON.parse(localStorage.getItem('aktifOturum'));
+    if (!aktifOturum) return;
+    
+    const businessName = window.currentBusinessData.name;
+    const gizli = kufurIceriyorMu(text);
+    
+    const yeniYorum = {
+      isletme_ismi: businessName,
+      yorum_isim: aktifOturum.ad,
+      yorum: text,
+      puan: selectedReviewRating,
+      gizli: gizli
+    };
+    
+    const yorumlar = yorumlariOku();
+    yorumlar.push(yeniYorum);
+    yorumlariKaydet(yorumlar);
+    
+    const yeniOrtalama = isletmeOrtalamaPuanGuncelle(businessName);
+    window.currentBusinessData.ortalama_puan = yeniOrtalama;
+    
+    closeWriteReviewModal();
+    openRepairmanDetail(window.currentBusinessData);
+    alert('Yorumunuz başarıyla gönderildi!');
+  };
 </script>
 </body>
 </html>

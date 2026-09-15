@@ -171,6 +171,55 @@ app.post('/api/notify-business-status', async (req, res) => {
     }
 });
 
+const cron = require('node-cron');
+const fs = require('fs');
+const os = require('os');
+const { google } = require('googleapis');
+
+async function uploadToDrive(filePath, fileName) {
+    try {
+        const auth = new google.auth.GoogleAuth({
+            keyFile: path.join(__dirname, 'drive-credentials.json'),
+            scopes: ['https://www.googleapis.com/auth/drive'],
+        });
+
+        const drive = google.drive({ version: 'v3', auth });
+        const folderId = '14hVAXwujkzpqc2GMxoQpFcaL_krG7vCD'; // Kullanıcının doğrudan paylaştığı klasörün ID'si
+
+        const fileMetadata = { name: fileName, parents: [folderId] };
+        const media = { mimeType: 'application/x-sqlite3', body: fs.createReadStream(filePath) };
+
+        const file = await drive.files.create({ resource: fileMetadata, media: media, fields: 'id' });
+        console.log(`[Google Drive] Yedek başarıyla klasöre yüklendi: ${fileName}, ID: ${file.data.id}`);
+    } catch (err) {
+        console.error('[Google Drive Hatası]', err);
+    }
+}
+
+// Her gün 23:59'da çalışacak
+cron.schedule('59 23 * * *', async () => {
+    try {
+        const yedekKlasor = path.join(os.homedir(), 'Desktop', 'tamircimnerede_yedek');
+        if (!fs.existsSync(yedekKlasor)) fs.mkdirSync(yedekKlasor, { recursive: true });
+
+        const now = new Date();
+        const tarih = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + '_' + String(now.getHours()).padStart(2, '0') + '-' + String(now.getMinutes()).padStart(2, '0');
+        const yedekDosyaAdi = `database_${tarih}.sqlite`;
+        const yedekYolu = path.join(yedekKlasor, yedekDosyaAdi);
+
+        await db.backup(yedekYolu);
+        console.log(`[Yedekleme] Masaüstüne yedeklendi: ${yedekYolu}`);
+
+        if (fs.existsSync(path.join(__dirname, 'drive-credentials.json'))) {
+            await uploadToDrive(yedekYolu, yedekDosyaAdi);
+        } else {
+            console.log('[Google Drive] drive-credentials.json bulunamadığı için Drive\'a yüklenmedi.');
+        }
+    } catch (error) {
+        console.error('[Yedekleme Hatası]', error);
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });

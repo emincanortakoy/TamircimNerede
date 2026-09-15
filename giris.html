@@ -523,6 +523,14 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
           <span>İşletme Bilgilerim</span>
         </div>
+        <div class="admin-sidebar-item" data-tab="yorumlar" style="display:none;" id="sidebarYorumlar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span>Yorumlar</span>
+        </div>
+        <div class="admin-sidebar-item" data-tab="yaptigim_yorumlar" id="sidebarYaptigimYorumlar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          <span>Yaptığım Yorumlar</span>
+        </div>
         <div class="admin-sidebar-item" data-tab="uyeler" style="display:none;" id="sidebarUyeler">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
           <span>Üye Bilgileri</span>
@@ -665,6 +673,7 @@
                   <th>Markalar</th>
                   <th>Servis Türü</th>
                   <th>Konum</th>
+                  <th>Ortalama Puan</th>
                   <th>İşlem</th>
                 </tr>
               </thead>
@@ -759,6 +768,60 @@
           <div id="bilgiSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
       </div>
+      <div class="tab-content" id="tabYorumlar">
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;">İşletme Yorumları</h3>
+              <input type="text" id="yorumAraIsletme" placeholder="İşletme Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="yorumAraKullanici" placeholder="Kullanıcı Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Kullanıcı</th>
+                  <th>Puan</th>
+                  <th>Yorum</th>
+                  <th>Durum</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="yorumlarTableBody"></tbody>
+            </table>
+            <div id="yorumlarEmptyMsg" class="empty-msg">Kayıtlı yorum bulunmamaktadır.</div>
+          </div>
+          <div id="yorumSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tabYaptigim_yorumlar">
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:flex-start;gap:15px;flex-wrap:wrap;width:100%;">
+              <h3 style="margin:0;">Yaptığım Yorumlar</h3>
+              <input type="text" id="benimYorumAraIsletme" placeholder="İşletme Ara..." oninput="benimYorumSayfa=1;benimYorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Puan</th>
+                  <th>Yorum</th>
+                  <th>Durum</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="benimYorumlarTableBody"></tbody>
+            </table>
+            <div id="benimYorumlarEmptyMsg" class="empty-msg">Yaptığınız herhangi bir yorum bulunmamaktadır.</div>
+          </div>
+          <div id="benimYorumSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
       <div class="tab-content" id="tabUyeler">
         <div class="stats-row">
           <div class="stat-card">
@@ -803,6 +866,67 @@
   </div>
 </div>
 
+
+<div id="yorumDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
+  <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;">
+    <button onclick="yorumDuzenleKapat()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:20px;">✕</button>
+    <h3 style="margin-top:0;margin-bottom:16px;color:#f8fafc;font:600 16px/1 'Segoe UI',Arial,sans-serif;">Yorum Düzenle</h3>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">İşletme Adı</label>
+      <input type="text" id="duzYorumIsletme" disabled style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#94a3b8;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Yorumu Yapan (İsim)</label>
+      <input type="text" id="duzYorumIsim" disabled style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#94a3b8;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Puan</label>
+      <input type="number" step="0.5" min="1" max="5" id="duzYorumPuan" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Yorum İçeriği</label>
+      <textarea id="duzYorumMetin" rows="4" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1.5 'Segoe UI',Arial,sans-serif;resize:none;"></textarea>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Görünürlük Durumu (Gizli)</label>
+      <select id="duzYorumGizli" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+        <option value="false">Görünür (Küfür Yok)</option>
+        <option value="true">Gizli (Küfür/Uygunsuz)</option>
+      </select>
+    </div>
+    
+    <button id="yorumDuzenleKaydet" style="width:100%;padding:10px;border:none;border-radius:8px;background:#22c55e;color:#fff;font:600 14px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Kaydet</button>
+  </div>
+</div>
+
+<div id="benimYorumDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
+  <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;">
+    <button onclick="benimYorumDuzenleKapat()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:20px;">✕</button>
+    <h3 style="margin-top:0;margin-bottom:16px;color:#f8fafc;font:600 16px/1 'Segoe UI',Arial,sans-serif;">Yorumumu Düzenle</h3>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">İşletme Adı</label>
+      <input type="text" id="duzBenimYorumIsletme" disabled style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#94a3b8;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Puan (1-5 arası, buçuklu olabilir)</label>
+      <input type="number" step="0.5" min="1" max="5" id="duzBenimYorumPuan" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Yorum İçeriği (En az 30 karakter)</label>
+      <textarea id="duzBenimYorumMetin" rows="4" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1.5 'Segoe UI',Arial,sans-serif;resize:none;"></textarea>
+    </div>
+    
+    <button id="benimYorumDuzenleKaydet" style="width:100%;padding:10px;border:none;border-radius:8px;background:#22c55e;color:#fff;font:600 14px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Kaydet</button>
+  </div>
+</div>
 <div id="uyeDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
   <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;">
     <button id="uyeDuzenleKapat" style="position:absolute;top:10px;right:12px;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">✕</button>
@@ -865,6 +989,10 @@
         <option value="Özel Servis">Özel Servis</option>
       </select>
     </div>
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Ortalama Puan</label>
+      <input type="number" step="0.1" min="0" max="5" id="duzIsletmePuan" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
+    </div>
     <div style="margin-bottom:16px;">
       <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Onay Durumu</label>
       <select id="duzIsletmeDurum" style="width:100%;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;font:400 14px/1 'Segoe UI',Arial,sans-serif;">
@@ -884,7 +1012,7 @@
   const originalSetItem = Storage.prototype.setItem;
 
   Storage.prototype.getItem = function(key) {
-    if (key === 'isletmeler' || key === 'kullanicilar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -901,7 +1029,7 @@
   };
 
   Storage.prototype.setItem = function(key, value) {
-    if (key === 'isletmeler' || key === 'kullanicilar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1018,11 +1146,17 @@
         document.getElementById('tabBilgilerim').classList.add('active');
 
         bilgilerimTablosuYukle(bulunan.e_posta);
+        document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+        benimYorumTablosuYukle();
       } else {
         document.querySelector('[data-tab="basvurular"]').style.display = '';
         document.querySelector('[data-tab="harita"]').style.display = '';
         document.getElementById('sidebarBilgilerim').style.display = 'none';
         document.getElementById('sidebarUyeler').style.display = '';
+        document.getElementById('sidebarYorumlar').style.display = '';
+        document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+        yorumTablosuYukle();
+        benimYorumTablosuYukle();
 
         document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -1310,6 +1444,8 @@
     document.querySelector('[data-tab="harita"]').style.display = '';
     document.getElementById('sidebarBilgilerim').style.display = 'none';
     document.getElementById('sidebarUyeler').style.display = 'none';
+    document.getElementById('sidebarYorumlar').style.display = 'none';
+    document.getElementById('sidebarYaptigimYorumlar').style.display = 'none';
   });
 
   document.querySelectorAll('.admin-sidebar-item').forEach(item => {
@@ -1593,6 +1729,7 @@
       return `<tr>
         <td>${i.isletme_adi}</td><td>${i.ad_soyad}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
         <td>${cihazStr}</td><td>${markaStr}</td><td>${i.yetkili_servis_ozel_servis}</td><td>${konumStr}</td>
+        <td>${i.ortalama_puan ? parseFloat(i.ortalama_puan).toFixed(1) : '0.0'}</td>
         <td><button class="btn-onayla" onclick="isletmeDuzenle(${orijinalIdx})">Düzenle</button><button class="btn-sil" onclick="isletmeSil(${orijinalIdx})">Sil</button></td>
       </tr>`;
     }).join('');
@@ -1642,6 +1779,7 @@
     const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
     document.getElementById('duzIsletmeMarka').value = markalar.join(', ');
     document.getElementById('duzIsletmeServis').value = i.yetkili_servis_ozel_servis || 'Özel Servis';
+    document.getElementById('duzIsletmePuan').value = i.ortalama_puan || 0;
     const durumSelect = document.getElementById('duzIsletmeDurum');
     if (durumSelect) durumSelect.value = i.onay_durumu || 'beklemede';
     document.getElementById('isletmeDuzenleOverlay').style.display = 'flex';
@@ -1669,6 +1807,7 @@
     i.markalar = markaRaw ? markaRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
     
     i.yetkili_servis_ozel_servis = document.getElementById('duzIsletmeServis').value;
+    i.ortalama_puan = parseFloat(document.getElementById('duzIsletmePuan').value) || 0;
     
     const durumSelect = document.getElementById('duzIsletmeDurum');
     let durumDegisti = false;
@@ -1703,6 +1842,299 @@
   document.getElementById('isletmeDuzenleOverlay').addEventListener('click', function(e) {
     if (e.target === this) isletmeDuzenleKapat();
   });
+
+  // --- YORUMLAR TABLOSU VE YÖNETİMİ ---
+  let yorumSayfa = 1;
+  const yorumSayfaBasina = 10;
+  let duzenlenenYorumIdx = null;
+
+  function yorumTablosuYukle() {
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    let filtered = [...yorumlar];
+    
+    const isletmeAra = document.getElementById('yorumAraIsletme').value.trim().toLowerCase();
+    const kullaniciAra = document.getElementById('yorumAraKullanici').value.trim().toLowerCase();
+    
+    if (isletmeAra) {
+      filtered = filtered.filter(y => (y.isletme_ismi || '').toLowerCase().includes(isletmeAra));
+    }
+    if (kullaniciAra) {
+      filtered = filtered.filter(y => (y.yorum_isim || '').toLowerCase().includes(kullaniciAra));
+    }
+    
+    const tbody = document.getElementById('yorumlarTableBody');
+    const emptyMsg = document.getElementById('yorumlarEmptyMsg');
+    
+    if (filtered.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('yorumSayfalama').innerHTML = '';
+      return;
+    }
+    
+    const toplamSayfa = Math.ceil(filtered.length / yorumSayfaBasina);
+    if (yorumSayfa > toplamSayfa) yorumSayfa = toplamSayfa;
+    const baslangic = (yorumSayfa - 1) * yorumSayfaBasina;
+    const sayfaVerisi = filtered.slice(baslangic, baslangic + yorumSayfaBasina);
+    
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(y => {
+      const orijinalIdx = yorumlar.indexOf(y);
+      const durumStr = y.gizli ? '<span style="color:#ef4444;">Gizli</span>' : '<span style="color:#22c55e;">Görünür</span>';
+      return `<tr>
+        <td>${y.isletme_ismi}</td>
+        <td>${y.yorum_isim}</td>
+        <td>${y.puan}</td>
+        <td><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${y.yorum}">${y.yorum}</div></td>
+        <td>${durumStr}</td>
+        <td>
+          <button class="btn-onayla" onclick="yorumDuzenle(${orijinalIdx})">Düzenle</button>
+          <button class="btn-sil" onclick="yorumSil(${orijinalIdx})">Sil</button>
+        </td>
+      </tr>`;
+    }).join('');
+    
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(1)" ${yorumSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${yorumSayfa-1})" ${yorumSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===yorumSayfa?'active':''}" onclick="yorumSayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${yorumSayfa+1})" ${yorumSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${toplamSayfa})" ${yorumSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('yorumSayfalama').innerHTML = sayfaHTML;
+  }
+  
+  window.yorumSayfaGit = function(sayfa) {
+    yorumSayfa = sayfa;
+    yorumTablosuYukle();
+  };
+  
+  window.yorumSil = function(idx) {
+    if (!confirm('Bu yorumu silmek istediğinizden emin misiniz?')) return;
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const islemGoren = yorumlar[idx];
+    yorumlar.splice(idx, 1);
+    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    
+    isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi);
+    
+    yorumTablosuYukle();
+  };
+  
+  window.yorumDuzenle = function(idx) {
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const y = yorumlar[idx];
+    if (!y) return;
+    duzenlenenYorumIdx = idx;
+    
+    document.getElementById('duzYorumIsletme').value = y.isletme_ismi || '';
+    document.getElementById('duzYorumIsim').value = y.yorum_isim || '';
+    document.getElementById('duzYorumPuan').value = y.puan || 0;
+    document.getElementById('duzYorumMetin').value = y.yorum || '';
+    document.getElementById('duzYorumGizli').value = y.gizli ? 'true' : 'false';
+    
+    document.getElementById('yorumDuzenleOverlay').style.display = 'flex';
+  };
+  
+  window.yorumDuzenleKapat = function() {
+    duzenlenenYorumIdx = null;
+    document.getElementById('yorumDuzenleOverlay').style.display = 'none';
+  };
+  
+  document.getElementById('yorumDuzenleKaydet').addEventListener('click', function() {
+    if (duzenlenenYorumIdx === null) return;
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const y = yorumlar[duzenlenenYorumIdx];
+    
+    y.puan = parseFloat(document.getElementById('duzYorumPuan').value) || 0;
+    y.yorum = document.getElementById('duzYorumMetin').value.trim();
+    y.gizli = document.getElementById('duzYorumGizli').value === 'true';
+    
+    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    
+    isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi);
+    
+    yorumDuzenleKapat();
+    yorumTablosuYukle();
+  });
+  
+  function isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi) {
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const gecerliYorumlar = yorumlar.filter(y => y.isletme_ismi === isletmeIsmi && !y.gizli);
+    
+    let ortalama = 0;
+    if (gecerliYorumlar.length > 0) {
+      const toplam = gecerliYorumlar.reduce((acc, y) => acc + parseFloat(y.puan), 0);
+      ortalama = Math.floor((toplam / gecerliYorumlar.length) * 10) / 10;
+    }
+    
+    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const i = isletmeler.find(is => is.isletme_adi === isletmeIsmi);
+    if (i) {
+      i.ortalama_puan = ortalama;
+      localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+      
+      // Update tables in UI
+      haritaTablosuYukle();
+      tabloyuYukle();
+      bilgilerimTablosuYukle();
+    }
+  }
+
+
+  // --- YAPTIĞIM YORUMLAR YÖNETİMİ ---
+  let benimYorumSayfa = 1;
+  const benimYorumSayfaBasina = 10;
+  let duzenlenenBenimYorumIdx = null;
+  
+  function kufurIceriyorMuPanel(metin) {
+    if(!metin) return false;
+    const kufurler = ['aptal', 'salak', 'gerizekalı', 'amk', 'aq', 'şerefsiz', 'piç', 'orospu'];
+    const kucukMetin = metin.toLocaleLowerCase('tr-TR');
+    return kufurler.some(k => kucukMetin.includes(k));
+  }
+
+  function benimYorumTablosuYukle() {
+    if (!aktifKullanici) return;
+    
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    let filtered = yorumlar.filter(y => y.yorum_isim === aktifKullanici.ad);
+    
+    const isletmeAra = document.getElementById('benimYorumAraIsletme').value.trim().toLowerCase();
+    
+    if (isletmeAra) {
+      filtered = filtered.filter(y => (y.isletme_ismi || '').toLowerCase().includes(isletmeAra));
+    }
+    
+    const tbody = document.getElementById('benimYorumlarTableBody');
+    const emptyMsg = document.getElementById('benimYorumlarEmptyMsg');
+    
+    if (filtered.length === 0) {
+      emptyMsg.style.display = 'block';
+      tbody.innerHTML = '';
+      document.getElementById('benimYorumSayfalama').innerHTML = '';
+      return;
+    }
+    
+    const toplamSayfa = Math.ceil(filtered.length / benimYorumSayfaBasina);
+    if (benimYorumSayfa > toplamSayfa) benimYorumSayfa = toplamSayfa;
+    const baslangic = (benimYorumSayfa - 1) * benimYorumSayfaBasina;
+    const sayfaVerisi = filtered.slice(baslangic, baslangic + benimYorumSayfaBasina);
+    
+    emptyMsg.style.display = 'none';
+    tbody.innerHTML = sayfaVerisi.map(y => {
+      const orijinalIdx = yorumlar.indexOf(y);
+      let durumStr = '<span style="color:#22c55e;">Yayında</span>';
+      if(y.gizli) {
+        durumStr = '<span style="color:#ef4444;" title="Yorumunuz kurallarımıza uymadığı için gizlenmiştir.">Gizli (İnceleniyor)</span>';
+      }
+      return `<tr>
+        <td>${y.isletme_ismi}</td>
+        <td>${y.puan}</td>
+        <td><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${y.yorum}">${y.yorum}</div></td>
+        <td>${durumStr}</td>
+        <td>
+          <button class="btn-onayla" onclick="benimYorumDuzenle(${orijinalIdx})">Düzenle</button>
+          <button class="btn-sil" onclick="benimYorumSil(${orijinalIdx})">Sil</button>
+        </td>
+      </tr>`;
+    }).join('');
+    
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(1)" ${benimYorumSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${benimYorumSayfa-1})" ${benimYorumSayfa===1?'disabled':''}>‹</button>`;
+      for (let s = 1; s <= toplamSayfa; s++) {
+        sayfaHTML += `<button class="filter-btn ${s===benimYorumSayfa?'active':''}" onclick="benimYorumSayfaGit(${s})">${s}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${benimYorumSayfa+1})" ${benimYorumSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${toplamSayfa})" ${benimYorumSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    document.getElementById('benimYorumSayfalama').innerHTML = sayfaHTML;
+  }
+  
+  window.benimYorumSayfaGit = function(sayfa) {
+    benimYorumSayfa = sayfa;
+    benimYorumTablosuYukle();
+  };
+  
+  window.benimYorumSil = function(idx) {
+    if (!confirm('Bu yorumunuzu silmek istediğinizden emin misiniz?')) return;
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const islemGoren = yorumlar[idx];
+    if(islemGoren.yorum_isim !== aktifKullanici.ad) {
+      alert("Bu yorumu silme yetkiniz yok.");
+      return;
+    }
+    yorumlar.splice(idx, 1);
+    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    
+    if(typeof isletmeOrtalamaPuanGuncelleAdmin === 'function') {
+      isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi);
+    }
+    benimYorumTablosuYukle();
+  };
+  
+  window.benimYorumDuzenle = function(idx) {
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const y = yorumlar[idx];
+    if (!y || y.yorum_isim !== aktifKullanici.ad) return;
+    duzenlenenBenimYorumIdx = idx;
+    
+    document.getElementById('duzBenimYorumIsletme').value = y.isletme_ismi || '';
+    document.getElementById('duzBenimYorumPuan').value = y.puan || 0;
+    document.getElementById('duzBenimYorumMetin').value = y.yorum || '';
+    
+    document.getElementById('benimYorumDuzenleOverlay').style.display = 'flex';
+  };
+  
+  window.benimYorumDuzenleKapat = function() {
+    duzenlenenBenimYorumIdx = null;
+    document.getElementById('benimYorumDuzenleOverlay').style.display = 'none';
+  };
+  
+  document.getElementById('benimYorumDuzenleKaydet').addEventListener('click', function() {
+    if (duzenlenenBenimYorumIdx === null) return;
+    
+    const metin = document.getElementById('duzBenimYorumMetin').value.trim();
+    if(metin.length < 30) {
+      alert("Yorumunuz en az 30 karakter olmalıdır.");
+      return;
+    }
+    
+    let puan = parseFloat(document.getElementById('duzBenimYorumPuan').value);
+    if(isNaN(puan) || puan < 1 || puan > 5) {
+      alert("Geçerli bir puan giriniz (1 ile 5 arası).");
+      return;
+    }
+    
+    const gizliDurum = kufurIceriyorMuPanel(metin);
+    
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const y = yorumlar[duzenlenenBenimYorumIdx];
+    
+    if(y.yorum_isim !== aktifKullanici.ad) {
+      alert("Bu yorumu düzenleme yetkiniz yok.");
+      return;
+    }
+    
+    y.puan = puan;
+    y.yorum = metin;
+    y.gizli = gizliDurum;
+    
+    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    
+    if(typeof isletmeOrtalamaPuanGuncelleAdmin === 'function') {
+      isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi);
+    }
+    
+    benimYorumDuzenleKapat();
+    benimYorumTablosuYukle();
+  });
+
   // Otomatik çıkış kontrolü (hesap silinme durumu)
   setInterval(async () => {
     if (aktifKullanici && aktifKullanici.e_posta !== 'emincanlarRL') {

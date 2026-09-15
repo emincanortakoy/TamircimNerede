@@ -1,0 +1,8 @@
+frontend
+html, css, javascript, maplibre
+
+backend
+node.js, Express.js, nodemailer, cors, body-parser
+
+database
+sqlite
