@@ -7,6 +7,7 @@
 <!-- Tarayıcı Sekmesi İkonu (Logonun Yazısız Hali) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'><defs><linearGradient id='pinGrad' x1='0%.' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%233b82f6'/><stop offset='100%' stop-color='%231d4ed8'/></linearGradient><linearGradient id='wrenchGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2310b981'/><stop offset='100%' stop-color='%23059669'/></linearGradient><linearGradient id='boltGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23facc15'/><stop offset='100%' stop-color='%23eab308'/></linearGradient></defs><path d='M 250,55 C 165,55 100,120 100,205 C 100,295 215,395 250,420 C 285,395 400,295 400,205 C 400,120 335,55 250,55 Z' fill='url(%23pinGrad)'/><circle cx='250' cy='195' r='95' fill='%23ffffff'/><circle cx='250' cy='195' r='95' fill='none' stroke='%23e2e8f0' stroke-width='4'/><g transform='translate(250, 195) rotate(-40) translate(-250, -195)'><path d='M 238,135 C 238,118 248,110 250,110 C 252,110 262,118 262,135 L 272,135 C 282,135 288,143 285,155 C 282,168 268,175 258,175 L 258,230 A 16,16 0 0 1 242,230 L 242,175 C 232,175 218,168 215,155 C 212,143 218,135 228,135 Z' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='14' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='7' fill='%23ffffff'/></g><g transform='translate(250, 195) rotate(45) translate(-250, -195)'><rect x='244' y='215' width='12' height='35' rx='4' fill='%23334155'/><rect x='247' y='150' width='6' height='65' fill='%2394a3b8'/><polygon points='247,150 253,150 251,140 249,140' fill='%23646869'/></g><circle cx='250' cy='195' r='28' fill='%230f172a'/><path d='M 252,178 L 241,195 L 249,195 L 247,212 L 260,193 L 252,193 Z' fill='url(%23boltGrad)'/></svg>">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css">
+<script src="i18n.js"></script>
 <style>
   html, body {
     margin: 0;
@@ -152,6 +153,32 @@
   #profilBtn:hover {
     transform: scale(1.1);
     background: #2563eb;
+  }
+
+  .lang-toggle-btn {
+    position: fixed;
+    top: 22px;
+    right: 68px;
+    width: 46px;
+    height: 30px;
+    background: #ffffff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+    border: 1px solid #cbd5e1;
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    padding: 0;
+    outline: none;
+  }
+
+  .lang-toggle-btn:hover {
+    transform: scale(1.08);
+    background: #f8fafc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
 
   #profilMenu {
@@ -553,7 +580,7 @@
     color: #888;
   }
 
-  #modalOverlay, #kosullarModalOverlay {
+  #modalOverlay {
     display: none;
     position: fixed;
     inset: 0;
@@ -563,8 +590,22 @@
     align-items: center;
   }
 
-  #modalOverlay.active, #kosullarModalOverlay.active {
+  #modalOverlay.active {
     display: flex;
+  }
+
+  #kosullarModalOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #kosullarModalOverlay.active {
+    display: flex !important;
   }
 
   #modalMenu, #kosullarModal {
@@ -575,6 +616,10 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  #kosullarModal {
+    z-index: 100000;
   }
 
   #modalMenu {
@@ -716,6 +761,53 @@
 
   #formKosullar {
     accent-color: #4caf50;
+  }
+
+  .form-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    color: rgba(255, 255, 255, 0.85);
+    font: 400 12px/1.4 'Segoe UI', Arial, sans-serif;
+  }
+
+  .form-checkbox-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    margin-top: 2px;
+    accent-color: #fff;
+    cursor: pointer;
+  }
+
+  .form-checkbox-row span {
+    flex: 1;
+    line-height: 1.45;
+  }
+
+  .legal-link-btn {
+    display: inline !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+    text-decoration: underline !important;
+    font-weight: 700 !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    cursor: pointer !important;
+    vertical-align: baseline !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: color 0.15s ease;
+  }
+
+  .legal-link-btn:hover {
+    color: #e2e8f0 !important;
+    text-decoration: underline !important;
   }
 
   .form-empty {
@@ -1118,7 +1210,19 @@
 
   @media (max-width: 768px) {
     #desktop-reviews-section { display: none !important; }
-    #mobile-see-reviews-btn { display: block !important; }
+    #mobile-see-reviews-btn { 
+      display: block !important; 
+      background: #ffffff !important;
+      font-family: Arial, sans-serif !important;
+      border-radius: 12px !important;
+      border: 1px solid #dee2e6 !important;
+      padding: 12px 16px !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      cursor: pointer !important;
+      text-align: center !important;
+    }
     .detail-panel {
       top: auto; right: 0 !important; left: 0;
       bottom: -100%; width: 100vw; max-width: 100vw;
@@ -1182,34 +1286,35 @@
 </div>
 
 <div id="map"></div>
-<input type="text" id="desktopSearch" placeholder="Tamirci Ara">
+<input type="text" id="desktopSearch" data-i18n-placeholder="search_placeholder" placeholder="Tamirci Ara">
+<button id="langToggleBtn" class="lang-toggle-btn" onclick="toggleLanguage()" title="Dili Değiştir / Change Language"></button>
 <div id="profilBtn">👤</div>
 <div id="profilMenu">
-  <a href="#" id="girisYapLink">Giriş Yap</a>
-  <a href="#" id="kayitLink">Üye Ol</a>
-  <a href="#" id="kullaniciPaneli" style="display:none;">Kullanıcı Paneli</a>
-  <a href="#" id="cikisYap" style="display:none;">Çıkış Yap</a>
+  <a href="#" id="girisYapLink" data-i18n="login_btn">Giriş Yap</a>
+  <a href="#" id="kayitLink" data-i18n="signup_btn">Üye Ol</a>
+  <a href="#" id="kullaniciPaneli" data-i18n="user_panel" style="display:none;">Kullanıcı Paneli</a>
+  <a href="#" id="cikisYap" data-i18n="logout_btn" style="display:none;">Çıkış Yap</a>
 </div>
 
 <div id="girisModalOverlay">
   <div id="girisModal">
     <button id="girisModalClose">✕</button>
     <div class="modal-tabs">
-      <button class="modal-tab active" data-gtab="giris">Giriş Yap</button>
-      <button class="modal-tab" data-gtab="kayit">Üye Ol</button>
+      <button class="modal-tab active" data-gtab="giris" data-i18n="login_btn">Giriş Yap</button>
+      <button class="modal-tab" data-gtab="kayit" data-i18n="signup_btn">Üye Ol</button>
     </div>
     <div class="modal-content">
       <div class="form-group">
-        <label class="form-label">E-posta <span style="color:#ff5050;">*</span></label>
-        <input type="text" class="form-input" id="girisEposta" placeholder="E-posta adresinizi giriniz">
+        <label class="form-label"><span data-i18n="email">E-posta</span> <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="girisEposta" data-i18n-placeholder="email_placeholder" placeholder="E-posta adresinizi giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label">Şifre <span style="color:#ff5050;">*</span></label>
-        <input type="password" class="form-input" id="girisSifre" placeholder="Şifrenizi giriniz">
+        <label class="form-label"><span data-i18n="password">Şifre</span> <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="girisSifre" data-i18n-placeholder="password_placeholder" placeholder="Şifrenizi giriniz">
       </div>
-      <div id="girisHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">E-posta veya şifre hatalıdır.</div>
+      <div id="girisHata" data-i18n="login_error" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">E-posta veya şifre hatalıdır.</div>
       <div style="margin-top:8px;">
-        <button id="girisYapBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Giriş Yap</button>
+        <button id="girisYapBtn" data-i18n="login_btn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Giriş Yap</button>
       </div>
     </div>
   </div>
@@ -1219,35 +1324,35 @@
   <div id="kayitModal">
     <button id="kayitModalClose">✕</button>
     <div class="modal-tabs">
-      <button class="modal-tab" data-gtab="giris">Giriş Yap</button>
-      <button class="modal-tab active" data-gtab="kayit">Üye Ol</button>
+      <button class="modal-tab" data-gtab="giris" data-i18n="login_btn">Giriş Yap</button>
+      <button class="modal-tab active" data-gtab="kayit" data-i18n="signup_btn">Üye Ol</button>
     </div>
     <div class="modal-content">
       <div class="form-group">
-        <label class="form-label">Ad Soyad <span style="color:#ff5050;">*</span></label>
-        <input type="text" class="form-input" id="kayitAdSoyad" placeholder="Adınızı ve soyadınızı giriniz">
+        <label class="form-label"><span data-i18n="fullname">Ad Soyad</span> <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="kayitAdSoyad" data-i18n-placeholder="fullname_placeholder" placeholder="Adınızı ve soyadınızı giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label">E-posta <span style="color:#ff5050;">*</span></label>
-        <input type="text" class="form-input" id="kayitEposta" placeholder="E-posta adresinizi giriniz">
+        <label class="form-label"><span data-i18n="email">E-posta</span> <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="kayitEposta" data-i18n-placeholder="email_placeholder" placeholder="E-posta adresinizi giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label">Şifre <span style="color:#ff5050;">*</span></label>
-        <input type="password" class="form-input" id="kayitSifre" placeholder="Şifrenizi giriniz">
+        <label class="form-label"><span data-i18n="password">Şifre</span> <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="kayitSifre" data-i18n-placeholder="password_placeholder" placeholder="Şifrenizi giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label">Şifreyi Onayla <span style="color:#ff5050;">*</span></label>
-        <input type="password" class="form-input" id="kayitSifreTekrar" placeholder="Şifrenizi tekrar giriniz">
+        <label class="form-label"><span data-i18n="confirm_password">Şifreyi Onayla</span> <span style="color:#ff5050;">*</span></label>
+        <input type="password" class="form-input" id="kayitSifreTekrar" data-i18n-placeholder="confirm_password_placeholder" placeholder="Şifrenizi tekrar giriniz">
       </div>
       <div class="form-group">
-        <label class="form-checkbox" style="padding: 6px 0; align-items: flex-start; line-height: 1.4;">
-          <input type="checkbox" id="kayitOnay" style="margin-top: 2px;">
-          <span><span style="color:#ff5050;">*</span> Ad, soyad ve e-posta bilgilerimin hesap oluşturma ve doğrulama süreçleri amacıyla işlenmesine ilişkin <a href="#" id="kayitAydinlatmaLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Aydınlatma Metni</a>’ni okudum, onaylıyorum.</span>
-        </label>
+        <div class="form-checkbox-row">
+          <input type="checkbox" id="kayitOnay">
+          <span id="kayitOnayText"><span style="color:#ff5050;">*</span> Ad, soyad ve e-posta bilgilerimin hesap oluşturma ve doğrulama süreçleri amacıyla işlenmesine ilişkin <button type="button" id="kayitAydinlatmaLink" class="legal-link-btn" onclick="window.openKosullarModal(event)">Aydınlatma Metni</button>’ni okudum, onaylıyorum.</span>
+        </div>
       </div>
-      <div id="kayitHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">Lütfen gerekli yerleri doldurunuz.</div>
+      <div id="kayitHata" data-i18n="fill_required" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">Lütfen gerekli yerleri doldurunuz.</div>
       <div style="margin-top:8px;">
-        <button id="kayitOlBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Üye Ol</button>
+        <button id="kayitOlBtn" data-i18n="signup_btn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Üye Ol</button>
       </div>
     </div>
   </div>
@@ -1257,13 +1362,13 @@
   <div id="dogrulamaModal" style="position:relative; width:340px; max-width:90vw; background:#8cabdb; border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.25); font-family: Arial, sans-serif;">
     <button id="dogrulamaModalClose" style="position:absolute; top:8px; right:8px; width:28px; height:28px; border:none; background:rgba(0,0,0,0.1); color:#fff; border-radius:50%; font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</button>
     <div style="padding:20px; text-align:center;">
-      <h3 style="color:#fff; margin-bottom:10px;">E-posta Doğrulama</h3>
+      <h3 style="color:#fff; margin-bottom:10px;" data-i18n="verification_title">E-posta Doğrulama</h3>
       <p style="color:#fff; font-size:13px; margin-bottom:16px;">Lütfen <b id="dogrulamaEpostaText"></b> adresine gönderilen 6 haneli kodu giriniz.</p>
       <div class="form-group" style="margin-bottom:16px;">
-        <input type="text" class="form-input" id="dogrulamaKoduInput" placeholder="6 Haneli Kod" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px; font-weight:bold; font-family: Arial, sans-serif;">
+        <input type="text" class="form-input" id="dogrulamaKoduInput" data-i18n-placeholder="verification_code_placeholder" placeholder="6 Haneli Kod" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px; font-weight:bold; font-family: Arial, sans-serif;">
       </div>
-      <div id="dogrulamaHata" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 Arial,sans-serif;color:#fff;text-align:center;">Kod hatalı.</div>
-      <button id="dogrulamaBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 Arial,sans-serif;cursor:pointer;">Doğrula</button>
+      <div id="dogrulamaHata" data-i18n="verification_error" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 Arial,sans-serif;color:#fff;text-align:center;">Kod hatalı.</div>
+      <button id="dogrulamaBtn" data-i18n="verify_btn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 Arial,sans-serif;cursor:pointer;">Doğrula</button>
     </div>
   </div>
 </div>
@@ -1279,11 +1384,11 @@
     </div>
     <div style="padding:15px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border-radius:0 0 12px 12px;">
       <div style="display:flex; gap:10px; align-items:center;">
-        <button id="modal-prev-reviews-btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
+        <button id="modal-prev-reviews-btn" data-i18n="prev_btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
         <span id="modal-reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
-        <button id="modal-next-reviews-btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+        <button id="modal-next-reviews-btn" data-i18n="next_btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
       </div>
-      <button onclick="openWriteReviewModal()" style="background:#4caf50; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Yorum Yap</button>
+      <button onclick="openWriteReviewModal()" data-i18n="write_review_btn" style="background:#4caf50; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Yorum Yap</button>
     </div>
   </div>
 </div>
@@ -1292,21 +1397,21 @@
 <div id="writeReviewModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2800; justify-content:center; align-items:center;">
   <div style="position:relative; width:400px; max-width:90vw; background:#fff; border-radius:12px; padding:20px; font-family:Arial,sans-serif;">
     <button onclick="closeWriteReviewModal()" style="position:absolute; top:12px; right:12px; border:none; background:none; font-size:20px; cursor:pointer;">✕</button>
-    <h3 style="margin-top:0; color:#333; font-size:18px; text-align:center; margin-bottom:20px;">Değerlendirme Yap</h3>
+    <h3 style="margin-top:0; color:#333; font-size:18px; text-align:center; margin-bottom:20px;" data-i18n="leave_review_title">Değerlendirme Yap</h3>
     
     <div style="text-align:center; margin-bottom:15px;">
       <div id="write-review-stars" style="display:inline-flex; font-size:36px; color:#ddd; cursor:pointer; user-select:none; position:relative;">
         <!-- Yıldızlar JS ile doldurulacak -->
       </div>
-      <div id="write-review-rating-text" style="font-weight:bold; font-size:16px; color:#555; margin-top:5px;">Puan Seçiniz</div>
+      <div id="write-review-rating-text" style="font-weight:bold; font-size:16px; color:#555; margin-top:5px;" data-i18n="select_rating">Puan Seçiniz</div>
     </div>
     
-    <textarea id="write-review-text" placeholder="En az 30 karakter olacak şekilde yorumunuzu buraya yazın..." style="width:100%; height:100px; border:1px solid #ccc; border-radius:8px; padding:10px; font-family:Arial,sans-serif; font-size:14px; resize:none; box-sizing:border-box; margin-bottom:5px;"></textarea>
+    <textarea id="write-review-text" data-i18n-placeholder="review_placeholder" placeholder="En az 30 karakter olacak şekilde yorumunuzu buraya yazın..." style="width:100%; height:100px; border:1px solid #ccc; border-radius:8px; padding:10px; font-family:Arial,sans-serif; font-size:14px; resize:none; box-sizing:border-box; margin-bottom:5px;"></textarea>
     <div id="write-review-char-count" style="font-size:12px; color:#777; text-align:right; margin-bottom:15px;">0 / 30</div>
     
-    <div id="write-review-error" style="display:none; color:#dc2626; font-size:13px; margin-bottom:15px; text-align:center; background:#fee2e2; padding:8px; border-radius:6px;">Lütfen puan verin ve en az 30 karakter yorum yazın.</div>
+    <div id="write-review-error" data-i18n="review_error" style="display:none; color:#dc2626; font-size:13px; margin-bottom:15px; text-align:center; background:#fee2e2; padding:8px; border-radius:6px;">Lütfen puan verin ve en az 30 karakter yorum yazın.</div>
     
-    <button onclick="submitReview()" style="width:100%; padding:12px; background:#3b82f6; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">Gönder</button>
+    <button onclick="submitReview()" data-i18n="submit_btn" style="width:100%; padding:12px; background:#3b82f6; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">Gönder</button>
   </div>
 </div>
 
@@ -1315,22 +1420,22 @@
   <div style="position:relative; width:450px; max-width:90vw; background:#fff; border-radius:16px; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); font-family:Arial,sans-serif; text-align:center;">
     <button id="welcomeTourClose" style="position:absolute; top:12px; right:12px; width:30px; height:30px; border:none; background:#eee; color:#333; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
     
-    <h3 style="color:#2c3e50; margin-top:0; margin-bottom:16px; font-size:18px; padding-right:32px;">Tamircim Nerede demo uygulamasını test ettiğiniz için teşekkür ederiz.</h3>
+    <h3 style="color:#2c3e50; margin-top:0; margin-bottom:16px; font-size:18px; padding-right:32px;" data-i18n="tour_title">Tamircim Nerede demo uygulamasını test ettiğiniz için teşekkür ederiz.</h3>
     
-    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;">Bilgisayar tanıtımı</div>
+    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;" data-i18n="tour_pc_title">Bilgisayar tanıtımı</div>
     <ul style="color:#555; font-size:14px; line-height:1.6; margin-bottom:16px; text-align:left; padding-left:20px; margin-top:0;">
-      <li>Sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
-      <li>Üstteki arama kısmıyla Tamircileri arayabilirsiniz.</li>
-      <li>Soldaki gri sekmeye imleci getirerek detaylı filtreleme kısmını açabilirsiniz</li>
-      <li>Sol alttaki buton ile de haritaya tamirci ekleyebilirsiniz</li>
+      <li data-i18n="tour_pc_1">Sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
+      <li data-i18n="tour_pc_2">Üstteki arama kısmıyla Tamircileri arayabilirsiniz.</li>
+      <li data-i18n="tour_pc_3">Soldaki gri sekmeye imleci getirerek detaylı filtreleme kısmını açabilirsiniz</li>
+      <li data-i18n="tour_pc_4">Sol alttaki buton ile de haritaya tamirci ekleyebilirsiniz</li>
     </ul>
     
     <div style="color:#aaa; letter-spacing:2px; margin-bottom:16px;">-----------------------</div>
     
-    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;">Mobil tanıtımı</div>
+    <div style="color:#333; font-weight:bold; font-size:15px; text-align:left; margin-bottom:8px;" data-i18n="tour_mobile_title">Mobil tanıtımı</div>
     <ul style="color:#555; font-size:14px; line-height:1.6; margin-bottom:0; text-align:left; padding-left:20px; margin-top:0;">
-      <li>Yine sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
-      <li>Alttaki menüyü de geniştirerek detaylı filtreleme kısmını açabilir, tamirci ekleme butonunu görebilirsiniz</li>
+      <li data-i18n="tour_mobile_1">Yine sağ üst taraftaki butona basarak Hesaba Giriş Yapabilir/Üye olabilirsiniz.</li>
+      <li data-i18n="tour_mobile_2">Alttaki menüyü de geniştirerek detaylı filtreleme kısmını açabilir, tamirci ekleme butonunu görebilirsiniz</li>
     </ul>
   </div>
 </div>
@@ -1338,48 +1443,48 @@
 <div id="sidebar">
   <div class="sidebar-inner">
     <div id="mobileDragHandle" class="sidebar-drag-handle"></div>
-    <input type="text" id="searchBox" placeholder="Tamirci Ara">
+    <input type="text" id="searchBox" data-i18n-placeholder="search_placeholder" placeholder="Tamirci Ara">
     <div class="filter-section">
       <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>Cihaz Türü</span>
+        <span data-i18n="device_type">Cihaz Türü</span>
         <span class="filter-arrow">▼</span>
       </div>
       <div class="filter-body" id="cihazTuruBody">
-        <label class="filter-option"><input type="checkbox" value="telefon"> Telefon</label>
-        <label class="filter-option"><input type="checkbox" value="masaustu"> Masaüstü Bilgisayar</label>
-        <label class="filter-option"><input type="checkbox" value="dizustu"> Dizüstü Bilgisayar</label>
-        <label class="filter-option"><input type="checkbox" value="tablet"> Tablet</label>
-        <label class="filter-option"><input type="checkbox" value="televizyon"> Televizyon</label>
-        <label class="filter-option"><input type="checkbox" value="klima"> Klima</label>
-        <label class="filter-option"><input type="checkbox" value="beyazEsya"> Beyaz Eşya</label>
-        <label class="filter-option"><input type="checkbox" value="diger"> Diğer</label>
+        <label class="filter-option"><input type="checkbox" value="telefon"> <span data-i18n="dev_telefon">Telefon</span></label>
+        <label class="filter-option"><input type="checkbox" value="masaustu"> <span data-i18n="dev_masaustu">Masaüstü Bilgisayar</span></label>
+        <label class="filter-option"><input type="checkbox" value="dizustu"> <span data-i18n="dev_dizustu">Dizüstü Bilgisayar</span></label>
+        <label class="filter-option"><input type="checkbox" value="tablet"> <span data-i18n="dev_tablet">Tablet</span></label>
+        <label class="filter-option"><input type="checkbox" value="televizyon"> <span data-i18n="dev_televizyon">Televizyon</span></label>
+        <label class="filter-option"><input type="checkbox" value="klima"> <span data-i18n="dev_klima">Klima</span></label>
+        <label class="filter-option"><input type="checkbox" value="beyazEsya"> <span data-i18n="dev_beyazEsya">Beyaz Eşya</span></label>
+        <label class="filter-option"><input type="checkbox" value="diger"> <span data-i18n="dev_diger">Diğer</span></label>
       </div>
     </div>
     <div class="filter-section">
       <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>Cihaz Markası</span>
+        <span data-i18n="device_brand">Cihaz Markası</span>
         <span class="filter-arrow">▼</span>
       </div>
       <div class="filter-body" id="cihazMarkasiBody">
-        <div class="filter-empty">Lütfen Cihaz Türü Seçiniz</div>
+        <div class="filter-empty" data-i18n="select_device_type">Lütfen Cihaz Türü Seçiniz</div>
       </div>
     </div>
     <div class="filter-section">
       <div class="filter-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>Yetkili Servis</span>
+        <span data-i18n="authorized_service">Yetkili Servis</span>
         <span class="filter-arrow">▼</span>
       </div>
       <div class="filter-body yetkili-servis-body" id="yetkiliServisBody">
-        <label class="filter-option"><input type="checkbox" value="Yetkili Servis"> Yetkili Servis</label>
-        <label class="filter-option"><input type="checkbox" value="Özel Servis"> Özel Servis</label>
-        <div style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.08);border-radius:6px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(0,0,0,0.65);">
+        <label class="filter-option"><input type="checkbox" value="Yetkili Servis"> <span data-i18n="authorized_service">Yetkili Servis</span></label>
+        <label class="filter-option"><input type="checkbox" value="Özel Servis"> <span data-i18n="special_service">Özel Servis</span></label>
+        <div data-i18n="service_info_note" style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.08);border-radius:6px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(0,0,0,0.65);">
           <b>Bilgilendirme:</b> Sitedeki servis statüleri kullanıcı ve işletme beyanlarına dayanır. Cihazınızı teslim etmeden önce yetki ve garanti koşullarını ilgili işletmeden veya üreticiden teyit etmenizi rica ederiz.
         </div>
       </div>
     </div>
     <div class="sidebar-items">
     </div>
-    <button id="addTamirci">+<span class="btn-label">İşletme Tanımla</span></button>
+    <button id="addTamirci">+<span class="btn-label" data-i18n="add_business_btn">İşletme Tanımla</span></button>
   </div>
 </div>
 
@@ -1387,72 +1492,74 @@
   <div id="modalMenu">
     <button id="modalClose">✕</button>
     <div class="modal-tabs">
-      <button class="modal-tab active" data-tab="1">İşletme sahibiyim</button>
-      <button class="modal-tab" data-tab="2">Site kullanıcısıyım</button>
+      <button class="modal-tab active" data-tab="1" data-i18n="im_owner">İşletme sahibiyim</button>
+      <button class="modal-tab" data-tab="2" data-i18n="im_user">Site kullanıcısıyım</button>
     </div>
     <div class="modal-content" id="modalContent">
       <div class="form-group">
-        <label class="form-label">İşletme Adı <span style="color:#ff5050;">*</span></label>
-        <input type="text" class="form-input" id="formIsletmeAdi" placeholder="İşletme adını giriniz">
+        <label class="form-label"><span data-i18n="business_name">İşletme Adı</span> <span style="color:#ff5050;">*</span></label>
+        <input type="text" class="form-input" id="formIsletmeAdi" data-i18n-placeholder="business_name_placeholder" placeholder="İşletme adını giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label" id="labelTelefon">Telefon <span style="color:#ff5050;">*</span></label>
-        <input type="tel" class="form-input" id="formTelefon" placeholder="Telefon numaranızı giriniz">
+        <label class="form-label" id="labelTelefon"><span data-i18n="phone">Telefon</span> <span style="color:#ff5050;">*</span></label>
+        <input type="tel" class="form-input" id="formTelefon" data-i18n-placeholder="phone_placeholder" placeholder="Telefon numaranızı giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label" id="labelEposta">Şirket E-postası <span style="color:#ff5050;">*</span></label>
-        <input type="email" class="form-input" id="formEposta" placeholder="Şirket E-postası adresinizi giriniz">
+        <label class="form-label" id="labelEposta"><span data-i18n="company_email">Şirket E-postası</span> <span style="color:#ff5050;">*</span></label>
+        <input type="email" class="form-input" id="formEposta" data-i18n-placeholder="company_email_placeholder" placeholder="Şirket E-postası adresinizi giriniz">
       </div>
       <div class="form-group">
-        <label class="form-label">Servis verilen cihaz türleri <span style="color:#ff5050;">*</span></label>
+        <label class="form-label"><span data-i18n="serviced_devices">Servis verilen cihaz türleri</span> <span style="color:#ff5050;">*</span></label>
         <div class="form-checkbox-grid" id="formCihazTuru">
-          <label class="form-checkbox"><input type="checkbox" value="telefon"> Telefon</label>
-          <label class="form-checkbox"><input type="checkbox" value="masaustu"> Masaüstü Bilgisayar</label>
-          <label class="form-checkbox"><input type="checkbox" value="dizustu"> Dizüstü Bilgisayar</label>
-          <label class="form-checkbox"><input type="checkbox" value="tablet"> Tablet</label>
-          <label class="form-checkbox"><input type="checkbox" value="televizyon"> Televizyon</label>
-          <label class="form-checkbox"><input type="checkbox" value="klima"> Klima</label>
-          <label class="form-checkbox"><input type="checkbox" value="beyazEsya"> Beyaz Eşya</label>
-          <label class="form-checkbox"><input type="checkbox" value="diger"> Diğer</label>
+          <label class="form-checkbox"><input type="checkbox" value="telefon"> <span data-i18n="dev_telefon">Telefon</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="masaustu"> <span data-i18n="dev_masaustu">Masaüstü Bilgisayar</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="dizustu"> <span data-i18n="dev_dizustu">Dizüstü Bilgisayar</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="tablet"> <span data-i18n="dev_tablet">Tablet</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="televizyon"> <span data-i18n="dev_televizyon">Televizyon</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="klima"> <span data-i18n="dev_klima">Klima</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="beyazEsya"> <span data-i18n="dev_beyazEsya">Beyaz Eşya</span></label>
+          <label class="form-checkbox"><input type="checkbox" value="diger"> <span data-i18n="dev_diger">Diğer</span></label>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Markalar <span style="color:#ff5050;">*</span></label>
+        <label class="form-label"><span data-i18n="serviced_brands">Markalar</span> <span style="color:#ff5050;">*</span></label>
         <div class="form-checkbox-grid" id="formMarkalar">
-          <div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>
+          <div class="form-empty" data-i18n="select_device_type">Lütfen Cihaz Türü Seçiniz</div>
         </div>
       </div>
       <div class="form-group">
         <label class="form-checkbox" style="padding: 8px 0;">
-          <input type="checkbox" id="formYetkili"> <span id="labelYetkili">Yetkili Servis misiniz?</span>
+          <input type="checkbox" id="formYetkili"> <span id="labelYetkili" data-i18n="are_you_authorized">Yetkili Servis misiniz?</span>
         </label>
       </div>
       <div class="form-group">
-        <label class="form-checkbox" style="padding: 8px 0;">
-          <input type="checkbox" id="formOnay"> <span><span style="color:#ff5050;">*</span> Kişisel verilerimin (İsim, Soyisim, E-posta Adresi, Telefon Numarası) dükkan doğrulama, üyelik süreçleri ve platformda yayınlanma amaçlarıyla işlenmesine <a href="#" id="aydinlatmaLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Aydınlatma Metni</a> kapsamında rıza gösteriyorum.</span>
-        </label>
+        <div class="form-checkbox-row">
+          <input type="checkbox" id="formOnay">
+          <span id="formOnayText"><span style="color:#ff5050;">*</span> Kişisel verilerimin (İsim, Soyisim, E-posta Adresi, Telefon Numarası) dükkan doğrulama, üyelik süreçleri ve platformda yayınlanma amaçlarıyla işlenmesine <button type="button" id="aydinlatmaLink" class="legal-link-btn" onclick="window.openKosullarModal(event)">Aydınlatma Metni</button> kapsamında rıza gösteriyorum.</span>
+        </div>
       </div>
       <div class="form-group">
-        <label class="form-checkbox" style="padding: 8px 0;">
-          <input type="checkbox" id="formKosullar"> <span style="color:#ff5050;">*</span> <span><a href="#" id="kosullarLink" style="color:#fff;text-decoration:underline;font-weight:bold;">Kullanım Koşulları ve Sorumluluk Reddi Metni</a>'ni okudum, kabul ediyorum.</span>
-        </label>
+        <div class="form-checkbox-row">
+          <input type="checkbox" id="formKosullar" style="accent-color:#4caf50;">
+          <span id="formKosullarText"><span style="color:#ff5050;">*</span> <button type="button" id="kosullarLink" class="legal-link-btn" onclick="window.openKosullarModal(event)">Kullanım Koşulları ve Sorumluluk Reddi Metni</button>'ni okudum, kabul ediyorum.</span>
+        </div>
       </div>
-      <div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.1);border-radius:8px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(255,255,255,0.8);">
+      <div data-i18n="business_location_note" style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.1);border-radius:8px;font:400 11px/1.5 'Segoe UI',Arial,sans-serif;color:rgba(255,255,255,0.8);">
         <b>Not:</b> Haritada işaretlediğiniz yer teknik servisin konumu olarak belirlenecektir. Konum belirlemek için bilgisayarda iseniz sağ fare tuşunu kullanınız, telefon veya tablette iseniz ekrana basılı tutunuz.
       </div>
-      <div id="formUyari" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">
+      <div id="formUyari" data-i18n="fill_required" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,80,80,0.85);border-radius:8px;font:500 13px/1 'Segoe UI',Arial,sans-serif;color:#fff;text-align:center;">
         Lütfen gerekli yerleri doldurunuz.
       </div>
       <div style="margin-top:16px;">
-        <button id="isletmeEkleBtn" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">İşletme Ekle</button>
+        <button id="isletmeEkleBtn" data-i18n="add_business_submit" style="width:100%;padding:12px;border:none;border-radius:10px;background:#4caf50;color:#fff;font:600 15px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">İşletme Ekle</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="kosullarModalOverlay">
+<div id="kosullarModalOverlay" onclick="if(event.target === this) window.closeKosullarModal(event);">
   <div id="kosullarModal">
-    <button id="kosullarModalClose">✕</button>
+    <button id="kosullarModalClose" onclick="window.closeKosullarModal(event);">✕</button>
     <div class="kosullar-title">TAMİRCİM NEREDE – AYDINLATMA METNİ, GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI</div>
     <div class="kosullar-body">
       <div class="bolum">
@@ -1520,11 +1627,11 @@
     <h2 id="detail-title" class="business-title"></h2>
     
     <div class="section-block">
-      <span class="section-subtitle">Hizmet Verilen Cihaz</span>
+      <span class="section-subtitle" data-i18n="device_type_label">Hizmet Verilen Cihaz</span>
       <div id="detail-devices" class="tags-container"></div>
     </div>
     <div class="section-block">
-      <span class="section-subtitle">Hizmet Verilen Markalar</span>
+      <span class="section-subtitle" data-i18n="brands_label">Hizmet Verilen Markalar</span>
       <div id="detail-brands" class="tags-container"></div>
     </div>
     <div class="section-block info-box">
@@ -1546,19 +1653,19 @@
       <span id="detail-rating-count" style="font-size:13px; color:#777;">(0)</span>
     </div>
     
-    <button id="mobile-see-reviews-btn" class="submit-btn" style="display:none; width:100%; margin-bottom:15px; background:#3b82f6;" onclick="openReviewsModal()">Yorumları Gör</button>
+    <button id="mobile-see-reviews-btn" class="submit-btn" data-i18n="view_reviews" style="display:none; width:100%; margin-bottom:15px; background:#ffffff; font-family:Arial, sans-serif; border-radius:12px; border:1px solid #dee2e6; padding:12px 16px; font-weight:600; font-size:14px; color:#333; cursor:pointer;" onclick="openReviewsModal()">Yorumları Gör</button>
     
     <!-- YORUMLAR LİSTESİ (SADECE BİLGİSAYARDA) -->
     <div id="desktop-reviews-section" style="margin-bottom:20px; border-top:1px solid #eee; padding-top:15px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="font-size:15px; margin:0; color:#333;">Yorumlar</h3>
-        <button onclick="openWriteReviewModal()" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Yorum Yap</button>
+        <h3 style="font-size:15px; margin:0; color:#333;" data-i18n="reviews_title">Yorumlar</h3>
+        <button onclick="openWriteReviewModal()" data-i18n="write_review_btn" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Yorum Yap</button>
       </div>
       <div id="desktop-reviews-list" style="display:flex; flex-direction:column; gap:10px; min-height:100px;"></div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-        <button id="prev-reviews-btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
+        <button id="prev-reviews-btn" data-i18n="prev_btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
         <span id="reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
-        <button id="next-reviews-btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+        <button id="next-reviews-btn" data-i18n="next_btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
       </div>
     </div>
   </div>
@@ -1567,7 +1674,7 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
         <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.72 11.72 0 003.68.59 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.59 3.68a1 1 0 01-.24 1.02l-2.23 2.09z"/>
       </svg>
-      <span>Hemen Ara</span>
+      <span data-i18n="call_now">Hemen Ara</span>
     </a>
     <a id="detail-nav-btn" href="#" target="_blank" class="btn btn-secondary" title="Google Haritalar'da Aç">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1943,9 +2050,11 @@
     
     setStarFill((ortalama / 5) * 100);
     
+    const isEn = window.i18n && window.i18n.getLang() === 'en';
     const allReviews = yorumlariOku().filter(y => y.isletme_ismi === data.name && !y.gizli);
     const ratingCount = document.getElementById('detail-rating-count');
-    if (ratingCount) ratingCount.innerText = '(' + allReviews.length + (allReviews.length === 1 ? ' Yorum' : ' Yorum') + ')';
+    const reviewWord = isEn ? (allReviews.length === 1 ? ' Review' : ' Reviews') : ' Yorum';
+    if (ratingCount) ratingCount.innerText = '(' + allReviews.length + ' ' + reviewWord + ')';
     
     if (typeof loadReviews === 'function') {
       loadReviews(data.name, 1);
@@ -1953,7 +2062,8 @@
 
     const badge = document.getElementById('detail-type-badge');
     if (badge) {
-      badge.innerText = data.serviceType || 'Özel Servis';
+      const rawType = data.serviceType || 'Özel Servis';
+      badge.innerText = isEn ? (rawType === 'Yetkili Servis' ? 'Authorized Service' : 'Special Service') : rawType;
       if (data.serviceType === 'Yetkili Servis') {
         badge.classList.add('authorized');
       } else {
@@ -1967,7 +2077,7 @@
       (data.devices || []).forEach(device => {
         const span = document.createElement('span');
         span.className = 'tag tag-primary';
-        span.innerText = device;
+        span.innerText = isEn ? (window.t ? window.t(device) : device) : device;
         deviceContainer.appendChild(span);
       });
     }
@@ -1984,7 +2094,7 @@
     }
 
     const emailEl = document.getElementById('detail-email');
-    if (emailEl) emailEl.innerText = data.email || 'Belirtilmemiş';
+    if (emailEl) emailEl.innerText = data.email || (isEn ? 'Not specified' : 'Belirtilmemiş');
     
     const callBtn = document.getElementById('detail-call-btn');
     if (callBtn) {
@@ -2130,23 +2240,31 @@
   const modalTabs = document.querySelectorAll('#modalOverlay .modal-tab');
 
   let aktifTab = '1';
+  window.aktifTab = aktifTab;
 
   function switchTabUI(tabId) {
     aktifTab = tabId;
+    window.aktifTab = tabId;
     const labelTel = document.getElementById('labelTelefon');
     const labelMail = document.getElementById('labelEposta');
     const labelYetkili = document.getElementById('labelYetkili');
 
+    const isEn = window.i18n && window.i18n.getLang() === 'en';
+    const optText = isEn ? '(Optional)' : '(Opsiyonel)';
+    const telText = isEn ? 'Phone' : 'Telefon';
+    const mailText = isEn ? 'Company Email' : 'Şirket E-postası';
+
     if (tabId === '2') {
-      if (labelTel) labelTel.innerHTML = 'Telefon <span style="font-size:11px;opacity:0.75;">(Opsiyonel)</span>';
-      if (labelMail) labelMail.innerHTML = 'Şirket E-postası <span style="font-size:11px;opacity:0.75;">(Opsiyonel)</span>';
-      if (labelYetkili) labelYetkili.textContent = 'Yetkili Servis mi?';
+      if (labelTel) labelTel.innerHTML = `<span data-i18n="phone">${telText}</span> <span style="font-size:11px;opacity:0.75;" data-i18n="optional_tag">${optText}</span>`;
+      if (labelMail) labelMail.innerHTML = `<span data-i18n="company_email">${mailText}</span> <span style="font-size:11px;opacity:0.75;" data-i18n="optional_tag">${optText}</span>`;
+      if (labelYetkili) labelYetkili.textContent = isEn ? 'Authorized Service?' : 'Yetkili Servis mi?';
     } else {
-      if (labelTel) labelTel.innerHTML = 'Telefon <span style="color:#ff5050;">*</span>';
-      if (labelMail) labelMail.innerHTML = 'Şirket E-postası <span style="color:#ff5050;">*</span>';
-      if (labelYetkili) labelYetkili.textContent = 'Yetkili Servis misiniz?';
+      if (labelTel) labelTel.innerHTML = `<span data-i18n="phone">${telText}</span> <span style="color:#ff5050;">*</span>`;
+      if (labelMail) labelMail.innerHTML = `<span data-i18n="company_email">${mailText}</span> <span style="color:#ff5050;">*</span>`;
+      if (labelYetkili) labelYetkili.textContent = isEn ? 'Are you an Authorized Service?' : 'Yetkili Servis misiniz?';
     }
   }
+  window.switchTabUI = switchTabUI;
 
   addTamirciBtn.addEventListener('click', () => {
     const oturum = localStorage.getItem('aktifOturum');
@@ -2189,7 +2307,7 @@
 
     document.querySelectorAll('#formCihazTuru input[type="checkbox"]').forEach(cb => cb.checked = false);
     const formMarkalar = document.getElementById('formMarkalar');
-    if (formMarkalar) formMarkalar.innerHTML = '<div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>';
+    if (formMarkalar) formMarkalar.innerHTML = '<div class="form-empty" data-i18n="select_device_type">' + (window.t ? window.t("Lütfen Cihaz Türü Seçiniz") : "Lütfen Cihaz Türü Seçiniz") + '</div>';
 
     const formYetkili = document.getElementById('formYetkili');
     if (formYetkili) formYetkili.checked = false;
@@ -2207,16 +2325,14 @@
     const kosullarLink = document.getElementById('kosullarLink');
     if (kosullarLink) {
       kosullarLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('kosullarModalOverlay').classList.add('active');
+        window.openKosullarModal(e);
       });
     }
 
     const aydinlatmaLink = document.getElementById('aydinlatmaLink');
     if (aydinlatmaLink) {
       aydinlatmaLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('kosullarModalOverlay').classList.add('active');
+        window.openKosullarModal(e);
       });
     }
 
@@ -2232,7 +2348,7 @@
       const otherSelected = selected.filter(s => s !== 'diger');
 
       if (selected.length === 0) {
-        formMarkalar.innerHTML = '<div class="form-empty">Lütfen Cihaz Türü Seçiniz</div>';
+        formMarkalar.innerHTML = '<div class="form-empty" data-i18n="select_device_type">' + (window.t ? window.t("Lütfen Cihaz Türü Seçiniz") : "Lütfen Cihaz Türü Seçiniz") + '</div>';
         return;
       }
 
@@ -2252,12 +2368,14 @@
       }
 
       if (!digerSelected) {
-        html += `<label class="form-checkbox"><input type="checkbox"> Diğer</label>`;
+        const digerLabel = window.t ? window.t("Diğer") : "Diğer";
+        html += `<label class="form-checkbox"><input type="checkbox"> <span data-i18n="dev_diger">${digerLabel}</span></label>`;
       }
 
       if (digerSelected) {
+        const brandPh = window.t ? window.t("Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz") : "Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz";
         html += `<div class="form-group" style="margin-top:8px;grid-column:1/-1;">
-          <input type="text" class="form-input" placeholder="Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz">
+          <input type="text" class="form-input" placeholder="${brandPh}">
         </div>`;
       }
 
@@ -2333,11 +2451,11 @@
         if (formKosullar && !formKosullar.checked) bos = true;
 
         if (!currentMarker) {
-          formUyari.textContent = 'Lütfen haritada yer işaretleyiniz.';
+          formUyari.textContent = window.t ? window.t('Lütfen haritada yer işaretleyiniz.') : 'Lütfen haritada yer işaretleyiniz.';
           formUyari.style.display = 'block';
           setTimeout(() => { formUyari.style.display = 'none'; }, 4000);
         } else if (bos) {
-          formUyari.textContent = 'Lütfen gerekli yerleri doldurunuz.';
+          formUyari.textContent = window.t ? window.t('Lütfen gerekli yerleri doldurunuz.') : 'Lütfen gerekli yerleri doldurunuz.';
           formUyari.style.display = 'block';
           setTimeout(() => { formUyari.style.display = 'none'; }, 4000);
         } else {
@@ -2416,7 +2534,7 @@
     const otherSelected = selected.filter(s => s !== 'diger');
 
     if (selected.length === 0) {
-      cihazMarkasiBody.innerHTML = '<div class="filter-empty">Lütfen Cihaz Türü Seçiniz</div>';
+      cihazMarkasiBody.innerHTML = '<div class="filter-empty" data-i18n="select_device_type">' + (window.t ? window.t("Lütfen Cihaz Türü Seçiniz") : "Lütfen Cihaz Türü Seçiniz") + '</div>';
       applyFiltersAndSearch(false);
       return;
     }
@@ -2437,7 +2555,8 @@
     }
 
     if (selected.length > 0) {
-      html += `<label class="filter-option"><input type="checkbox"> Diğer</label>`;
+      const digerText = window.t ? window.t("Diğer") : "Diğer";
+      html += `<label class="filter-option"><input type="checkbox"> <span data-i18n="dev_diger">${digerText}</span></label>`;
     }
 
     cihazMarkasiBody.innerHTML = html;
@@ -2448,26 +2567,60 @@
 
     applyFiltersAndSearch(false);
   }
+  window.updateBrands = updateBrands;
 
   cihazTuruCheckboxes.forEach(cb => {
     cb.addEventListener('change', updateBrands);
   });
 
-  document.getElementById('kosullarModalOverlay').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('active');
-  });
+  window.openKosullarModal = function(e) {
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    }
+    const modal = document.getElementById('kosullarModalOverlay');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.setProperty('display', 'flex', 'important');
+      modal.style.setProperty('z-index', '99999', 'important');
+    }
+    return false;
+  };
 
-  document.getElementById('kosullarModalClose').addEventListener('click', function() {
-    document.getElementById('kosullarModalOverlay').classList.remove('active');
-  });
+  window.closeKosullarModal = function(e) {
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    }
+    const modal = document.getElementById('kosullarModalOverlay');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.setProperty('display', 'none', 'important');
+    }
+    return false;
+  };
 
-  const kayitAydinlatmaLink = document.getElementById('kayitAydinlatmaLink');
-  if (kayitAydinlatmaLink) {
-    kayitAydinlatmaLink.addEventListener('click', function(e) {
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('#kayitAydinlatmaLink, #aydinlatmaLink, #kosullarLink, .legal-link-btn');
+    if (link) {
       e.preventDefault();
-      document.getElementById('kosullarModalOverlay').classList.add('active');
-    });
-  }
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+      window.openKosullarModal(e);
+      return;
+    }
+
+    const row = e.target.closest('.form-checkbox-row');
+    if (row && e.target.tagName !== 'INPUT') {
+      const cb = row.querySelector('input[type="checkbox"]');
+      if (cb) {
+        cb.checked = !cb.checked;
+        cb.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+  }, true);
 
   function oturumKontrol() {
     const oturum = localStorage.getItem('aktifOturum');
@@ -2629,7 +2782,7 @@
     const hata = document.getElementById('girisHata');
 
     if (!eposta || !sifre) {
-      hata.textContent = 'Lütfen e-posta ve şifrenizi giriniz.';
+      hata.textContent = window.t ? window.t('Lütfen e-posta ve şifrenizi giriniz.') : 'Lütfen e-posta ve şifrenizi giriniz.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
       return;
@@ -2646,7 +2799,7 @@
       document.getElementById('girisEposta').value = '';
       document.getElementById('girisSifre').value = '';
     } else {
-      hata.textContent = 'E-posta veya şifre hatalıdır.';
+      hata.textContent = window.t ? window.t('E-posta veya şifre hatalıdır.') : 'E-posta veya şifre hatalıdır.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
     }
@@ -2664,7 +2817,7 @@
     const hata = document.getElementById('dogrulamaHata');
     
     if (girilenKod !== uretilenDogrulamaKodu) {
-      hata.textContent = 'Girdiğiniz kod hatalı.';
+      hata.textContent = window.t ? window.t('Girdiğiniz kod hatalı.') : 'Girdiğiniz kod hatalı.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
       return;
@@ -2695,14 +2848,14 @@
     const hata = document.getElementById('kayitHata');
 
     if (!adSoyad || !eposta || !sifre || !sifreTekrar || !onayChecked) {
-      hata.textContent = 'Lütfen gerekli yerleri doldurunuz ve onay kutusunu işaretleyiniz.';
+      hata.textContent = window.t ? window.t('Lütfen gerekli yerleri doldurunuz ve onay kutusunu işaretleyiniz.') : 'Lütfen gerekli yerleri doldurunuz ve onay kutusunu işaretleyiniz.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
       return;
     }
 
     if (sifre !== sifreTekrar) {
-      hata.textContent = 'Şifreler eşleşmiyor.';
+      hata.textContent = window.t ? window.t('Şifreler eşleşmiyor.') : 'Şifreler eşleşmiyor.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
       return;
@@ -2712,7 +2865,7 @@
 
     const epostaVar = mevcutlar.some(k => k.e_posta === eposta);
     if (epostaVar) {
-      hata.textContent = 'Bu e-posta adresi zaten kayıtlıdır.';
+      hata.textContent = window.t ? window.t('Bu e-posta adresi zaten kayıtlıdır.') : 'Bu e-posta adresi zaten kayıtlıdır.';
       hata.style.display = 'block';
       setTimeout(() => { hata.style.display = 'none'; }, 4000);
       return;
@@ -2824,7 +2977,8 @@
       if (!container) return;
       container.innerHTML = '';
       if (gecerliYorumlar.length === 0) {
-        container.innerHTML = '<div style="color:#777; font-size:13px; text-align:center; padding:10px;">Henüz yorum yapılmamış. İlk yorumu siz yapın!</div>';
+        const noReviewText = window.t ? window.t("Henüz yorum yapılmamış. İlk yorumu siz yapın!") : "Henüz yorum yapılmamış. İlk yorumu siz yapın!";
+        container.innerHTML = `<div style="color:#777; font-size:13px; text-align:center; padding:10px;" data-i18n="no_reviews_placeholder">${noReviewText}</div>`;
         return;
       }
       
@@ -2877,7 +3031,8 @@
   
   window.openReviewsModal = function() {
     if (window.innerWidth > 768) return; // Sadece mobilde modal açılır, pc'de panele tıklanmaz
-    document.getElementById('reviewsModalTitle').innerText = window.currentBusinessData.name + ' Yorumları';
+    const reviewWord = (window.i18n && window.i18n.getLang() === 'en') ? ' Reviews' : ' Yorumları';
+    document.getElementById('reviewsModalTitle').innerText = (window.currentBusinessData ? window.currentBusinessData.name : '') + reviewWord;
     document.getElementById('reviewsModalOverlay').style.display = 'flex';
   };
   

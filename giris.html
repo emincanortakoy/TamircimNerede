@@ -7,6 +7,7 @@
 <!-- Tarayıcı Sekmesi İkonu (Logonun Yazısız Hali) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'><defs><linearGradient id='pinGrad' x1='0%.' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%233b82f6'/><stop offset='100%' stop-color='%231d4ed8'/></linearGradient><linearGradient id='wrenchGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2310b981'/><stop offset='100%' stop-color='%23059669'/></linearGradient><linearGradient id='boltGrad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23facc15'/><stop offset='100%' stop-color='%23eab308'/></linearGradient></defs><path d='M 250,55 C 165,55 100,120 100,205 C 100,295 215,395 250,420 C 285,395 400,295 400,205 C 400,120 335,55 250,55 Z' fill='url(%23pinGrad)'/><circle cx='250' cy='195' r='95' fill='%23ffffff'/><circle cx='250' cy='195' r='95' fill='none' stroke='%23e2e8f0' stroke-width='4'/><g transform='translate(250, 195) rotate(-40) translate(-250, -195)'><path d='M 238,135 C 238,118 248,110 250,110 C 252,110 262,118 262,135 L 272,135 C 282,135 288,143 285,155 C 282,168 268,175 258,175 L 258,230 A 16,16 0 0 1 242,230 L 242,175 C 232,175 218,168 215,155 C 212,143 218,135 228,135 Z' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='14' fill='url(%23wrenchGrad)'/><circle cx='250' cy='242' r='7' fill='%23ffffff'/></g><g transform='translate(250, 195) rotate(45) translate(-250, -195)'><rect x='244' y='215' width='12' height='35' rx='4' fill='%23334155'/><rect x='247' y='150' width='6' height='65' fill='%2394a3b8'/><polygon points='247,150 253,150 251,140 249,140' fill='%23646869'/></g><circle cx='250' cy='195' r='28' fill='%230f172a'/><path d='M 252,178 L 241,195 L 249,195 L 247,212 L 260,193 L 252,193 Z' fill='url(%23boltGrad)'/></svg>">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css">
+<script src="i18n.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,7 +21,49 @@
     justify-content: center;
   }
 
+  .login-lang-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 46px;
+    height: 30px;
+    background: #0f172a;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    outline: none;
+    padding: 0;
+  }
+  .login-lang-btn:hover {
+    transform: scale(1.08);
+    background: #1e293b;
+  }
+
+  .admin-lang-btn {
+    width: 46px;
+    height: 30px;
+    background: #1e293b;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    outline: none;
+    padding: 0;
+  }
+  .admin-lang-btn:hover {
+    transform: scale(1.08);
+    background: #334155;
+  }
+
   #loginBox {
+    position: relative;
     background: #16213e;
     padding: 40px 36px;
     border-radius: 16px;
@@ -490,83 +533,87 @@
 <body>
 
 <div id="loginBox">
-  <h2>Tamircim Nerede Üye Girişi</h2>
+  <button id="loginLangToggleBtn" class="lang-toggle-btn login-lang-btn" onclick="toggleLanguage()" title="Dili Değiştir / Change Language"></button>
+  <h2 data-i18n="login_screen_title">Tamircim Nerede Üye Girişi</h2>
   <div class="login-field">
-    <label>E-posta</label>
-    <input type="text" id="username" placeholder="E-posta adresinizi giriniz">
+    <label data-i18n="email">E-posta</label>
+    <input type="text" id="username" data-i18n-placeholder="email_placeholder" placeholder="E-posta adresinizi giriniz">
   </div>
   <div class="login-field">
-    <label>Şifre</label>
-    <input type="password" id="password" placeholder="Şifrenizi giriniz">
+    <label data-i18n="password">Şifre</label>
+    <input type="password" id="password" data-i18n-placeholder="password_placeholder" placeholder="Şifrenizi giriniz">
   </div>
-  <button id="loginBtn">Giriş Yap</button>
-  <div id="loginError">E-posta veya şifre hatalıdır.</div>
-  <a href="index.html" style="display:block;text-align:center;margin-top:12px;color:#94a3b8;font:500 13px/1 'Segoe UI',Arial,sans-serif;text-decoration:none;transition:color 0.2s;" onmouseover="this.color='#fff'" onmouseout="this.color='#94a3b8'">← Haritaya Dön</a>
+  <button id="loginBtn" data-i18n="login_btn">Giriş Yap</button>
+  <div id="loginError" data-i18n="login_error">E-posta veya şifre hatalıdır.</div>
+  <a href="index.html" data-i18n="back_to_map" style="display:block;text-align:center;margin-top:12px;color:#94a3b8;font:500 13px/1 'Segoe UI',Arial,sans-serif;text-decoration:none;transition:color 0.2s;" onmouseover="this.color='#fff'" onmouseout="this.color='#94a3b8'">← Haritaya Dön</a>
 </div>
 
 <div id="adminPanel">
   <div class="admin-header">
-    <h1 id="adminBaslik">Tamircim Nerede — Admin Paneli</h1>
-    <button id="cikisBtn">Çıkış Yap</button>
+    <h1 id="adminBaslik" data-i18n="admin_screen_title">Tamircim Nerede — Admin Paneli</h1>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button id="adminLangToggleBtn" class="lang-toggle-btn admin-lang-btn" onclick="toggleLanguage()" title="Dili Değiştir / Change Language"></button>
+      <button id="cikisBtn" data-i18n="logout_btn">Çıkış Yap</button>
+    </div>
   </div>
   <div class="admin-body">
       <div class="admin-sidebar">
         <div class="admin-sidebar-item active" data-tab="basvurular">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-          <span>İşletme Başvuruları</span>
+          <span data-i18n="tab_applications">İşletme Başvuruları</span>
         </div>
         <div class="admin-sidebar-item" data-tab="harita">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Haritadaki İşletmeler</span>
+          <span data-i18n="tab_businesses_on_map">Haritadaki İşletmeler</span>
         </div>
         <div class="admin-sidebar-item" data-tab="bilgilerim" style="display:none;" id="sidebarBilgilerim">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-          <span>İşletme Bilgilerim</span>
+          <span data-i18n="tab_my_business">İşletme Bilgilerim</span>
         </div>
         <div class="admin-sidebar-item" data-tab="yorumlar" style="display:none;" id="sidebarYorumlar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          <span>Yorumlar</span>
+          <span data-i18n="tab_reviews">Yorumlar</span>
         </div>
         <div class="admin-sidebar-item" data-tab="yaptigim_yorumlar" id="sidebarYaptigimYorumlar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-          <span>Yaptığım Yorumlar</span>
+          <span data-i18n="tab_my_reviews">Yaptığım Yorumlar</span>
         </div>
         <div class="admin-sidebar-item" data-tab="uyeler" style="display:none;" id="sidebarUyeler">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-          <span>Üye Bilgileri</span>
+          <span data-i18n="tab_members">Üye Bilgileri</span>
         </div>
       </div>
     <div class="admin-main">
       <div class="tab-content active" id="tabBasvurular">
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-label">Toplam Başvuru</div>
+            <div class="stat-label" data-i18n="stat_total">Toplam Başvuru</div>
             <div class="stat-value" id="statToplam">0</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Bekleyen</div>
+            <div class="stat-label" data-i18n="stat_pending">Bekleyen</div>
             <div class="stat-value" id="statBekleyen">0</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Onaylanan</div>
+            <div class="stat-label" data-i18n="stat_approved">Onaylanan</div>
             <div class="stat-value" id="statOnaylanan">0</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Reddedilen</div>
+            <div class="stat-label" data-i18n="stat_rejected">Reddedilen</div>
             <div class="stat-value" id="statReddedilen">0</div>
           </div>
         </div>
         <div class="table-section">
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-              <h3 style="margin:0;">İşletme Başvuruları</h3>
-              <input type="text" id="filtreIsletmeAra" placeholder="İşletme Ara..." oninput="aktifSayfa=1;tabloyuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <h3 style="margin:0;" data-i18n="tab_applications">İşletme Başvuruları</h3>
+              <input type="text" id="filtreIsletmeAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="aktifSayfa=1;tabloyuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
-              <button class="filter-btn active" onclick="basvuruFiltrele('tumu', this)">Tümü</button>
-              <button class="filter-btn" onclick="basvuruFiltrele('beklemede', this)">Beklemede</button>
-              <button class="filter-btn" onclick="basvuruFiltrele('onaylandi', this)">Onaylandı</button>
-              <button class="filter-btn" onclick="basvuruFiltrele('reddedildi', this)">Reddedildi</button>
+              <button class="filter-btn active" data-i18n="filter_all" onclick="basvuruFiltrele('tumu', this)">Tümü</button>
+              <button class="filter-btn" data-i18n="filter_pending" onclick="basvuruFiltrele('beklemede', this)">Beklemede</button>
+              <button class="filter-btn" data-i18n="filter_approved" onclick="basvuruFiltrele('onaylandi', this)">Onaylandı</button>
+              <button class="filter-btn" data-i18n="filter_rejected" onclick="basvuruFiltrele('reddedildi', this)">Reddedildi</button>
             </div>
             <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
               <div style="flex:1;min-width:150px;">
