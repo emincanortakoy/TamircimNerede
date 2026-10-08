@@ -1228,7 +1228,7 @@
       bottom: -100%; width: 100vw; max-width: 100vw;
       border-radius: 22px 22px 0 0;
       box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
-      max-height: 75vh;
+      max-height: 55vh;
       z-index: 2500;
     }
     .detail-panel.active { bottom: 0; }
@@ -2000,13 +2000,6 @@
     });
 
     if (zoomToResult && firstMatchedMarker && map) {
-      const targetPos = firstMatchedMarker.getLngLat();
-      map.flyTo({
-        center: [targetPos.lng, targetPos.lat],
-        zoom: 15,
-        duration: 1200,
-        essential: true
-      });
       openRepairmanDetail(firstMatchedMarker._businessData);
     }
   }
@@ -2105,21 +2098,32 @@
     const navBtn = document.getElementById('detail-nav-btn');
     if (navBtn) navBtn.href = 'https://www.google.com/maps/dir/?api=1&destination=' + data.lat + ',' + data.lng;
 
+    panel.classList.add('active');
+    panel.setAttribute('aria-hidden', 'false');
+
     if (map && data.lng && data.lat) {
       const isMobile = window.innerWidth <= 768;
-      const yOffset = isMobile ? -(window.innerHeight * 0.25) : 0;
+      let yOffset = 0;
+      if (isMobile) {
+        const sidebarEl = document.getElementById('sidebar');
+        if (sidebarEl) {
+          sidebarEl.classList.remove('expanded');
+          sidebarEl.style.height = '';
+        }
+        const maxPanelH = window.innerHeight * 0.55;
+        const panelH = Math.min(panel.offsetHeight || maxPanelH, maxPanelH);
+        const topSafe = 65;
+        yOffset = Math.round((topSafe - panelH) / 2 + 22);
+      }
       
       map.flyTo({
         center: [data.lng, data.lat],
         zoom: 15,
-        duration: 1200,
+        duration: 1000,
         essential: true,
         offset: [0, yOffset]
       });
     }
-
-    panel.classList.add('active');
-    panel.setAttribute('aria-hidden', 'false');
   }
 
   function closeRepairmanDetail() {
@@ -2129,6 +2133,9 @@
       panel.setAttribute('aria-hidden', 'true');
     }
   }
+
+  window.openRepairmanDetail = openRepairmanDetail;
+  window.closeRepairmanDetail = closeRepairmanDetail;
 
   document.getElementById('close-panel-btn').addEventListener('click', closeRepairmanDetail);
 
