@@ -18,23 +18,47 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: 'ortakoyemincan@gmail.com', // Kendi e-postanız
-        pass: 'ldtb auek kofn kzyp' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
+        user: 'kendiepostaniz@gmail.com', // Kendi e-postanız
+        pass: '' // E-posta şifreniz (Gmail ise uygulama şifresi gerekir)
     }
 });
 
 // Static files
 app.use(express.static(path.join(__dirname)));
 
-// Initialize better-sqlite3 database
+// Initialize better-sqlite3 database (database.sqlite and database.db mirror)
 const db = new Database('./database.sqlite', { verbose: console.log });
-console.log('Connected to the SQLite database using better-sqlite3.');
+console.log('Connected to the SQLite database (database.sqlite) using better-sqlite3.');
 
-// Create tables for the key-value store approach to minimize structural changes
-db.exec(`CREATE TABLE IF NOT EXISTS store (
+let db2 = null;
+try {
+    db2 = new Database('./database.db');
+    console.log('Connected to database.db as mirror.');
+} catch (e) {
+    console.error('database.db mirror initialization error:', e.message);
+}
+
+// Create tables for store and complaints
+const initSql = `
+CREATE TABLE IF NOT EXISTS store (
     key TEXT PRIMARY KEY,
     value TEXT
-)`);
+);
+CREATE TABLE IF NOT EXISTS sikayetler (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sikayet_isletme TEXT,
+    sikayet_konu TEXT,
+    e_posta TEXT,
+    sikayet_detay TEXT,
+    durum TEXT DEFAULT 'beklemede',
+    tarih TEXT
+);
+`;
+
+db.exec(initSql);
+if (db2) {
+    try { db2.exec(initSql); } catch(err) { console.error('Error creating tables in database.db:', err.message); }
+}
 
 // Initialize empty arrays if not exist
 const insertOrIgnore = db.prepare(`INSERT OR IGNORE INTO store (key, value) VALUES (?, ?)`);
@@ -168,6 +192,151 @@ app.post('/api/notify-business-status', async (req, res) => {
     } catch (err) {
         console.error('Durum bildirim maili gönderme hatası:', err);
         res.status(500).json({ error: 'Bildirim e-postası gönderilirken bir hata oluştu: ' + err.message });
+    }
+});
+
+// GET /api/sikayetler (Tüm şikayetleri listele)
+app.get('/api/sikayetler', (req, res) => {
+    try {
+        const stmt = db.prepare(`SELECT * FROM sikayetler ORDER BY id DESC`);
+        const rows = stmt.all();
+        res.json(rows);
+    } catch (err) {
+        console.error('Şikayetleri çekme hatası:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/sikayetler (Yeni şikayet kaydet)
+app.post('/api/sikayetler', async (req, res) => {
+    const { sikayet_isletme, sikayet_konu, e_posta, sikayet_detay } = req.body;
+    if (!sikayet_isletme || !sikayet_konu || !sikayet_detay) {
+        return res.status(400).json({ error: 'Gerekli şikayet bilgileri eksik.' });
+    }
+
+    const emailValue = (e_posta && typeof e_posta === 'string' && e_posta.trim()) ? e_posta.trim() : 'bulunamadı';
+    const tarih = new Date().toISOString();
+
+    try {
+        const stmt = db.prepare(`INSERT INTO sikayetler (sikayet_isletme, sikayet_konu, e_posta, sikayet_detay, durum, tarih) VALUES (?, ?, ?, ?, 'beklemede', ?)`);
+        const info = stmt.run(sikayet_isletme, sikayet_konu, emailValue, sikayet_detay, tarih);
+
+        if (db2) {
+            try {
+                const stmt2 = db2.prepare(`INSERT INTO sikayetler (id, sikayet_isletme, sikayet_konu, e_posta, sikayet_detay, durum, tarih) VALUES (?, ?, ?, ?, ?, 'beklemede', ?)`);
+                stmt2.run(info.lastInsertRowid, sikayet_isletme, sikayet_konu, emailValue, sikayet_detay, tarih);
+            } catch (errDb2) {
+                console.error('database.db mirror insert hatası:', errDb2.message);
+            }
+        }
+
+        // Eğer kişi e-postasını girdiyse bilgi maili gönder
+        if (emailValue !== 'bulunamadı') {
+            const htmlContent = `
+                <h3>İşletme Şikayetiniz Alınmıştır</h3>
+                <p>Merhaba,</p>
+                <p><b>${sikayet_isletme}</b> isimli işletme için ilettiğiniz şikayet tarafımıza başarıyla ulaşmıştır ve incelemeye alınmıştır.</p>
+                <hr/>
+                <h4>Şikayet Bilgileriniz:</h4>
+                <ul>
+                    <li><b>İşletme Adı:</b> ${sikayet_isletme}</li>
+                    <li><b>Şikayet Sebebi:</b> ${sikayet_konu}</li>
+                    <li><b>Açıklama:</b> ${sikayet_detay}</li>
+                </ul>
+                <p>Şikayetiniz yetkili sistem yöneticisi tarafından incelenecek ve sonuçlandığında tarafınıza bilgilendirme yapılacaktır.</p>
+                <p>İyi günler dileriz.</p>
+            `;
+            transporter.sendMail({
+                from: '"Tamircim Nerede Bildirim" <sizin.epostaniz@gmail.com>',
+                to: emailValue,
+                subject: `İşletme Şikayetiniz Alındı - ${sikayet_isletme}`,
+                html: htmlContent
+            }).catch(mailErr => {
+                console.error('Kullanıcıya şikayet alındı maili hatası:', mailErr.message);
+            });
+        }
+
+        // Sistem yöneticisine şikayet bildirimi gönder
+        transporter.sendMail({
+            from: '"Tamircim Nerede Bildirim" <sizin.epostaniz@gmail.com>',
+            to: 'ortakoyemincan@gmail.com',
+            subject: `Yeni İşletme Şikayeti: ${sikayet_isletme} (${sikayet_konu})`,
+            html: `
+                <h3>Yeni Bir İşletme Şikayeti Alındı!</h3>
+                <p><b>Şikayet Edilen İşletme:</b> ${sikayet_isletme}</p>
+                <p><b>Şikayet Sebebi:</b> ${sikayet_konu}</p>
+                <p><b>Bildiren E-posta:</b> ${emailValue}</p>
+                <p><b>Şikayet Detayı:</b></p>
+                <div style="background:#f1f5f9;padding:12px;border-radius:6px;white-space:pre-wrap;">${sikayet_detay}</div>
+                <p>Lütfen admin panelinden şikayeti inceleyiniz.</p>
+            `
+        }).catch(adminMailErr => {
+            console.error('Yöneticiye şikayet bildirim maili hatası:', adminMailErr.message);
+        });
+
+        res.json({ success: true, id: info.lastInsertRowid });
+    } catch (err) {
+        console.error('Şikayet oluşturma hatası:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/sikayetler/:id/durum (Şikayet onayla / reddet)
+app.post('/api/sikayetler/:id/durum', async (req, res) => {
+    const id = req.params.id;
+    const { status } = req.body; // 'onaylandi' veya 'reddedildi'
+
+    if (!['onaylandi', 'reddedildi', 'beklemede'].includes(status)) {
+        return res.status(400).json({ error: 'Geçersiz durum.' });
+    }
+
+    try {
+        const getStmt = db.prepare(`SELECT * FROM sikayetler WHERE id = ?`);
+        const row = getStmt.get(id);
+        if (!row) {
+            return res.status(404).json({ error: 'Şikayet bulunamadı.' });
+        }
+
+        const updateStmt = db.prepare(`UPDATE sikayetler SET durum = ? WHERE id = ?`);
+        updateStmt.run(status, id);
+
+        if (db2) {
+            try {
+                const updateStmt2 = db2.prepare(`UPDATE sikayetler SET durum = ? WHERE id = ?`);
+                updateStmt2.run(status, id);
+            } catch (errDb2) {}
+        }
+
+        // Eğer e-posta varsa sonuç maili gönder
+        if (row.e_posta && row.e_posta !== 'bulunamadı') {
+            const durumMetni = status === 'onaylandi' ? 'onaylanmıştır' : 'reddedilmiştir';
+            const durumBaslik = status === 'onaylandi' ? 'ONAYLANDI' : 'REDDEDİLDİ';
+
+            const htmlContent = `
+                <h3>İşletme Şikayeti Değerlendirme Sonucu</h3>
+                <p>Merhaba,</p>
+                <p><b>${row.sikayet_isletme}</b> isimli İşletme için <b>${row.sikayet_konu}</b> konulu şikayetiniz <b>${durumMetni}</b>.</p>
+                <p>${status === 'onaylandi' 
+                    ? 'İlettiğiniz şikayet yetkili incelemesi sonucu haklı bulunmuş ve gerekli işlemler/düzeltmeler uygulanmıştır.' 
+                    : 'İlettiğiniz şikayet sistem yöneticilerimiz tarafından incelenmiş ancak onaylanmamış/reddedilmiştir.'}</p>
+                <p>Geri bildiriminiz ve hassasiyetiniz için teşekkür ederiz.</p>
+                <p>İyi günler dileriz.</p>
+            `;
+
+            transporter.sendMail({
+                from: '"Tamircim Nerede Bildirim" <sizin.epostaniz@gmail.com>',
+                to: row.e_posta,
+                subject: `Şikayetiniz ${durumBaslik} - ${row.sikayet_isletme}`,
+                html: htmlContent
+            }).catch(mailErr => {
+                console.error('Şikayet durum maili hatası:', mailErr.message);
+            });
+        }
+
+        res.json({ success: true, durum: status });
+    } catch (err) {
+        console.error('Şikayet durum güncelleme hatası:', err);
+        res.status(500).json({ error: err.message });
     }
 });
 

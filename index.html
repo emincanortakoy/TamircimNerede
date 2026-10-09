@@ -159,26 +159,21 @@
     position: fixed;
     top: 22px;
     right: 68px;
-    width: 46px;
-    height: 30px;
-    background: #ffffff;
-    border-radius: 6px;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 1500;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
-    border: 1px solid #cbd5e1;
-    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    box-shadow: none;
+    transition: transform 0.2s;
     padding: 0;
     outline: none;
   }
 
   .lang-toggle-btn:hover {
-    transform: scale(1.08);
-    background: #f8fafc;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transform: scale(1.12);
   }
 
   #profilMenu {
@@ -1210,6 +1205,7 @@
 
   @media (max-width: 768px) {
     #desktop-reviews-section { display: none !important; }
+    #mobile-report-container { display: flex !important; }
     #mobile-see-reviews-btn { 
       display: block !important; 
       background: #ffffff !important;
@@ -1382,13 +1378,21 @@
     <div style="padding:20px; overflow-y:auto; flex:1;" id="modal-reviews-list-container">
       <div id="modal-reviews-list" style="display:flex; flex-direction:column; gap:12px;"></div>
     </div>
-    <div style="padding:15px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border-radius:0 0 12px 12px;">
-      <div style="display:flex; gap:10px; align-items:center;">
-        <button id="modal-prev-reviews-btn" data-i18n="prev_btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
-        <span id="modal-reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
-        <button id="modal-next-reviews-btn" data-i18n="next_btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+    <div style="padding:14px 20px 12px; border-top:1px solid #eee; background:#f8fafc; border-radius:0 0 12px 12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="modal-prev-reviews-btn" data-i18n="prev_btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
+          <span id="modal-reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
+          <button id="modal-next-reviews-btn" data-i18n="next_btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+        </div>
+        <button onclick="openWriteReviewModal()" data-i18n="write_review_btn" style="background:#4caf50; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Yorum Yap</button>
       </div>
-      <button onclick="openWriteReviewModal()" data-i18n="write_review_btn" style="background:#4caf50; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Yorum Yap</button>
+      <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #e2e8f0; display:flex; justify-content:flex-end;">
+        <button onclick="closeReviewsModal(); openReportModal();" style="background:none; border:none; color:#ef4444; font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline; display:inline-flex; align-items:center; gap:5px; padding:2px 0;" title="İşletmeyi Şikayet Et">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <span data-i18n="report_business_btn">İşletmeyi şikayet et</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1557,6 +1561,64 @@
   </div>
 </div>
 
+<!-- İŞLETMEYİ ŞİKAYET ET MODALI -->
+<div id="reportModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2500; justify-content:center; align-items:center;" onclick="if(event.target === this) closeReportModal();">
+  <div id="reportModalMenu" style="position:relative; width:440px; max-width:92vw; background:#8cabdb; border-radius:16px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+    <button id="reportModalClose" onclick="closeReportModal()" style="position:absolute; top:10px; right:10px; width:28px; height:28px; border:none; border-radius:50%; background:rgba(255,255,255,0.25); color:#fff; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2;">✕</button>
+    <div style="padding:18px 20px 12px; background:rgba(0,0,0,0.08); border-bottom:1px solid rgba(255,255,255,0.15);">
+      <h3 style="margin:0; font:600 16px/1.3 'Segoe UI',Arial,sans-serif; color:#fff;" data-i18n="report_business_title">İşletmeyi Şikayet Et</h3>
+      <div id="reportBusinessName" style="margin-top:4px; font:500 13px/1 'Segoe UI',Arial,sans-serif; color:rgba(255,255,255,0.9);"></div>
+    </div>
+    <div class="modal-content" style="padding:20px; max-height:75vh; overflow-y:auto; color:#fff;">
+      
+      <!-- 1. Şikayet Sebebi -->
+      <div class="form-group">
+        <label class="form-label"><span data-i18n="report_reason_label">Şikayet sebebini seçiniz</span> <span style="color:#ff5050;">*</span></label>
+        <select class="form-input" id="reportReasonSelect" onchange="onReportReasonChange()" style="background:rgba(255,255,255,0.95); color:#1e293b; font-weight:500; border-radius:8px; border:none; padding:10px; box-sizing:border-box;">
+          <option value="" data-i18n="select_reason_placeholder">Şikayet sebebi seçiniz...</option>
+          <option value="İşletme yerinde bulunmuyor" data-i18n="reason_not_at_location">İşletme yerinde bulunmuyor</option>
+          <option value="İşletme konumu yanlış" data-i18n="reason_location_incorrect">İşletme konumu yanlış</option>
+          <option value="Dolandırıcı işletme" data-i18n="reason_fraud">Dolandırıcı işletme</option>
+          <option value="İşletme tamir ettiği cihaz yanlış" data-i18n="reason_device_incorrect">İşletme tamir ettiği cihaz yanlış</option>
+          <option value="İşletme tamir ettiği cihaz markası yanlış" data-i18n="reason_brand_incorrect">İşletme tamir ettiği cihaz markası yanlış</option>
+          <option value="Diğer" data-i18n="reason_other">Diğer</option>
+        </select>
+      </div>
+
+      <!-- Koşullu Alan: Cihaz veya Marka Seçimi -->
+      <div class="form-group" id="reportConditionalGroup" style="display:none; background:rgba(0,0,0,0.12); padding:12px; border-radius:10px; margin-bottom:16px;">
+        <label class="form-label" id="reportConditionalLabel" style="font-weight:600;"><span id="reportConditionalLabelText">Cihaz seçiniz</span> <span style="color:#ff5050;">*</span></label>
+        <div id="reportConditionalGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:8px; margin-top:8px;"></div>
+      </div>
+
+      <!-- 2. Şikayet Açıklaması -->
+      <div class="form-group">
+        <label class="form-label"><span data-i18n="report_detail_label">Şikayet sebebini açıklayınız</span> <span style="color:#ff5050;">*</span></label>
+        <textarea class="form-input" id="reportDetailText" rows="4" data-i18n-placeholder="report_detail_placeholder" placeholder="Şikayetinizi detaylı olarak açıklayınız..." style="background:rgba(255,255,255,0.95); color:#1e293b; border-radius:8px; border:none; padding:10px; resize:vertical; min-height:80px; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif;"></textarea>
+      </div>
+
+      <!-- 3. E-posta (İsteğe bağlı) -->
+      <div class="form-group">
+        <label class="form-label"><span data-i18n="report_email_label">E-posta Adresi (İsteğe bağlı)</span></label>
+        <input type="email" class="form-input" id="reportEmail" placeholder="ornek@email.com" style="background:rgba(255,255,255,0.95); color:#1e293b; border-radius:8px; border:none; padding:10px; box-sizing:border-box;">
+        <div style="margin-top:6px; font-size:11px; line-height:1.4; color:rgba(255,255,255,0.9); background:rgba(0,0,0,0.12); padding:8px 10px; border-radius:6px;" data-i18n="report_email_note">
+          Verilen e-posta adresi sadece iletişim amaçlı kullanılacaktır. Bilgileriniz karşı tarafla asla paylaşılmayacaktır.
+        </div>
+      </div>
+
+      <!-- Uyarı / Hata Alanı -->
+      <div id="reportUyari" data-i18n="fill_required" style="display:none; margin-top:12px; padding:10px 14px; background:rgba(255,80,80,0.9); border-radius:8px; font:500 13px/1 'Segoe UI',Arial,sans-serif; color:#fff; text-align:center;">
+        Lütfen gerekli yerleri doldurunuz.
+      </div>
+
+      <!-- Gönder Butonu -->
+      <div style="margin-top:16px;">
+        <button id="reportSubmitBtn" onclick="submitBusinessReport()" data-i18n="submit_report_btn" style="width:100%; padding:12px; border:none; border-radius:10px; background:#ef4444; color:#fff; font:600 15px/1 'Segoe UI',Arial,sans-serif; cursor:pointer; transition:background 0.2s;">Şikayeti Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="kosullarModalOverlay" onclick="if(event.target === this) window.closeKosullarModal(event);">
   <div id="kosullarModal">
     <button id="kosullarModalClose" onclick="window.closeKosullarModal(event);">✕</button>
@@ -1654,6 +1716,12 @@
     </div>
     
     <button id="mobile-see-reviews-btn" class="submit-btn" data-i18n="view_reviews" style="display:none; width:100%; margin-bottom:15px; background:#ffffff; font-family:Arial, sans-serif; border-radius:12px; border:1px solid #dee2e6; padding:12px 16px; font-weight:600; font-size:14px; color:#333; cursor:pointer;" onclick="openReviewsModal()">Yorumları Gör</button>
+    <div id="mobile-report-container" style="display:none; margin-top:-6px; margin-bottom:15px; justify-content:flex-end;">
+      <button onclick="openReportModal()" style="background:none; border:none; color:#ef4444; font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline; display:inline-flex; align-items:center; gap:5px; padding:4px 0;" title="İşletmeyi Şikayet Et">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        <span data-i18n="report_business_btn">İşletmeyi şikayet et</span>
+      </button>
+    </div>
     
     <!-- YORUMLAR LİSTESİ (SADECE BİLGİSAYARDA) -->
     <div id="desktop-reviews-section" style="margin-bottom:20px; border-top:1px solid #eee; padding-top:15px;">
@@ -1666,6 +1734,12 @@
         <button id="prev-reviews-btn" data-i18n="prev_btn" onclick="changeReviewPage(-1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>Geri</button>
         <span id="reviews-page-info" style="font-size:13px; color:#64748b; font-weight:600;">1/1</span>
         <button id="next-reviews-btn" data-i18n="next_btn" onclick="changeReviewPage(1)" style="border:none; background:#e2e8f0; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:#475569;" disabled>İleri</button>
+      </div>
+      <div style="margin-top:16px; padding-top:12px; border-top:1px dashed #e2e8f0; display:flex; justify-content:flex-end;">
+        <button id="desktop-report-btn" onclick="openReportModal()" style="background:none; border:none; color:#ef4444; font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline; display:inline-flex; align-items:center; gap:5px; padding:4px 0;" title="İşletmeyi Şikayet Et">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <span data-i18n="report_business_btn">İşletmeyi şikayet et</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1691,7 +1765,7 @@
   const originalSetItem = Storage.prototype.setItem;
 
   Storage.prototype.getItem = function(key) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1708,7 +1782,7 @@
   };
 
   Storage.prototype.setItem = function(key, value) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -2755,9 +2829,92 @@
   }
   
   function kufurIceriyorMu(metin) {
-    const kufurler = ['aptal', 'salak', 'gerizekalı', 'amk', 'aq', 'şerefsiz', 'piç', 'orospu'];
-    const kucukMetin = metin.toLocaleLowerCase('tr');
-    return kufurler.some(k => kucukMetin.includes(k));
+    if (!metin || typeof metin !== 'string') return false;
+
+    const trLower = metin.toLocaleLowerCase('tr-TR');
+    const normalized = trLower
+      .replace(/[@âäáà]/g, 'a')
+      .replace(/[0]/g, 'o')
+      .replace(/[1!]/g, 'i')
+      .replace(/[3]/g, 'e')
+      .replace(/[$ş]/g, 'ş')
+      .replace(/[ç]/g, 'ç')
+      .replace(/[ğ]/g, 'ğ')
+      .replace(/[ü]/g, 'ü')
+      .replace(/[ö]/g, 'ö');
+
+    const patterns = [
+      // sik, siktir, sikim, sikik, sikimsonik, sikeyim, sikti, sikiş, sikko, hassiktir
+      // Must NOT match: eksik, kesik, lastik, plastik, trafik, fizik, klasik, pratik, tebrik, sık, sıkıntı, sıktı
+      /(?<![\p{L}\p{N}])(has+)?s+i+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])s[\s._\-*]+i[\s._\-*]+k+[\p{L}\p{N}]*/u,
+      // sokuk, sokayım
+      /(?<![\p{L}\p{N}])s+o+k+(u+k+|a+y+[ıi]+m+)[\p{L}\p{N}]*/u,
+
+      // yarrak, yarak, yarram, yarrağım, dalyarak, dalyarrak
+      // Must NOT match: yarar, yara, yaramaz, yaralandı
+      /(?<![\p{L}\p{N}])(dal+)?y+a+r+r*a+[kğgq]([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])y+a+r+r+a+m+([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])y[\s._\-]+a[\s._\-]+r[\s._\-]+r*[\s._\-]*a[\s._\-]+[kğgq][\p{L}\p{N}]*/u,
+
+      // amk, aq, amq, a.m.k, a.q, a m k
+      // Must NOT match: tamam, damla, akşam, kamu
+      /(?<![\p{L}\p{N}])a+[\s._\-*]*m+[\s._\-*]*[kq]+(?![\p{L}\p{N}])/u,
+      /(?<![\p{L}\p{N}])a+[\s._\-*]*q+(?![\p{L}\p{N}])/u,
+
+      // amcık, amcik, amcığı, amına, amınakoyim
+      // Must NOT match: amca, amcam
+      /(?<![\p{L}\p{N}])a+m+c+[ıi]+[kğg]([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])a+m+[ıi]+n+a+([\p{L}\p{N}]*)/u,
+
+      // oç, o.ç, oc, orospu, orospuçocuğu, ospu
+      /(?<![\p{L}\p{N}])o+[\s._\-*]*[çc]+(?![\p{L}\p{N}])/u,
+      /(?<![\p{L}\p{N}])(o+r+o+s+p+u+|o+s+p+u+)[\p{L}\p{N}]*/u,
+
+      // piç, pic
+      /(?<![\p{L}\p{N}])p+[iı]+[çc]+([\p{L}\p{N}]*)/u,
+
+      // şerefsiz, serefsiz
+      /(?<![\p{L}\p{N}])[şs]+e+r+e+f+s+[iı]+z+[\p{L}\p{N}]*/u,
+
+      // pezevenk, pezeveng, pezo
+      /(?<![\p{L}\p{N}])p+e+z+e+v+e+n+[kg]+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])p+e+z+o+(?![\p{L}\p{N}])/u,
+
+      // göt, götü, göte, götlek, götveren
+      // Must NOT match: götür, götürmek, götürdüm, götürür, götürecek
+      /(?<![\p{L}\p{N}])g+[öo]+t+(?![üu]r[\p{L}]*)[\p{L}\p{N}]*/u,
+
+      // bok, boktan, boku, boklu
+      // Must NOT match: boks, boksör, boxer
+      /(?<![\p{L}\p{N}])b+[o0]+k+(?![söe][\p{L}]*)[\p{L}\p{N}]*/u,
+
+      // taşşak, daşşak, taşak, daşak
+      // Must NOT match: taşıt, taşımacılık, taslak, taşra
+      /(?<![\p{L}\p{N}])[td]+a+[şs]{1,2}a+[kğg]+[\p{L}\p{N}]*/u,
+
+      // ibne, kahpe, puşt, gavat, kavat, yavşak
+      /(?<![\p{L}\p{N}])[iı]+b+n+e+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])k+a+h+p+e+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])p+[uü]+[şs]+t+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])[gk]+a+v+a+t+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])y+a+v+[şs]+a+[kğg]+[\p{L}\p{N}]*/u,
+
+      // aptal, salak, gerizekalı, ahmak, embesil, haysiyetsiz
+      /(?<![\p{L}\p{N}])a+p+t+a+l+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])s+a+l+a+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])g+e+r+[iı]+z+e+k+a+l+[ıi]+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])a+h+m+a+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])e+m+b+e+s+[iı]+l+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])h+a+y+s+[iı]+y+e+t+s+[iı]+z+[\p{L}\p{N}]*/u
+    ];
+
+    for (const regex of patterns) {
+      if (regex.test(trLower) || regex.test(normalized)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function isletmeOrtalamaPuanGuncelle(isletmeIsmi) {
@@ -3142,6 +3299,7 @@
     const yeniYorum = {
       isletme_ismi: businessName,
       yorum_isim: aktifOturum.ad,
+      kullanici_eposta: aktifOturum.e_posta,
       yorum: text,
       puan: selectedReviewRating,
       gizli: gizli
@@ -3156,7 +3314,151 @@
     
     closeWriteReviewModal();
     openRepairmanDetail(window.currentBusinessData);
-    alert('Yorumunuz başarıyla gönderildi!');
+    if (gizli) {
+      alert(window.t ? window.t('Yorumunuz kurallarımıza uygunluk açısından incelemeye alınmıştır.') : 'Yorumunuz kurallarımıza uygunluk açısından incelemeye alınmıştır.');
+    } else {
+      alert(window.t ? window.t('Yorumunuz başarıyla gönderildi!') : 'Yorumunuz başarıyla gönderildi!');
+    }
+  };
+
+  // --- İŞLETMEYİ ŞİKAYET ET MODALI VE İŞLEMLERİ ---
+  window.openReportModal = function() {
+    if (!window.currentBusinessData) return;
+    const overlay = document.getElementById('reportModalOverlay');
+    if (!overlay) return;
+
+    document.getElementById('reportBusinessName').textContent = window.currentBusinessData.name || '';
+    document.getElementById('reportReasonSelect').value = '';
+    document.getElementById('reportDetailText').value = '';
+    document.getElementById('reportEmail').value = '';
+    document.getElementById('reportConditionalGroup').style.display = 'none';
+    document.getElementById('reportConditionalGrid').innerHTML = '';
+    document.getElementById('reportUyari').style.display = 'none';
+
+    overlay.style.display = 'flex';
+  };
+
+  window.closeReportModal = function() {
+    const overlay = document.getElementById('reportModalOverlay');
+    if (overlay) overlay.style.display = 'none';
+  };
+
+  window.onReportReasonChange = function() {
+    const select = document.getElementById('reportReasonSelect');
+    const group = document.getElementById('reportConditionalGroup');
+    const labelText = document.getElementById('reportConditionalLabelText');
+    const grid = document.getElementById('reportConditionalGrid');
+    document.getElementById('reportUyari').style.display = 'none';
+
+    const val = select.value;
+    const isEn = window.i18n && window.i18n.getLang() === 'en';
+
+    if (val === 'İşletme tamir ettiği cihaz yanlış') {
+      group.style.display = 'block';
+      labelText.innerText = isEn ? 'Select device' : 'Cihaz seçiniz';
+      grid.innerHTML = '';
+      const devices = (window.currentBusinessData && window.currentBusinessData.devices) || [];
+      if (devices.length === 0) {
+        grid.innerHTML = '<div style="font-size:12px; color:rgba(255,255,255,0.7);">' + (isEn ? 'No device specified' : 'Kayıtlı cihaz bulunamadı') + '</div>';
+      } else {
+        devices.forEach(dev => {
+          const lbl = document.createElement('label');
+          lbl.style.cssText = 'display:flex; align-items:center; gap:6px; font-size:12px; background:rgba(255,255,255,0.15); padding:6px 8px; border-radius:6px; cursor:pointer;';
+          lbl.innerHTML = `<input type="checkbox" value="${dev}" style="accent-color:#ef4444;"> <span>${isEn && window.t ? window.t(dev) : dev}</span>`;
+          grid.appendChild(lbl);
+        });
+      }
+    } else if (val === 'İşletme tamir ettiği cihaz markası yanlış') {
+      group.style.display = 'block';
+      labelText.innerText = isEn ? 'Select device brand' : 'Cihaz markası seçiniz';
+      grid.innerHTML = '';
+      const brands = (window.currentBusinessData && window.currentBusinessData.brands) || [];
+      if (brands.length === 0) {
+        grid.innerHTML = '<div style="font-size:12px; color:rgba(255,255,255,0.7);">' + (isEn ? 'No brand specified' : 'Kayıtlı marka bulunamadı') + '</div>';
+      } else {
+        brands.forEach(br => {
+          const lbl = document.createElement('label');
+          lbl.style.cssText = 'display:flex; align-items:center; gap:6px; font-size:12px; background:rgba(255,255,255,0.15); padding:6px 8px; border-radius:6px; cursor:pointer;';
+          lbl.innerHTML = `<input type="checkbox" value="${br}" style="accent-color:#ef4444;"> <span>${br}</span>`;
+          grid.appendChild(lbl);
+        });
+      }
+    } else {
+      group.style.display = 'none';
+      grid.innerHTML = '';
+    }
+  };
+
+  window.submitBusinessReport = async function() {
+    const reasonSelect = document.getElementById('reportReasonSelect');
+    const detailText = document.getElementById('reportDetailText');
+    const emailInput = document.getElementById('reportEmail');
+    const uyari = document.getElementById('reportUyari');
+    const conditionalGroup = document.getElementById('reportConditionalGroup');
+
+    const reason = reasonSelect.value.trim();
+    const detail = detailText.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!reason || !detail) {
+      uyari.style.display = 'block';
+      return;
+    }
+
+    // Check conditional checkboxes if active
+    let selectedItems = [];
+    if (conditionalGroup.style.display !== 'none') {
+      const checkedBoxes = conditionalGroup.querySelectorAll('input[type="checkbox"]:checked');
+      if (checkedBoxes.length === 0) {
+        uyari.style.display = 'block';
+        return;
+      }
+      checkedBoxes.forEach(cb => selectedItems.push(cb.value));
+    }
+
+    uyari.style.display = 'none';
+
+    let finalDetail = detail;
+    if (selectedItems.length > 0) {
+      finalDetail += '\n\n[Bildirilen Seçimler: ' + selectedItems.join(', ') + ']';
+    }
+
+    const businessName = window.currentBusinessData ? window.currentBusinessData.name : '';
+    const emailValue = email ? email : 'bulunamadı';
+
+    const payload = {
+      sikayet_isletme: businessName,
+      sikayet_konu: reason,
+      e_posta: emailValue,
+      sikayet_detay: finalDetail
+    };
+
+    try {
+      await fetch('http://' + window.location.hostname + ':3000/api/sikayetler', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      console.warn('Network error, saving complaint locally:', e);
+    }
+
+    // Mirror to localStorage
+    const localSikayetler = JSON.parse(localStorage.getItem('sikayetler') || '[]');
+    localSikayetler.unshift({
+      id: Date.now(),
+      sikayet_isletme: businessName,
+      sikayet_konu: reason,
+      e_posta: emailValue,
+      sikayet_detay: finalDetail,
+      durum: 'beklemede',
+      tarih: new Date().toISOString()
+    });
+    localStorage.setItem('sikayetler', JSON.stringify(localSikayetler));
+
+    closeReportModal();
+    const isEn = window.i18n && window.i18n.getLang() === 'en';
+    alert(isEn ? 'Your complaint has been submitted. Necessary actions will be taken after review.' : 'İşletme şikayetiniz başarıyla alınmıştır. İnceleme sonrası gerekli işlemler yapılacaktır.');
   };
 </script>
 </body>

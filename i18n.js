@@ -2,7 +2,7 @@
  * Tamircim Nerede - Çift Dilli (Türkçe / English) Çeviri ve Yönetim Modülü
  */
 
-const FLAG_UK = `<svg viewBox="0 0 60 30" width="26" height="16" style="border-radius:2px;display:block;box-shadow:0 0 2px rgba(0,0,0,0.35);pointer-events:none;">
+const FLAG_UK = `<svg viewBox="0 0 60 30" width="34" height="22" style="border-radius:4px;overflow:hidden;display:block;box-shadow:0 2px 8px rgba(0,0,0,0.35);pointer-events:none;">
   <rect width="60" height="30" fill="#012169"/>
   <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
   <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2.5"/>
@@ -10,7 +10,7 @@ const FLAG_UK = `<svg viewBox="0 0 60 30" width="26" height="16" style="border-r
   <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
 </svg>`;
 
-const FLAG_TR = `<svg viewBox="0 0 1200 800" width="26" height="16" style="border-radius:2px;display:block;box-shadow:0 0 2px rgba(0,0,0,0.35);pointer-events:none;">
+const FLAG_TR = `<svg viewBox="0 0 1200 800" width="34" height="22" style="border-radius:4px;overflow:hidden;display:block;box-shadow:0 2px 8px rgba(0,0,0,0.35);pointer-events:none;">
   <rect width="1200" height="800" fill="#E30A17"/>
   <circle cx="425" cy="400" r="200" fill="#ffffff"/>
   <circle cx="475" cy="400" r="160" fill="#E30A17"/>
@@ -109,7 +109,44 @@ const I18N_DICT = {
   "review_placeholder": ["En az 30 karakter olacak şekilde yorumunuzu buraya yazın...", "Write your review here (at least 30 characters)..."],
   "review_error": ["Lütfen puan verin ve en az 30 karakter yorum yazın.", "Please rate and write at least 30 characters."],
   "submit_btn": ["Gönder", "Submit"],
-  "no_reviews_placeholder": ["Henüz yorum yapılmamış. İlk yorumu siz yapın!", "No reviews yet. Be the first to leave a review!"]
+  "no_reviews_placeholder": ["Henüz yorum yapılmamış. İlk yorumu siz yapın!", "No reviews yet. Be the first to leave a review!"],
+
+  // Admin & Üye Paneli Boş Durum Mesajları
+  "empty_applications": ["Henüz başvuru bulunmamaktadır.", "No applications found yet."],
+  "empty_map_businesses": ["Haritada onaylı işletme bulunmamaktadır.", "No approved businesses found on map."],
+  "empty_my_applications": ["Henüz işletme başvurunuz bulunmamaktadır.", "No business applications found yet."],
+  "empty_reviews": ["Kayıtlı yorum bulunmamaktadır.", "No registered reviews found."],
+  "empty_my_reviews": ["Yaptığınız herhangi bir yorum bulunmamaktadır.", "You have not submitted any reviews yet."],
+  "empty_members": ["Kayıtlı üye bulunmamaktadır.", "No registered members found."],
+
+  // Panel Arama Placeholder'ları
+  "search_business_placeholder": ["İşletme Ara...", "Search Business..."],
+  "search_user_placeholder": ["Kullanıcı Ara...", "Search User..."],
+  "search_member_placeholder": ["Ad Soyad Ara...", "Search Full Name..."],
+
+  // İşletme Şikayet Et Modalı & Yönetimi
+  "report_business_btn": ["İşletmeyi şikayet et", "Report Business"],
+  "report_business_title": ["İşletmeyi Şikayet Et", "Report Business"],
+  "report_reason_label": ["Şikayet sebebini seçiniz", "Select complaint reason"],
+  "select_reason_placeholder": ["Şikayet sebebi seçiniz...", "Select complaint reason..."],
+  "reason_not_at_location": ["İşletme yerinde bulunmuyor", "Business not at location"],
+  "reason_location_incorrect": ["İşletme konumu yanlış", "Business location is incorrect"],
+  "reason_fraud": ["Dolandırıcı işletme", "Fraudulent business"],
+  "reason_device_incorrect": ["İşletme tamir ettiği cihaz yanlış", "Repaired device type is incorrect"],
+  "reason_brand_incorrect": ["İşletme tamir ettiği cihaz markası yanlış", "Repaired device brand is incorrect"],
+  "reason_other": ["Diğer", "Other"],
+  "report_detail_label": ["Şikayet sebebini açıklayınız", "Explain complaint reason"],
+  "report_detail_placeholder": ["Şikayetinizi detaylı olarak açıklayınız...", "Explain your complaint in detail..."],
+  "report_email_label": ["E-posta Adresi (İsteğe bağlı)", "Email Address (Optional)"],
+  "report_email_note": ["Verilen e-posta adresi sadece iletişim amaçlı kullanılacaktır. Bilgileriniz karşı tarafla asla paylaşılmayacaktır.", "The provided email address will only be used for communication purposes. Your information will never be shared with third parties."],
+  "submit_report_btn": ["Şikayeti Gönder", "Submit Complaint"],
+  "tab_complaints": ["Şikayetler", "Complaints"],
+  "empty_complaints": ["Kayıtlı şikayet bulunmamaktadır.", "No registered complaints found."],
+  "search_business_complaint_placeholder": ["İşletme ismini giriniz", "Enter business name"],
+  "stat_total_reports": ["Toplam Şikayet", "Total Complaints"],
+  "filter_complaint_reason": ["Şikayet Sebebi", "Complaint Reason"],
+  "filter_all_reasons": ["Tüm Şikayet Sebepleri", "All Complaint Reasons"],
+  "complaint_detail_modal_title": ["Şikayet Detayı", "Complaint Details"]
 };
 
 // Düz Metin / Birebir Eşleşme Sözlüğü (TR -> EN)
@@ -207,6 +244,14 @@ const WORD_MAP = {
   "Henüz yorum yapılmamış. İlk yorumu siz yapın!": "No reviews yet. Be the first to leave a review!",
   "Yorum yapmak için hesaba giriş yapmalısınız.": "You must log in to write a review.",
   "Yorumunuz başarıyla gönderildi!": "Your review has been submitted successfully!",
+  "Yorumunuz kurallarımıza uygunluk açısından incelemeye alınmıştır.": "Your review is under review for compliance with our guidelines.",
+  "Yorumunuz kurallarımıza uygunluk açısından incelemeye alınmıştır": "Your review is under review for compliance with our guidelines",
+  "Gizli (İnceleniyor)": "Hidden (Under Review)",
+  "Gizli (Küfür/Uygunsuz)": "Hidden (Profanity/Inappropriate)",
+  "Görünür (Küfür Yok)": "Visible (No Profanity)",
+  "Gizli": "Hidden",
+  "Görünür": "Visible",
+  "Yayında": "Published",
   "Bu yorumu silme yetkiniz yok.": "You do not have permission to delete this review.",
   "Yorumunuz en az 30 karakter olmalıdır.": "Your review must be at least 30 characters.",
   "Geçerli bir puan giriniz (1 ile 5 arası).": "Please enter a valid rating (between 1 and 5).",
@@ -263,9 +308,43 @@ const WORD_MAP = {
   "Yorumumu Düzenle": "Edit My Review",
   "Haritadan Konum Seçimi": "Select Location on Map",
   "Henüz başvuru bulunmamaktadır.": "No applications found yet.",
+  "Henüz başvuru bulunmamaktadır": "No applications found yet.",
   "Haritada onaylı işletme bulunmamaktadır.": "No approved businesses found on map.",
+  "Haritada onaylı işletme bulunmamaktadır": "No approved businesses found on map.",
+  "Henüz işletme başvurunuz bulunmamaktadır.": "No business applications found yet.",
+  "Henüz işletme başvurunuz bulunmamaktadır": "No business applications found yet.",
+  "Kayıtlı yorum bulunmamaktadır.": "No registered reviews found.",
+  "Kayıtlı yorum bulunmamaktadır": "No registered reviews found.",
+  "Yaptığınız herhangi bir yorum bulunmamaktadır.": "You have not submitted any reviews yet.",
+  "Yaptığınız herhangi bir yorum bulunmamaktadır": "You have not submitted any reviews yet.",
+  "Kayıtlı üye bulunmamaktadır.": "No registered members found.",
+  "Kayıtlı üye bulunmamaktadır": "No registered members found.",
   "Henüz yorum bulunmamaktadır.": "No reviews found yet.",
-  "Henüz üye bulunmamaktadır.": "No members found yet."
+  "Henüz yorum bulunmamaktadır": "No reviews found yet.",
+  "Henüz üye bulunmamaktadır.": "No members found yet.",
+  "Henüz üye bulunmamaktadır": "No members found yet.",
+  "Kayıtlı işletme bulunmamaktadır.": "No registered businesses found.",
+  "Kayıtlı işletme bulunmamaktadır": "No registered businesses found.",
+  "Herhangi bir kayıt bulunmamaktadır.": "No records found.",
+  "Herhangi bir kayıt bulunmamaktadır": "No records found.",
+  "Kayıt bulunamadı.": "No records found.",
+  "Kayıt bulunamadı": "No records found.",
+  "Sonuç bulunamadı.": "No results found.",
+  "Sonuç bulunamadı": "No results found.",
+  "İşletme Ara...": "Search Business...",
+  "İşletme Ara": "Search Business",
+  "Kullanıcı Ara...": "Search User...",
+  "Kullanıcı Ara": "Search User",
+  "Ad Soyad Ara...": "Search Full Name...",
+  "Ad Soyad Ara": "Search Full Name",
+  "Bu üyeyi silmek istediğinizden emin misiniz?": "Are you sure you want to delete this member?",
+  "Bu üyeyi silmek istediğinizden emin misiniz": "Are you sure you want to delete this member?",
+  "Bu işletmeyi silmek istediğinizden emin misiniz?": "Are you sure you want to delete this business?",
+  "Bu işletmeyi silmek istediğinizden emin misiniz": "Are you sure you want to delete this business?",
+  "Bu yorumu silmek istediğinizden emin misiniz?": "Are you sure you want to delete this review?",
+  "Bu yorumu silmek istediğinizden emin misiniz": "Are you sure you want to delete this review?",
+  "Bu yorumunuzu silmek istediğinizden emin misiniz?": "Are you sure you want to delete your review?",
+  "Bu yorumunuzu silmek istediğinizden emin misiniz": "Are you sure you want to delete your review?"
 };
 
 // I18N_DICT'ten WORD_MAP'i otomatik genişlet
@@ -281,7 +360,13 @@ for (const key in I18N_DICT) {
 const PLACEHOLDER_MAP = {
   "Tamirci Ara": "Search Repairer",
   "İşletme Ara...": "Search Business...",
+  "İşletme Ara": "Search Business",
+  "Kullanıcı Ara...": "Search User...",
+  "Kullanıcı Ara": "Search User",
+  "Ad Soyad Ara...": "Search Full Name...",
+  "Ad Soyad Ara": "Search Full Name",
   "Haritada Ara...": "Search on Map...",
+  "Haritada Ara": "Search on Map",
   "E-posta adresinizi giriniz": "Enter your email address",
   "Şifrenizi giriniz": "Enter your password",
   "Adınızı ve soyadınızı giriniz": "Enter your full name",
@@ -291,7 +376,10 @@ const PLACEHOLDER_MAP = {
   "Telefon numaranızı giriniz": "Enter phone number",
   "Şirket E-postası adresinizi giriniz": "Enter company email",
   "En az 30 karakter olacak şekilde yorumunuzu buraya yazın...": "Write your review here (at least 30 characters)...",
-  "Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz": "Please Enter the Brands You Repair"
+  "Lütfen Tamir Ettiğiniz Cihaz Markalarını Giriniz": "Please Enter the Brands You Repair",
+  "İşletme ismini giriniz": "Enter business name",
+  "Şikayetinizi detaylı olarak açıklayınız...": "Explain your complaint in detail...",
+  "Şikayet sebebi seçiniz...": "Select complaint reason..."
 };
 
 // Ters Sözlükler (EN -> TR)
@@ -575,6 +663,7 @@ class I18nManager {
 
       // 4. Genel input / textarea placeholder'ları
       document.querySelectorAll('input, textarea').forEach(input => {
+        if (input.getAttribute('data-i18n-placeholder')) return;
         if (input.placeholder) {
           const trans = this.translatePlaceholder(input.placeholder);
           if (trans) input.placeholder = trans;

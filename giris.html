@@ -25,47 +25,39 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 46px;
-    height: 30px;
-    background: #0f172a;
-    border-radius: 6px;
-    border: 1px solid #334155;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: transform 0.2s;
     outline: none;
     padding: 0;
   }
   .login-lang-btn:hover {
-    transform: scale(1.08);
-    background: #1e293b;
+    transform: scale(1.12);
   }
 
   .admin-lang-btn {
-    width: 46px;
-    height: 30px;
-    background: #1e293b;
-    border-radius: 6px;
-    border: 1px solid #334155;
+    background: transparent;
+    border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: transform 0.2s;
     outline: none;
     padding: 0;
   }
   .admin-lang-btn:hover {
-    transform: scale(1.08);
-    background: #334155;
+    transform: scale(1.12);
   }
 
   #loginBox {
     position: relative;
     background: #16213e;
-    padding: 40px 36px;
+    padding: 48px 36px 36px;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     width: 380px;
@@ -74,8 +66,9 @@
 
   #loginBox h2 {
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     font-size: 20px;
+    line-height: 1.35;
     color: #e2e8f0;
   }
 
@@ -379,9 +372,21 @@
     #loginBox {
       width: 100%;
       max-width: 95vw;
-      padding: 28px 20px;
-      margin: 40px auto;
+      padding: 52px 20px 28px;
+      margin: 32px auto;
       border-radius: 14px;
+    }
+
+    #loginBox h2 {
+      font-size: 19px;
+      margin-bottom: 22px;
+      padding: 0 4px;
+      line-height: 1.35;
+    }
+
+    .login-lang-btn {
+      top: 14px;
+      right: 14px;
     }
 
     .admin-header {
@@ -582,6 +587,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
           <span data-i18n="tab_members">Üye Bilgileri</span>
         </div>
+        <div class="admin-sidebar-item" data-tab="sikayetler" style="display:none;" id="sidebarSikayetler">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span data-i18n="tab_complaints">Şikayetler</span>
+        </div>
       </div>
     <div class="admin-main">
       <div class="tab-content active" id="tabBasvurular">
@@ -665,7 +674,7 @@
               </thead>
               <tbody id="tableBody"></tbody>
             </table>
-            <div id="emptyMsg" class="empty-msg">Henüz başvuru bulunmamaktadır.</div>
+            <div id="emptyMsg" class="empty-msg" data-i18n="empty_applications">Henüz başvuru bulunmamaktadır.</div>
           </div>
           <div id="sayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
@@ -675,7 +684,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">Haritadaki Onaylı İşletmeler</h3>
-              <input type="text" id="haritaAra" placeholder="İşletme Ara..." oninput="haritaSayfa=1;haritaTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="haritaAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="haritaSayfa=1;haritaTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="flex:1;min-width:150px;">
@@ -726,7 +735,7 @@
               </thead>
               <tbody id="haritaTableBody"></tbody>
             </table>
-            <div id="haritaEmptyMsg" class="empty-msg">Haritada onaylı işletme bulunmamaktadır.</div>
+            <div id="haritaEmptyMsg" class="empty-msg" data-i18n="empty_map_businesses">Haritada onaylı işletme bulunmamaktadır.</div>
           </div>
           <div id="haritaSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
@@ -754,7 +763,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">İşletme Bilgilerim</h3>
-              <input type="text" id="bilgiAra" placeholder="İşletme Ara..." oninput="bilgiSayfa=1;bilgilerimTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="bilgiAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="bilgiSayfa=1;bilgilerimTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" onclick="bilgiFiltrele('tumu', this)">Tümü</button>
@@ -810,7 +819,7 @@
               </thead>
               <tbody id="bilgilerimTableBody"></tbody>
             </table>
-            <div id="bilgilerimEmptyMsg" class="empty-msg">Henüz işletme başvurunuz bulunmamaktadır.</div>
+            <div id="bilgilerimEmptyMsg" class="empty-msg" data-i18n="empty_my_applications">Henüz işletme başvurunuz bulunmamaktadır.</div>
           </div>
           <div id="bilgiSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
@@ -820,8 +829,8 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">İşletme Yorumları</h3>
-              <input type="text" id="yorumAraIsletme" placeholder="İşletme Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
-              <input type="text" id="yorumAraKullanici" placeholder="Kullanıcı Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="yorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="yorumAraKullanici" data-i18n-placeholder="search_user_placeholder" placeholder="Kullanıcı Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div class="table-responsive">
@@ -838,7 +847,7 @@
               </thead>
               <tbody id="yorumlarTableBody"></tbody>
             </table>
-            <div id="yorumlarEmptyMsg" class="empty-msg">Kayıtlı yorum bulunmamaktadır.</div>
+            <div id="yorumlarEmptyMsg" class="empty-msg" data-i18n="empty_reviews">Kayıtlı yorum bulunmamaktadır.</div>
           </div>
           <div id="yorumSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
@@ -848,7 +857,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:flex-start;gap:15px;flex-wrap:wrap;width:100%;">
               <h3 style="margin:0;">Yaptığım Yorumlar</h3>
-              <input type="text" id="benimYorumAraIsletme" placeholder="İşletme Ara..." oninput="benimYorumSayfa=1;benimYorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="benimYorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="benimYorumSayfa=1;benimYorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div class="table-responsive">
@@ -864,7 +873,7 @@
               </thead>
               <tbody id="benimYorumlarTableBody"></tbody>
             </table>
-            <div id="benimYorumlarEmptyMsg" class="empty-msg">Yaptığınız herhangi bir yorum bulunmamaktadır.</div>
+            <div id="benimYorumlarEmptyMsg" class="empty-msg" data-i18n="empty_my_reviews">Yaptığınız herhangi bir yorum bulunmamaktadır.</div>
           </div>
           <div id="benimYorumSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
@@ -888,7 +897,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">Üye Bilgileri</h3>
-              <input type="text" id="uyeAra" placeholder="Ad Soyad Ara..." oninput="uyeSayfa=1;uyeleriYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="uyeAra" data-i18n-placeholder="search_member_placeholder" placeholder="Ad Soyad Ara..." oninput="uyeSayfa=1;uyeleriYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div style="overflow-x:auto;">
@@ -904,15 +913,120 @@
               </thead>
               <tbody id="uyelerTableBody"></tbody>
             </table>
-            <div id="uyelerEmptyMsg" class="empty-msg">Kayıtlı üye bulunmamaktadır.</div>
+            <div id="uyelerEmptyMsg" class="empty-msg" data-i18n="empty_members">Kayıtlı üye bulunmamaktadır.</div>
           </div>
           <div id="uyeSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tabSikayetler">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_total_reports">Toplam Şikayet</div>
+            <div class="stat-value" id="sikayetStatToplam">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_pending">Bekleyen</div>
+            <div class="stat-value" id="sikayetStatBekleyen">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_approved">Onaylanan</div>
+            <div class="stat-value" id="sikayetStatOnaylanan">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_rejected">Reddedilen</div>
+            <div class="stat-value" id="sikayetStatReddedilen">0</div>
+          </div>
+        </div>
+        <div class="table-section">
+          <div class="table-header">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+              <h3 style="margin:0;" data-i18n="tab_complaints">İşletme Şikayetleri</h3>
+              <input type="text" id="sikayetAraIsletme" data-i18n-placeholder="search_business_complaint_placeholder" placeholder="İşletme ismini giriniz" oninput="sikayetSayfa=1;sikayetlerTablosuYukle()" style="width:220px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+            </div>
+            <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+              <button class="filter-btn active" data-i18n="filter_all" onclick="sikayetFiltrele('tumu', this)">Tümü</button>
+              <button class="filter-btn" data-i18n="filter_pending" onclick="sikayetFiltrele('beklemede', this)">Beklemede</button>
+              <button class="filter-btn" data-i18n="filter_approved" onclick="sikayetFiltrele('onaylandi', this)">Onaylandı</button>
+              <button class="filter-btn" data-i18n="filter_rejected" onclick="sikayetFiltrele('reddedildi', this)">Reddedildi</button>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;" data-i18n="filter_complaint_reason">Şikayet Sebebi</label>
+                <select id="sikayetFiltreKonu" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="sikayetSayfa=1;sikayetlerTablosuYukle()">
+                  <option value="" data-i18n="filter_all_reasons">Tüm Şikayet Sebepleri</option>
+                  <option value="İşletme yerinde bulunmuyor">İşletme yerinde bulunmuyor</option>
+                  <option value="İşletme konumu yanlış">İşletme konumu yanlış</option>
+                  <option value="Dolandırıcı işletme">Dolandırıcı işletme</option>
+                  <option value="İşletme tamir ettiği cihaz yanlış">İşletme tamir ettiği cihaz yanlış</option>
+                  <option value="İşletme tamir ettiği cihaz markası yanlış">İşletme tamir ettiği cihaz markası yanlış</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>İşletme Adı</th>
+                  <th>Şikayet Sebebi</th>
+                  <th>E-posta</th>
+                  <th>Şikayet Detayı</th>
+                  <th>Durum</th>
+                  <th>Tarih</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="sikayetlerTableBody"></tbody>
+            </table>
+            <div id="sikayetlerEmptyMsg" class="empty-msg" data-i18n="empty_complaints">Kayıtlı şikayet bulunmamaktadır.</div>
+          </div>
+          <div id="sikayetSayfalama" style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;"></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<div id="sikayetDetayOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;justify-content:center;align-items:center;" onclick="if(event.target === this) sikayetDetayKapat();">
+  <div style="width:480px;max-width:92vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+    <button onclick="sikayetDetayKapat()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:20px;">✕</button>
+    <h3 style="margin-top:0;margin-bottom:16px;color:#f8fafc;font:600 16px/1 'Segoe UI',Arial,sans-serif;" data-i18n="complaint_detail_modal_title">Şikayet Detayı</h3>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">İşletme Adı</label>
+      <div id="detaySikayetIsletme" style="color:#fff;font-weight:600;font-size:14px;"></div>
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Şikayet Sebebi</label>
+      <div id="detaySikayetKonu" style="color:#facc15;font-weight:500;font-size:13px;"></div>
+    </div>
+    
+    <div style="margin-bottom:10px;display:flex;gap:15px;">
+      <div style="flex:1;">
+        <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">E-posta</label>
+        <div id="detaySikayetEposta" style="color:#e2e8f0;font-size:13px;"></div>
+      </div>
+      <div style="flex:1;">
+        <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Durum</label>
+        <div id="detaySikayetDurum"></div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom:14px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Tarih</label>
+      <div id="detaySikayetTarih" style="color:#94a3b8;font-size:12px;"></div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font:500 12px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:6px;">Şikayet Açıklaması</label>
+      <div id="detaySikayetMetin" style="width:100%;padding:12px;box-sizing:border-box;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#f8fafc;font:400 13px/1.6 'Segoe UI',Arial,sans-serif;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;"></div>
+    </div>
+
+    <button onclick="sikayetDetayKapat()" style="width:100%;padding:10px;border:none;border-radius:8px;background:#334155;color:#fff;font:600 14px/1 'Segoe UI',Arial,sans-serif;cursor:pointer;">Kapat</button>
+  </div>
+</div>
 
 <div id="yorumDuzenleOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;justify-content:center;align-items:center;">
   <div style="width:360px;max-width:90vw;background:#1e293b;border-radius:12px;padding:24px;position:relative;">
@@ -1059,7 +1173,7 @@
   const originalSetItem = Storage.prototype.setItem;
 
   Storage.prototype.getItem = function(key) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1076,7 +1190,7 @@
   };
 
   Storage.prototype.setItem = function(key, value) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar') {
+    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
@@ -1194,6 +1308,7 @@
 
         bilgilerimTablosuYukle(bulunan.e_posta);
         document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+        if (document.getElementById('sidebarSikayetler')) document.getElementById('sidebarSikayetler').style.display = 'none';
         benimYorumTablosuYukle();
       } else {
         document.querySelector('[data-tab="basvurular"]').style.display = '';
@@ -1202,8 +1317,14 @@
         document.getElementById('sidebarUyeler').style.display = '';
         document.getElementById('sidebarYorumlar').style.display = '';
         document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+        if (document.getElementById('sidebarSikayetler')) {
+          document.getElementById('sidebarSikayetler').style.display = (bulunan.yetki === 'owner') ? '' : 'none';
+        }
         yorumTablosuYukle();
         benimYorumTablosuYukle();
+        if (bulunan.yetki === 'owner') {
+          sikayetlerTablosuYukle();
+        }
 
         document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -1376,19 +1497,21 @@
   let duzenlenenUyeIdx = null;
 
   function uyeleriYukle() {
-    let uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const tumUyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    let uyeler = [...tumUyeler];
     const tbody = document.getElementById('uyelerTableBody');
     const emptyMsg = document.getElementById('uyelerEmptyMsg');
 
-    document.getElementById('uyeStatToplam').textContent = uyeler.length;
-    document.getElementById('uyeStatUye').textContent = uyeler.filter(u => u.yetki === 'uye').length;
-    document.getElementById('uyeStatOwner').textContent = uyeler.filter(u => u.yetki === 'owner').length;
+    document.getElementById('uyeStatToplam').textContent = tumUyeler.length;
+    document.getElementById('uyeStatUye').textContent = tumUyeler.filter(u => u.yetki === 'uye').length;
+    document.getElementById('uyeStatOwner').textContent = tumUyeler.filter(u => u.yetki === 'owner').length;
 
     const aramaMetni = document.getElementById('uyeAra') ? document.getElementById('uyeAra').value.trim().toLowerCase() : '';
     if (aramaMetni) {
       uyeler = uyeler.filter(u => {
         const ad = (u.ad || '').toLowerCase();
-        return ad.includes(aramaMetni);
+        const eposta = (u.e_posta || '').toLowerCase();
+        return ad.includes(aramaMetni) || eposta.includes(aramaMetni);
       });
     }
 
@@ -1408,7 +1531,7 @@
     tbody.innerHTML = sayfaVerisi.map(u => {
       const sifreCoz = cozdur(u.sifre);
       const badgeClass = u.yetki === 'owner' ? 'badge-onaylandi' : 'badge-beklemede';
-      const orijinalIdx = uyeler.indexOf(u);
+      const orijinalIdx = tumUyeler.findIndex(x => x.e_posta === u.e_posta);
       return `<tr>
         <td>${u.ad || '-'}</td>
         <td>${u.e_posta || '-'}</td>
@@ -1440,11 +1563,50 @@
   }
 
   function uyeSil(idx) {
-    if (!confirm('Bu üyeyi silmek istediğinizden emin misiniz?')) return;
+    const confirmMsg = window.t ? window.t('Bu üyeyi silmek istediğinizden emin misiniz?') : 'Bu üyeyi silmek istediğinizden emin misiniz?';
+    if (!confirm(confirmMsg)) return;
+
     const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const silinenUye = uyeler[idx];
+    if (!silinenUye) return;
+
+    // 1. Üyeyi kullanıcılar listesinden sil
     uyeler.splice(idx, 1);
     localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+
+    // 2. Üyeye ait tüm yorumları bul ve sil
+    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const etkilenenIsletmeler = new Set();
+
+    const kalanYorumlar = yorumlar.filter(y => {
+      const ayniUyeMi = y.kullanici_eposta
+        ? (y.kullanici_eposta === silinenUye.e_posta)
+        : (silinenUye.ad && y.yorum_isim === silinenUye.ad);
+
+      if (ayniUyeMi) {
+        if (y.isletme_ismi) {
+          etkilenenIsletmeler.add(y.isletme_ismi);
+        }
+        return false; // Yorumu sil
+      }
+      return true; // Yorumu koru
+    });
+
+    localStorage.setItem('yorumlar', JSON.stringify(kalanYorumlar));
+
+    // 3. Yorumları silinen işletmelerin ortalama puanlarını yeniden hesapla
+    etkilenenIsletmeler.forEach(isletmeIsmi => {
+      isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi);
+    });
+
+    // 4. Tabloları güncelle
     uyeleriYukle();
+    if (typeof yorumTablosuYukle === 'function') {
+      yorumTablosuYukle();
+    }
+    if (typeof benimYorumTablosuYukle === 'function' && window.aktifKullanici) {
+      benimYorumTablosuYukle();
+    }
   }
 
   function uyeDuzenle(idx) {
@@ -1471,11 +1633,37 @@
   document.getElementById('duzKaydet').addEventListener('click', function() {
     if (duzenlenenUyeIdx === null) return;
     const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
-    uyeler[duzenlenenUyeIdx].ad = document.getElementById('duzAd').value.trim();
-    uyeler[duzenlenenUyeIdx].e_posta = document.getElementById('duzEposta').value.trim();
+    const eskiUye = uyeler[duzenlenenUyeIdx];
+    const eskiAd = eskiUye ? eskiUye.ad : null;
+    const eskiEposta = eskiUye ? eskiUye.e_posta : null;
+
+    const yeniAd = document.getElementById('duzAd').value.trim();
+    const yeniEposta = document.getElementById('duzEposta').value.trim();
+
+    uyeler[duzenlenenUyeIdx].ad = yeniAd;
+    uyeler[duzenlenenUyeIdx].e_posta = yeniEposta;
     uyeler[duzenlenenUyeIdx].sifre = sifrele(document.getElementById('duzSifre').value.trim());
     uyeler[duzenlenenUyeIdx].yetki = document.getElementById('duzYetki').value;
     localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+
+    // Üye adı veya e-postası değiştiyse yorumlarındaki bilgileri de güncelle
+    if (eskiAd && (eskiAd !== yeniAd || eskiEposta !== yeniEposta)) {
+      const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+      let degisti = false;
+      yorumlar.forEach(y => {
+        const ayniUyeMi = y.kullanici_eposta ? (y.kullanici_eposta === eskiEposta) : (y.yorum_isim === eskiAd);
+        if (ayniUyeMi) {
+          y.yorum_isim = yeniAd;
+          y.kullanici_eposta = yeniEposta;
+          degisti = true;
+        }
+      });
+      if (degisti) {
+        localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+        if (typeof yorumTablosuYukle === 'function') yorumTablosuYukle();
+      }
+    }
+
     document.getElementById('uyeDuzenleOverlay').style.display = 'none';
     uyeleriYukle();
   });
@@ -1493,6 +1681,7 @@
     document.getElementById('sidebarUyeler').style.display = 'none';
     document.getElementById('sidebarYorumlar').style.display = 'none';
     document.getElementById('sidebarYaptigimYorumlar').style.display = 'none';
+    if (document.getElementById('sidebarSikayetler')) document.getElementById('sidebarSikayetler').style.display = 'none';
   });
 
   document.querySelectorAll('.admin-sidebar-item').forEach(item => {
@@ -1504,6 +1693,9 @@
 
       if (this.dataset.tab === 'harita') {
         initAdminMap();
+      }
+      if (this.dataset.tab === 'sikayetler') {
+        sikayetlerTablosuYukle();
       }
     });
   });
@@ -1800,7 +1992,8 @@
   }
 
   function isletmeSil(idx) {
-    if (!confirm('Bu işletmeyi silmek istediğinizden emin misiniz?')) return;
+    const confirmMsg = window.t ? window.t('Bu işletmeyi silmek istediğinizden emin misiniz?') : 'Bu işletmeyi silmek istediğinizden emin misiniz?';
+    if (!confirm(confirmMsg)) return;
     const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
     isletmeler.splice(idx, 1);
     localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
@@ -1960,7 +2153,8 @@
   };
   
   window.yorumSil = function(idx) {
-    if (!confirm('Bu yorumu silmek istediğinizden emin misiniz?')) return;
+    const confirmMsg = window.t ? window.t('Bu yorumu silmek istediğinizden emin misiniz?') : 'Bu yorumu silmek istediğinizden emin misiniz?';
+    if (!confirm(confirmMsg)) return;
     const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
     const islemGoren = yorumlar[idx];
     yorumlar.splice(idx, 1);
@@ -2038,10 +2232,92 @@
   let duzenlenenBenimYorumIdx = null;
   
   function kufurIceriyorMuPanel(metin) {
-    if(!metin) return false;
-    const kufurler = ['aptal', 'salak', 'gerizekalı', 'amk', 'aq', 'şerefsiz', 'piç', 'orospu'];
-    const kucukMetin = metin.toLocaleLowerCase('tr-TR');
-    return kufurler.some(k => kucukMetin.includes(k));
+    if (!metin || typeof metin !== 'string') return false;
+
+    const trLower = metin.toLocaleLowerCase('tr-TR');
+    const normalized = trLower
+      .replace(/[@âäáà]/g, 'a')
+      .replace(/[0]/g, 'o')
+      .replace(/[1!]/g, 'i')
+      .replace(/[3]/g, 'e')
+      .replace(/[$ş]/g, 'ş')
+      .replace(/[ç]/g, 'ç')
+      .replace(/[ğ]/g, 'ğ')
+      .replace(/[ü]/g, 'ü')
+      .replace(/[ö]/g, 'ö');
+
+    const patterns = [
+      // sik, siktir, sikim, sikik, sikimsonik, sikeyim, sikti, sikiş, sikko, hassiktir
+      // Must NOT match: eksik, kesik, lastik, plastik, trafik, fizik, klasik, pratik, tebrik, sık, sıkıntı, sıktı
+      /(?<![\p{L}\p{N}])(has+)?s+i+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])s[\s._\-*]+i[\s._\-*]+k+[\p{L}\p{N}]*/u,
+      // sokuk, sokayım
+      /(?<![\p{L}\p{N}])s+o+k+(u+k+|a+y+[ıi]+m+)[\p{L}\p{N}]*/u,
+
+      // yarrak, yarak, yarram, yarrağım, dalyarak, dalyarrak
+      // Must NOT match: yarar, yara, yaramaz, yaralandı
+      /(?<![\p{L}\p{N}])(dal+)?y+a+r+r*a+[kğgq]([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])y+a+r+r+a+m+([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])y[\s._\-]+a[\s._\-]+r[\s._\-]+r*[\s._\-]*a[\s._\-]+[kğgq][\p{L}\p{N}]*/u,
+
+      // amk, aq, amq, a.m.k, a.q, a m k
+      // Must NOT match: tamam, damla, akşam, kamu
+      /(?<![\p{L}\p{N}])a+[\s._\-*]*m+[\s._\-*]*[kq]+(?![\p{L}\p{N}])/u,
+      /(?<![\p{L}\p{N}])a+[\s._\-*]*q+(?![\p{L}\p{N}])/u,
+
+      // amcık, amcik, amcığı, amına, amınakoyim
+      // Must NOT match: amca, amcam
+      /(?<![\p{L}\p{N}])a+m+c+[ıi]+[kğg]([\p{L}\p{N}]*)/u,
+      /(?<![\p{L}\p{N}])a+m+[ıi]+n+a+([\p{L}\p{N}]*)/u,
+
+      // oç, o.ç, oc, orospu, orospuçocuğu, ospu
+      /(?<![\p{L}\p{N}])o+[\s._\-*]*[çc]+(?![\p{L}\p{N}])/u,
+      /(?<![\p{L}\p{N}])(o+r+o+s+p+u+|o+s+p+u+)[\p{L}\p{N}]*/u,
+
+      // piç, pic
+      /(?<![\p{L}\p{N}])p+[iı]+[çc]+([\p{L}\p{N}]*)/u,
+
+      // şerefsiz, serefsiz
+      /(?<![\p{L}\p{N}])[şs]+e+r+e+f+s+[iı]+z+[\p{L}\p{N}]*/u,
+
+      // pezevenk, pezeveng, pezo
+      /(?<![\p{L}\p{N}])p+e+z+e+v+e+n+[kg]+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])p+e+z+o+(?![\p{L}\p{N}])/u,
+
+      // göt, götü, göte, götlek, götveren
+      // Must NOT match: götür, götürmek, götürdüm, götürür, götürecek
+      /(?<![\p{L}\p{N}])g+[öo]+t+(?![üu]r[\p{L}]*)[\p{L}\p{N}]*/u,
+
+      // bok, boktan, boku, boklu
+      // Must NOT match: boks, boksör, boxer
+      /(?<![\p{L}\p{N}])b+[o0]+k+(?![söe][\p{L}]*)[\p{L}\p{N}]*/u,
+
+      // taşşak, daşşak, taşak, daşak
+      // Must NOT match: taşıt, taşımacılık, taslak, taşra
+      /(?<![\p{L}\p{N}])[td]+a+[şs]{1,2}a+[kğg]+[\p{L}\p{N}]*/u,
+
+      // ibne, kahpe, puşt, gavat, kavat, yavşak
+      /(?<![\p{L}\p{N}])[iı]+b+n+e+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])k+a+h+p+e+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])p+[uü]+[şs]+t+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])[gk]+a+v+a+t+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])y+a+v+[şs]+a+[kğg]+[\p{L}\p{N}]*/u,
+
+      // aptal, salak, gerizekalı, ahmak, embesil, haysiyetsiz
+      /(?<![\p{L}\p{N}])a+p+t+a+l+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])s+a+l+a+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])g+e+r+[iı]+z+e+k+a+l+[ıi]+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])a+h+m+a+k+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])e+m+b+e+s+[iı]+l+[\p{L}\p{N}]*/u,
+      /(?<![\p{L}\p{N}])h+a+y+s+[iı]+y+e+t+s+[iı]+z+[\p{L}\p{N}]*/u
+    ];
+
+    for (const regex of patterns) {
+      if (regex.test(trLower) || regex.test(normalized)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function benimYorumTablosuYukle() {
@@ -2109,7 +2385,8 @@
   };
   
   window.benimYorumSil = function(idx) {
-    if (!confirm('Bu yorumunuzu silmek istediğinizden emin misiniz?')) return;
+    const confirmMsg = window.t ? window.t('Bu yorumunuzu silmek istediğinizden emin misiniz?') : 'Bu yorumunuzu silmek istediğinizden emin misiniz?';
+    if (!confirm(confirmMsg)) return;
     const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
     const islemGoren = yorumlar[idx];
     if(islemGoren.yorum_isim !== aktifKullanici.ad) {
@@ -2181,6 +2458,190 @@
     benimYorumDuzenleKapat();
     benimYorumTablosuYukle();
   });
+
+  // --- ŞİKAYETLER YÖNETİMİ (SADECE OWNER) ---
+  let sikayetSayfa = 1;
+  const sikayetSayfaBasina = 10;
+  let sikayetAktifFiltre = 'tumu';
+  let tumSikayetlerCache = [];
+
+  window.sikayetFiltrele = function(durum, btn) {
+    sikayetAktifFiltre = durum;
+    sikayetSayfa = 1;
+    const tabEl = document.getElementById('tabSikayetler');
+    if (tabEl) {
+      tabEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    }
+    if (btn) btn.classList.add('active');
+    sikayetlerTablosuYukle();
+  };
+
+  async function sikayetleriYukleVeri() {
+    try {
+      const res = await fetch('http://' + window.location.hostname + ':3000/api/sikayetler');
+      if (res.ok) {
+        tumSikayetlerCache = await res.json();
+        return tumSikayetlerCache;
+      }
+    } catch (e) {
+      console.warn('API error fetching sikayetler, reading from localStorage:', e);
+    }
+    tumSikayetlerCache = JSON.parse(localStorage.getItem('sikayetler') || '[]');
+    return tumSikayetlerCache;
+  }
+
+  window.sikayetlerTablosuYukle = async function() {
+    if (!aktifKullanici || aktifKullanici.yetki !== 'owner') return;
+
+    const sikayetler = await sikayetleriYukleVeri();
+
+    // Stats
+    const statToplam = document.getElementById('sikayetStatToplam');
+    const statBekleyen = document.getElementById('sikayetStatBekleyen');
+    const statOnaylanan = document.getElementById('sikayetStatOnaylanan');
+    const statReddedilen = document.getElementById('sikayetStatReddedilen');
+
+    if (statToplam) statToplam.textContent = sikayetler.length;
+    if (statBekleyen) statBekleyen.textContent = sikayetler.filter(s => s.durum === 'beklemede').length;
+    if (statOnaylanan) statOnaylanan.textContent = sikayetler.filter(s => s.durum === 'onaylandi').length;
+    if (statReddedilen) statReddedilen.textContent = sikayetler.filter(s => s.durum === 'reddedildi').length;
+
+    const aramaMetni = document.getElementById('sikayetAraIsletme') ? document.getElementById('sikayetAraIsletme').value.trim().toLowerCase() : '';
+    const filtreKonu = document.getElementById('sikayetFiltreKonu') ? document.getElementById('sikayetFiltreKonu').value : '';
+
+    let filtered = sikayetler;
+
+    if (sikayetAktifFiltre !== 'tumu') {
+      filtered = filtered.filter(s => s.durum === sikayetAktifFiltre);
+    }
+
+    if (aramaMetni) {
+      filtered = filtered.filter(s => (s.sikayet_isletme || '').toLowerCase().includes(aramaMetni));
+    }
+
+    if (filtreKonu) {
+      filtered = filtered.filter(s => (s.sikayet_konu || '').includes(filtreKonu));
+    }
+
+    const tbody = document.getElementById('sikayetlerTableBody');
+    const emptyMsg = document.getElementById('sikayetlerEmptyMsg');
+    const sayfalama = document.getElementById('sikayetSayfalama');
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '';
+      emptyMsg.style.display = 'block';
+      sayfalama.innerHTML = '';
+      return;
+    }
+
+    const toplamSayfa = Math.ceil(filtered.length / sikayetSayfaBasina);
+    if (sikayetSayfa > toplamSayfa) sikayetSayfa = toplamSayfa;
+    const baslangic = (sikayetSayfa - 1) * sikayetSayfaBasina;
+    const sayfaVerisi = filtered.slice(baslangic, baslangic + sikayetSayfaBasina);
+
+    emptyMsg.style.display = 'none';
+
+    tbody.innerHTML = sayfaVerisi.map(s => {
+      let badgeClass = 'badge-beklemede';
+      let badgeText = 'Beklemede';
+      if (s.durum === 'onaylandi') {
+        badgeClass = 'badge-onaylandi';
+        badgeText = 'Onaylandı';
+      } else if (s.durum === 'reddedildi') {
+        badgeClass = 'badge-reddedildi';
+        badgeText = 'Reddedildi';
+      }
+
+      const tarihStr = s.tarih ? new Date(s.tarih).toLocaleDateString('tr-TR') : '-';
+      const kisaDetay = (s.sikayet_detay && s.sikayet_detay.length > 35) ? s.sikayet_detay.substring(0, 35) + '...' : (s.sikayet_detay || '-');
+
+      let actionBtns = '';
+      if (s.durum === 'beklemede') {
+        actionBtns += `<button class="btn-onayla" onclick="sikayetDurumGuncelle(${s.id}, 'onaylandi')">Onayla</button> `;
+        actionBtns += `<button class="btn-reddet" onclick="sikayetDurumGuncelle(${s.id}, 'reddedildi')">Reddet</button> `;
+      }
+      actionBtns += `<button class="btn-onayla" style="background:#3b82f6; margin-left:3px;" onclick="sikayetDetayGoster(${s.id})">Şikayet Detayını Görüntüle</button>`;
+
+      return `<tr>
+        <td><b>${s.sikayet_isletme || '-'}</b></td>
+        <td><span style="color:#facc15; font-weight:500;">${s.sikayet_konu || '-'}</span></td>
+        <td>${s.e_posta || 'bulunamadı'}</td>
+        <td><div style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${s.sikayet_detay}">${kisaDetay}</div></td>
+        <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+        <td>${tarihStr}</td>
+        <td>${actionBtns}</td>
+      </tr>`;
+    }).join('');
+
+    let sayfaHTML = '';
+    if (toplamSayfa > 1) {
+      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(1)" ${sikayetSayfa===1?'disabled':''}>«</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${sikayetSayfa-1})" ${sikayetSayfa===1?'disabled':''}>‹</button>`;
+      for (let i = 1; i <= toplamSayfa; i++) {
+        sayfaHTML += `<button class="filter-btn ${sikayetSayfa===i?'active':''}" onclick="sikayetSayfaGit(${i})">${i}</button>`;
+      }
+      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${sikayetSayfa+1})" ${sikayetSayfa===toplamSayfa?'disabled':''}>›</button>`;
+      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${toplamSayfa})" ${sikayetSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    }
+    sayfalama.innerHTML = sayfaHTML;
+  };
+
+  window.sikayetSayfaGit = function(s) {
+    sikayetSayfa = s;
+    sikayetlerTablosuYukle();
+  };
+
+  window.sikayetDurumGuncelle = async function(id, yeniDurum) {
+    const onayMsg = yeniDurum === 'onaylandi' ? "Bu şikayeti onaylamak istediğinizden emin misiniz?" : "Bu şikayeti reddetmek istediğinizden emin misiniz?";
+    if (!confirm(onayMsg)) return;
+
+    try {
+      const res = await fetch('http://' + window.location.hostname + ':3000/api/sikayetler/' + id + '/durum', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: yeniDurum })
+      });
+      if (res.ok) {
+        alert("Şikayet durumu güncellendi.");
+      }
+    } catch (e) {
+      console.warn('Network error updating status:', e);
+    }
+
+    // Update local cache and localStorage
+    const localSikayetler = JSON.parse(localStorage.getItem('sikayetler') || '[]');
+    const target = localSikayetler.find(s => s.id === id);
+    if (target) {
+      target.durum = yeniDurum;
+      localStorage.setItem('sikayetler', JSON.stringify(localSikayetler));
+    }
+
+    sikayetlerTablosuYukle();
+  };
+
+  window.sikayetDetayGoster = function(id) {
+    const item = tumSikayetlerCache.find(s => s.id === id);
+    if (!item) return;
+
+    document.getElementById('detaySikayetIsletme').textContent = item.sikayet_isletme || '-';
+    document.getElementById('detaySikayetKonu').textContent = item.sikayet_konu || '-';
+    document.getElementById('detaySikayetEposta').textContent = item.e_posta || 'bulunamadı';
+    
+    let badgeClass = 'badge-beklemede';
+    let badgeText = 'Beklemede';
+    if (item.durum === 'onaylandi') { badgeClass = 'badge-onaylandi'; badgeText = 'Onaylandı'; }
+    else if (item.durum === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
+    document.getElementById('detaySikayetDurum').innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
+
+    document.getElementById('detaySikayetTarih').textContent = item.tarih ? new Date(item.tarih).toLocaleString('tr-TR') : '-';
+    document.getElementById('detaySikayetMetin').textContent = item.sikayet_detay || '-';
+
+    document.getElementById('sikayetDetayOverlay').style.display = 'flex';
+  };
+
+  window.sikayetDetayKapat = function() {
+    document.getElementById('sikayetDetayOverlay').style.display = 'none';
+  };
 
   // Otomatik çıkış kontrolü (hesap silinme durumu)
   setInterval(async () => {
