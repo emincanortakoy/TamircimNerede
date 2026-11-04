@@ -519,7 +519,7 @@
       margin-bottom: 2px;
     }
 
-    #sayfalama, #haritaSayfalama, #bilgiSayfalama, #uyeSayfalama {
+    #sayfalama, #haritaSayfalama, #bilgiSayfalama, #uyeSayfalama, #yorumSayfalama, #benimYorumSayfalama, #sikayetSayfalama {
       flex-wrap: wrap;
       padding: 10px 4px;
       gap: 4px;
@@ -616,7 +616,9 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;" data-i18n="tab_applications">İşletme Başvuruları</h3>
-              <input type="text" id="filtreIsletmeAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="aktifSayfa=1;tabloyuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <input type="text" id="filtreIsletmeAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="debouncedTabloAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              </div>
             </div>
             <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" data-i18n="filter_all" onclick="basvuruFiltrele('tumu', this)">Tümü</button>
@@ -641,7 +643,7 @@
               </div>
               <div style="flex:1;min-width:150px;">
                 <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;">Marka</label>
-                <select id="filtreMarka" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="tabloyuYukle()">
+                <select id="filtreMarka" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="aktifSayfa=1;tabloyuYukle()">
                   <option value="">Tümü</option>
                 </select>
               </div>
@@ -684,7 +686,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">Haritadaki Onaylı İşletmeler</h3>
-              <input type="text" id="haritaAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="haritaSayfa=1;haritaTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="haritaAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="debouncedHaritaAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="flex:1;min-width:150px;">
@@ -763,7 +765,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">İşletme Bilgilerim</h3>
-              <input type="text" id="bilgiAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="bilgiSayfa=1;bilgilerimTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="bilgiAra" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="debouncedBilgiAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" onclick="bilgiFiltrele('tumu', this)">Tümü</button>
@@ -829,8 +831,8 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">İşletme Yorumları</h3>
-              <input type="text" id="yorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
-              <input type="text" id="yorumAraKullanici" data-i18n-placeholder="search_user_placeholder" placeholder="Kullanıcı Ara..." oninput="yorumSayfa=1;yorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="yorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="debouncedYorumAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="yorumAraKullanici" data-i18n-placeholder="search_user_placeholder" placeholder="Kullanıcı Ara..." oninput="debouncedYorumAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div class="table-responsive">
@@ -857,7 +859,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:flex-start;gap:15px;flex-wrap:wrap;width:100%;">
               <h3 style="margin:0;">Yaptığım Yorumlar</h3>
-              <input type="text" id="benimYorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="benimYorumSayfa=1;benimYorumTablosuYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="benimYorumAraIsletme" data-i18n-placeholder="search_business_placeholder" placeholder="İşletme Ara..." oninput="debouncedBenimYorumAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div class="table-responsive">
@@ -897,7 +899,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;">Üye Bilgileri</h3>
-              <input type="text" id="uyeAra" data-i18n-placeholder="search_member_placeholder" placeholder="Ad Soyad Ara..." oninput="uyeSayfa=1;uyeleriYukle()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="uyeAra" data-i18n-placeholder="search_member_placeholder" placeholder="Ad Soyad Ara..." oninput="debouncedUyeAra()" style="width:200px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
           </div>
           <div style="overflow-x:auto;">
@@ -941,7 +943,7 @@
           <div class="table-header">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
               <h3 style="margin:0;" data-i18n="tab_complaints">İşletme Şikayetleri</h3>
-              <input type="text" id="sikayetAraIsletme" data-i18n-placeholder="search_business_complaint_placeholder" placeholder="İşletme ismini giriniz" oninput="sikayetSayfa=1;sikayetlerTablosuYukle()" style="width:220px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
+              <input type="text" id="sikayetAraIsletme" data-i18n-placeholder="search_business_complaint_placeholder" placeholder="İşletme ismini giriniz" oninput="debouncedSikayetAra()" style="width:220px;padding:6px 12px;border:1px solid #334155;border-radius:20px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;outline:none;">
             </div>
             <div class="filter-buttons" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;">
               <button class="filter-btn active" data-i18n="filter_all" onclick="sikayetFiltrele('tumu', this)">Tümü</button>
@@ -952,7 +954,7 @@
             <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
               <div style="flex:1;min-width:200px;">
                 <label style="color:#94a3b8;font:500 11px/1 'Segoe UI',Arial,sans-serif;display:block;margin-bottom:4px;" data-i18n="filter_complaint_reason">Şikayet Sebebi</label>
-                <select id="sikayetFiltreKonu" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="sikayetSayfa=1;sikayetlerTablosuYukle()">
+                <select id="sikayetFiltreKonu" style="width:100%;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font:400 12px/1 'Segoe UI',Arial,sans-serif;" onchange="sikayetSayfa=1;sikayetlerTablosuYukle(false)">
                   <option value="" data-i18n="filter_all_reasons">Tüm Şikayet Sebepleri</option>
                   <option value="İşletme yerinde bulunmuyor">İşletme yerinde bulunmuyor</option>
                   <option value="İşletme konumu yanlış">İşletme konumu yanlış</option>
@@ -1166,46 +1168,172 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
+<script defer src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
 <script>
-  // -- SQLite Backend Entegrasyonu --
+  // -- Optimize Edilmiş SQLite Backend & Bellek Önbellek (In-Memory Cache) Entegrasyonu --
   const originalGetItem = Storage.prototype.getItem;
   const originalSetItem = Storage.prototype.setItem;
+  const API_BASE = window.location.protocol === 'file:'
+    ? 'http://localhost:3000'
+    : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://' + window.location.hostname + ':3000' : window.location.origin);
+  const STORE_KEYS = new Set(['isletmeler', 'kullanicilar', 'yorumlar', 'sikayetler']);
+
+  const _storeRawCache = {};
+  const _storeParsedCache = {};
+  const _storeTimeCache = {};
+  const STORE_CACHE_TTL = 20000; // 20 saniye bellek önbellek süresi
+
+  function invalidateStoreCache(key) {
+    if (key) {
+      delete _storeRawCache[key];
+      delete _storeParsedCache[key];
+      delete _storeTimeCache[key];
+    } else {
+      for (const k of STORE_KEYS) {
+        delete _storeRawCache[k];
+        delete _storeParsedCache[k];
+        delete _storeTimeCache[k];
+      }
+    }
+  }
+
+  function getParsedStore(key) {
+    const now = Date.now();
+    if (_storeParsedCache[key] && _storeTimeCache[key] && (now - _storeTimeCache[key] < STORE_CACHE_TTL)) {
+      return _storeParsedCache[key];
+    }
+    const raw = localStorage.getItem(key) || '[]';
+    try {
+      const parsed = JSON.parse(raw);
+      _storeParsedCache[key] = Array.isArray(parsed) ? parsed : [];
+      _storeTimeCache[key] = now;
+      return _storeParsedCache[key];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function setParsedStore(key, arr) {
+    const raw = JSON.stringify(arr);
+    _storeParsedCache[key] = arr;
+    _storeRawCache[key] = raw;
+    _storeTimeCache[key] = Date.now();
+    localStorage.setItem(key, raw);
+  }
 
   Storage.prototype.getItem = function(key) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
+    if (STORE_KEYS.has(key)) {
+      const now = Date.now();
+      if (_storeRawCache[key] !== undefined && _storeTimeCache[key] && (now - _storeTimeCache[key] < STORE_CACHE_TTL)) {
+        return _storeRawCache[key];
+      }
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
+        xhr.open('GET', API_BASE + '/api/store/' + key + '?_t=' + now, false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
-            return xhr.responseText;
+          _storeRawCache[key] = xhr.responseText;
+          try { _storeParsedCache[key] = JSON.parse(xhr.responseText); } catch (_) {}
+          _storeTimeCache[key] = now;
+          return xhr.responseText;
         }
       } catch (e) {
         console.error('SQLite connection error:', e);
       }
-      return originalGetItem.call(this, key) || '[]';
+      const fallback = originalGetItem.call(this, key) || '[]';
+      _storeRawCache[key] = fallback;
+      _storeTimeCache[key] = now;
+      return fallback;
     }
     return originalGetItem.call(this, key);
   };
 
+  const _pendingSaves = {};
+
   Storage.prototype.setItem = function(key, value) {
-    if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
+    if (STORE_KEYS.has(key)) {
+      const now = Date.now();
+      _storeRawCache[key] = value;
+      try { _storeParsedCache[key] = JSON.parse(value); } catch (_) {}
+      _storeTimeCache[key] = now;
+      _pendingSaves[key] = value;
+
+      // NOT: keepalive:true tarayıcılarda 64KB üstü verileri (örn. 542 işletme ~250KB) iptal ettiği için kullanılmaz!
+      fetch(API_BASE + '/api/store/' + key, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: value
+      }).then(() => {
+        if (_pendingSaves[key] === value) {
+          delete _pendingSaves[key];
+        }
+      }).catch(e => console.error('SQLite async save error:', e));
+
       try {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(value);
-      } catch (e) {
-        console.error('SQLite connection error:', e);
-      }
-      // Yedek olarak local storage'a da yazıyoruz (hızlı çalışması ve sunucu kapalıyken çökmemesi için)
-      originalSetItem.call(this, key, value);
+        originalSetItem.call(this, key, value);
+      } catch (e) {}
       return;
     }
     originalSetItem.call(this, key, value);
   };
-  // ---------------------------------
+
+  // Sayfa hemen yenilenirse (F5) henüz tamamlanmamış kayıtları senkron olarak tamamla
+  window.addEventListener('beforeunload', function() {
+    for (const [key, val] of Object.entries(_pendingSaves)) {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', API_BASE + '/api/store/' + key, false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(val);
+        delete _pendingSaves[key];
+      } catch (e) {}
+    }
+  });
+
+  // Sayfa açılırken tüm verileri tek seferde arka planda önbelleğe yükle
+  let tumSikayetlerCache = [];
+  let sikayetlerLoaded = false;
+
+  async function preloadStoreBundle() {
+    try {
+      const res = await fetch(API_BASE + '/api/store-bundle?_t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return;
+      const bundle = await res.json();
+      const now = Date.now();
+      ['isletmeler', 'kullanicilar', 'yorumlar'].forEach(k => {
+        if (_pendingSaves[k]) return; // Devam eden kayıt varsa üzerine yazma
+        if (Array.isArray(bundle[k])) {
+          _storeParsedCache[k] = bundle[k];
+          _storeRawCache[k] = JSON.stringify(bundle[k]);
+          _storeTimeCache[k] = now;
+        }
+      });
+      if (Array.isArray(bundle.sikayetler)) {
+        tumSikayetlerCache = bundle.sikayetler;
+        sikayetlerLoaded = true;
+      }
+      kullanicilarDB = [adminKullanici, ...(_storeParsedCache['kullanicilar'] || [])];
+    } catch (e) {}
+  }
+
+  // Debounce yardımcısı (arama kutularında yazarken kasmayı önler)
+  function debounce(fn, delay) {
+    let timer = null;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  const debouncedTabloAra = debounce(() => { aktifSayfa = 1; tabloyuYukle(); }, 120);
+  const debouncedHaritaAra = debounce(() => { haritaSayfa = 1; haritaTablosuYukle(); }, 120);
+  const debouncedBilgiAra = debounce(() => { bilgiSayfa = 1; bilgilerimTablosuYukle(); }, 120);
+  const debouncedYorumAra = debounce(() => { yorumSayfa = 1; yorumTablosuYukle(); }, 120);
+  const debouncedBenimYorumAra = debounce(() => { benimYorumSayfa = 1; benimYorumTablosuYukle(); }, 120);
+  const debouncedUyeAra = debounce(() => { uyeSayfa = 1; uyeleriYukle(); }, 120);
+  const debouncedSikayetAra = debounce(() => { sikayetSayfa = 1; sikayetlerTablosuYukle(false); }, 120);
+  // ---------------------------------------------------------------------------------
+
   let kullanicilarDB = [];
   let adminMap = null;
   let adminMarkers = [];
@@ -1218,7 +1346,7 @@
   };
 
   function girisKullanicilariOku() {
-    return JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    return getParsedStore('kullanicilar');
   }
 
   const brandData = {
@@ -1236,36 +1364,38 @@
     'Tablet': 'tablet', 'Televizyon': 'televizyon', 'Klima': 'klima', 'Beyaz Eşya': 'beyazEsya'
   };
 
+  // Sabit kümeler (filtreleme döngülerinde tekrar tekrar dizi oluşturulmasını önler)
+  const BILINEN_CIHAZLAR_SET = new Set(Object.keys(cihazToKey));
+  const TUM_MARKALAR_SET = new Set(Object.values(brandData).flat());
+  const DURUM_ONCELIK = { 'beklemede': 0, 'reddedildi': 1, 'onaylandi': 2 };
+
   function filtreMarkalariGuncelle() {
     aktifSayfa = 1;
     const seciliCihaz = document.getElementById('filtreCihazTuru').value;
     const markaSelect = document.getElementById('filtreMarka');
     const onceki = markaSelect.value;
-    markaSelect.innerHTML = '<option value="">Tümü</option>';
 
     if (!seciliCihaz || seciliCihaz === 'Diğer') {
-      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.innerHTML = '<option value="">Tümü</option><option value="Diğer">Diğer</option>';
       markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
       tabloyuYukle();
       return;
     }
 
     const key = cihazToKey[seciliCihaz];
-    const brands = new Set();
-    if (key && brandData[key]) {
-      brandData[key].forEach(b => brands.add(b));
+    const sorted = key && brandData[key] ? [...new Set(brandData[key])].sort() : [];
+    let opts = '<option value="">Tümü</option>';
+    for (let i = 0; i < sorted.length; i++) {
+      opts += '<option value="' + sorted[i] + '">' + sorted[i] + '</option>';
     }
-    const sorted = [...brands].sort();
-    sorted.forEach(b => {
-      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
-    });
-    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+    opts += '<option value="Diğer">Diğer</option>';
+    markaSelect.innerHTML = opts;
 
     markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
     tabloyuYukle();
   }
 
-  kullanicilarDB = [adminKullanici, ...girisKullanicilariOku()];
+  const preloadPromise = preloadStoreBundle();
 
   const loginBox = document.getElementById('loginBox');
   const adminPanel = document.getElementById('adminPanel');
@@ -1280,6 +1410,95 @@
   usernameInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') girisYap(); });
 
   let aktifKullanici = null;
+  let aktifTabAdi = 'basvurular';
+  const PANEL_OTURUM_SURESI = 24 * 60 * 60 * 1000; // 24 saat (ms)
+
+  function sekmeVerisiniYukle(tabAdi) {
+    aktifTabAdi = tabAdi;
+    if (tabAdi === 'basvurular') tabloyuYukle();
+    else if (tabAdi === 'harita') initAdminMap();
+    else if (tabAdi === 'bilgilerim') bilgilerimTablosuYukle(aktifKullanici ? aktifKullanici.e_posta : null);
+    else if (tabAdi === 'yorumlar') yorumTablosuYukle();
+    else if (tabAdi === 'yaptigim_yorumlar') benimYorumTablosuYukle();
+    else if (tabAdi === 'uyeler') uyeleriYukle();
+    else if (tabAdi === 'sikayetler') sikayetlerTablosuYukle(false);
+  }
+
+  function panelOturumGecerliMi() {
+    try {
+      const rawPanel = localStorage.getItem('panelOturum');
+      const rawHarita = localStorage.getItem('aktifOturum');
+      if (!rawPanel || !rawHarita) {
+        if (rawPanel && !rawHarita) localStorage.removeItem('panelOturum');
+        return null;
+      }
+      const panelData = JSON.parse(rawPanel);
+      if (!panelData || !panelData.e_posta || !panelData.girisZamani) {
+        localStorage.removeItem('panelOturum');
+        return null;
+      }
+      if ((Date.now() - panelData.girisZamani) >= PANEL_OTURUM_SURESI) {
+        localStorage.removeItem('panelOturum');
+        return null;
+      }
+      return panelData;
+    } catch (e) {
+      localStorage.removeItem('panelOturum');
+      return null;
+    }
+  }
+
+  function oturumAcUI(bulunan, yeniGirisMi, veriYukle = true) {
+    aktifKullanici = bulunan;
+    if (yeniGirisMi) {
+      localStorage.setItem('panelOturum', JSON.stringify({
+        e_posta: bulunan.e_posta,
+        kullanici: bulunan,
+        girisZamani: Date.now()
+      }));
+      localStorage.setItem('aktifOturum', JSON.stringify(bulunan));
+    }
+
+    loginBox.style.display = 'none';
+    document.getElementById('adminBaslik').textContent = 'Tamircim Nerede — ' + (bulunan.isim_soyisim || bulunan.ad || '');
+    adminPanel.classList.add('visible');
+
+    if (bulunan.yetki === 'uye') {
+      document.querySelector('[data-tab="basvurular"]').style.display = 'none';
+      document.querySelector('[data-tab="harita"]').style.display = 'none';
+      document.getElementById('sidebarBilgilerim').style.display = '';
+      document.getElementById('sidebarUyeler').style.display = 'none';
+      document.getElementById('sidebarYorumlar').style.display = 'none';
+      document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+      if (document.getElementById('sidebarSikayetler')) document.getElementById('sidebarSikayetler').style.display = 'none';
+
+      document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('sidebarBilgilerim').classList.add('active');
+      document.getElementById('tabBilgilerim').classList.add('active');
+
+      aktifTabAdi = 'bilgilerim';
+      if (veriYukle) bilgilerimTablosuYukle(bulunan.e_posta);
+    } else {
+      document.querySelector('[data-tab="basvurular"]').style.display = '';
+      document.querySelector('[data-tab="harita"]').style.display = '';
+      document.getElementById('sidebarBilgilerim').style.display = 'none';
+      document.getElementById('sidebarUyeler').style.display = '';
+      document.getElementById('sidebarYorumlar').style.display = '';
+      document.getElementById('sidebarYaptigimYorumlar').style.display = '';
+      if (document.getElementById('sidebarSikayetler')) {
+        document.getElementById('sidebarSikayetler').style.display = (bulunan.yetki === 'owner') ? '' : 'none';
+      }
+
+      document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-tab="basvurular"]').classList.add('active');
+      document.getElementById('tabBasvurular').classList.add('active');
+
+      aktifTabAdi = 'basvurular';
+      if (veriYukle) tabloyuYukle();
+    }
+  }
 
   function girisYap() {
     const kullanici = usernameInput.value.trim();
@@ -1291,49 +1510,7 @@
     const bulunan = kullanicilarDB.find(k => k.e_posta === kullanici && (k.sifre === sifre || k.sifre === sifreliSifre));
 
     if (bulunan) {
-      aktifKullanici = bulunan;
-      loginBox.style.display = 'none';
-      document.getElementById('adminBaslik').textContent = 'Tamircim Nerede — ' + (bulunan.isim_soyisim || bulunan.ad || '' );
-      adminPanel.classList.add('visible');
-
-      if (bulunan.yetki === 'uye') {
-        document.querySelector('[data-tab="basvurular"]').style.display = 'none';
-        document.querySelector('[data-tab="harita"]').style.display = 'none';
-        document.getElementById('sidebarBilgilerim').style.display = '';
-
-        document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById('sidebarBilgilerim').classList.add('active');
-        document.getElementById('tabBilgilerim').classList.add('active');
-
-        bilgilerimTablosuYukle(bulunan.e_posta);
-        document.getElementById('sidebarYaptigimYorumlar').style.display = '';
-        if (document.getElementById('sidebarSikayetler')) document.getElementById('sidebarSikayetler').style.display = 'none';
-        benimYorumTablosuYukle();
-      } else {
-        document.querySelector('[data-tab="basvurular"]').style.display = '';
-        document.querySelector('[data-tab="harita"]').style.display = '';
-        document.getElementById('sidebarBilgilerim').style.display = 'none';
-        document.getElementById('sidebarUyeler').style.display = '';
-        document.getElementById('sidebarYorumlar').style.display = '';
-        document.getElementById('sidebarYaptigimYorumlar').style.display = '';
-        if (document.getElementById('sidebarSikayetler')) {
-          document.getElementById('sidebarSikayetler').style.display = (bulunan.yetki === 'owner') ? '' : 'none';
-        }
-        yorumTablosuYukle();
-        benimYorumTablosuYukle();
-        if (bulunan.yetki === 'owner') {
-          sikayetlerTablosuYukle();
-        }
-
-        document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelector('[data-tab="basvurular"]').classList.add('active');
-        document.getElementById('tabBasvurular').classList.add('active');
-
-        tabloyuYukle();
-        uyeleriYukle();
-      }
+      oturumAcUI(bulunan, true, true);
     } else {
       loginError.style.display = 'block';
       usernameInput.classList.add('error');
@@ -1361,81 +1538,86 @@
     const seciliCihaz = document.getElementById('bilgiFiltreCihaz').value;
     const markaSelect = document.getElementById('bilgiFiltreMarka');
     const onceki = markaSelect.value;
-    markaSelect.innerHTML = '<option value="">Tümü</option>';
 
     if (!seciliCihaz || seciliCihaz === 'Diğer') {
-      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.innerHTML = '<option value="">Tümü</option><option value="Diğer">Diğer</option>';
       markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
       bilgilerimTablosuYukle();
       return;
     }
 
     const key = cihazToKey[seciliCihaz];
-    const brands = new Set();
-    if (key && brandData[key]) {
-      brandData[key].forEach(b => brands.add(b));
+    const sorted = key && brandData[key] ? [...new Set(brandData[key])].sort() : [];
+    let opts = '<option value="">Tümü</option>';
+    for (let i = 0; i < sorted.length; i++) {
+      opts += '<option value="' + sorted[i] + '">' + sorted[i] + '</option>';
     }
-    const sorted = [...brands].sort();
-    sorted.forEach(b => {
-      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
-    });
-    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+    opts += '<option value="Diğer">Diğer</option>';
+    markaSelect.innerHTML = opts;
     markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
     bilgilerimTablosuYukle();
+  }
+
+  function cihazFiltreEslesiyorMu(cihaz_turu, filtreCihaz) {
+    if (!filtreCihaz) return true;
+    const cihazlar = Array.isArray(cihaz_turu) ? cihaz_turu : (cihaz_turu ? [cihaz_turu] : []);
+    if (filtreCihaz === 'Diğer') {
+      for (let k = 0; k < cihazlar.length; k++) {
+        if (!BILINEN_CIHAZLAR_SET.has(cihazlar[k])) return true;
+      }
+      return false;
+    }
+    return cihazlar.includes(filtreCihaz);
+  }
+
+  function markaFiltreEslesiyorMu(markalar_raw, filtreMarka) {
+    if (!filtreMarka) return true;
+    const markalar = Array.isArray(markalar_raw) ? markalar_raw : (markalar_raw ? [markalar_raw] : []);
+    if (filtreMarka === 'Diğer') {
+      for (let k = 0; k < markalar.length; k++) {
+        if (!TUM_MARKALAR_SET.has(markalar[k])) return true;
+      }
+      return false;
+    }
+    return markalar.includes(filtreMarka);
   }
 
   function bilgilerimTablosuYukle(kullaniciEposta) {
     if (kullaniciEposta) bilgiKullaniciEposta = kullaniciEposta;
     const ep = bilgiKullaniciEposta;
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
-    let benimIsletmelerim = isletmeler.filter(i => i.kayit_eposta === ep)
-      .sort((a, b) => {
-        const oncelik = { 'beklemede': 0, 'reddedildi': 1, 'onaylandi': 2 };
-        return (oncelik[a.onay_durumu] ?? 3) - (oncelik[b.onay_durumu] ?? 3);
-      });
-
-    document.getElementById('bilgToplam').textContent = benimIsletmelerim.length;
-    document.getElementById('bilgBekleyen').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'beklemede').length;
-    document.getElementById('bilgOnaylanan').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'onaylandi').length;
-    document.getElementById('bilgReddedilen').textContent = benimIsletmelerim.filter(i => i.onay_durumu === 'reddedildi').length;
+    const isletmeler = getParsedStore('isletmeler');
 
     const aramaMetni = document.getElementById('bilgiAra') ? document.getElementById('bilgiAra').value.trim().toLowerCase() : '';
     const filtreCihaz = document.getElementById('bilgiFiltreCihaz') ? document.getElementById('bilgiFiltreCihaz').value : '';
     const filtreMarka = document.getElementById('bilgiFiltreMarka') ? document.getElementById('bilgiFiltreMarka').value : '';
     const filtreServis = document.getElementById('bilgiFiltreServis') ? document.getElementById('bilgiFiltreServis').value : '';
 
-    if (bilgiAktifFiltre !== 'tumu') {
-      benimIsletmelerim = benimIsletmelerim.filter(i => i.onay_durumu === bilgiAktifFiltre);
+    let toplam = 0, bekleyen = 0, onaylanan = 0, reddedilen = 0;
+    const benimIsletmelerim = [];
+
+    for (let idx = 0; idx < isletmeler.length; idx++) {
+      const i = isletmeler[idx];
+      if (i.kayit_eposta !== ep) continue;
+
+      toplam++;
+      const durum = i.onay_durumu;
+      if (durum === 'beklemede') bekleyen++;
+      else if (durum === 'onaylandi') onaylanan++;
+      else if (durum === 'reddedildi') reddedilen++;
+
+      if (bilgiAktifFiltre !== 'tumu' && durum !== bilgiAktifFiltre) continue;
+      if (filtreServis && i.yetkili_servis_ozel_servis !== filtreServis) continue;
+      if (aramaMetni && !(i.isletme_adi || '').toLowerCase().includes(aramaMetni)) continue;
+      if (!cihazFiltreEslesiyorMu(i.cihaz_turu, filtreCihaz)) continue;
+      if (!markaFiltreEslesiyorMu(i.markalar, filtreMarka)) continue;
+
+      benimIsletmelerim.push(i);
     }
-    if (aramaMetni) {
-      benimIsletmelerim = benimIsletmelerim.filter(i => {
-        const ad = (i.isletme_adi || '').toLowerCase();
-        return ad.includes(aramaMetni);
-      });
-    }
-    if (filtreCihaz) {
-      benimIsletmelerim = benimIsletmelerim.filter(i => {
-        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
-        if (filtreCihaz === 'Diğer') {
-          const bilinenCihazlar = Object.values(cihazToKey);
-          return cihazlar.some(c => !bilinenCihazlar.includes(c));
-        }
-        return cihazlar.some(c => c === filtreCihaz);
-      });
-    }
-    if (filtreMarka) {
-      benimIsletmelerim = benimIsletmelerim.filter(i => {
-        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
-        if (filtreMarka === 'Diğer') {
-          const tumMarkalar = Object.values(brandData).flat();
-          return markalar.some(m => !tumMarkalar.includes(m));
-        }
-        return markalar.some(m => m === filtreMarka);
-      });
-    }
-    if (filtreServis) {
-      benimIsletmelerim = benimIsletmelerim.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
-    }
+
+    document.getElementById('bilgToplam').textContent = toplam;
+    document.getElementById('bilgBekleyen').textContent = bekleyen;
+    document.getElementById('bilgOnaylanan').textContent = onaylanan;
+    document.getElementById('bilgReddedilen').textContent = reddedilen;
 
     const tbody = document.getElementById('bilgilerimTableBody');
     const emptyMsg = document.getElementById('bilgilerimEmptyMsg');
@@ -1447,6 +1629,8 @@
       return;
     }
 
+    benimIsletmelerim.sort((a, b) => (DURUM_ONCELIK[a.onay_durumu] ?? 3) - (DURUM_ONCELIK[b.onay_durumu] ?? 3));
+
     const toplamSayfa = Math.ceil(benimIsletmelerim.length / sayfaBasina);
     if (bilgiSayfa > toplamSayfa) bilgiSayfa = toplamSayfa;
     const baslangic = (bilgiSayfa - 1) * sayfaBasina;
@@ -1456,10 +1640,10 @@
     tbody.innerHTML = sayfaVerisi.map(i => {
       const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : (i.cihaz_turu || '-');
       const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : (i.markalar || '-');
-      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
+      const konumStr = i.konum && typeof i.konum.enlem === 'number' ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
       let badgeClass = 'badge-beklemede', badgeText = 'Beklemede';
       if (i.onay_durumu === 'onaylandi') { badgeClass = 'badge-onaylandi'; badgeText = 'Onaylandı'; }
-      if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
+      else if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
       const tarih = i.tarih ? new Date(i.tarih).toLocaleDateString('tr-TR') : '-';
       return `<tr>
         <td>${i.isletme_adi}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
@@ -1468,17 +1652,64 @@
       </tr>`;
     }).join('');
 
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(1)" ${bilgiSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${bilgiSayfa-1})" ${bilgiSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===bilgiSayfa?'active':''}" onclick="bilgiSayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${bilgiSayfa+1})" ${bilgiSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="bilgiSayfaGit(${toplamSayfa})" ${bilgiSayfa===toplamSayfa?'disabled':''}>»</button>`;
+    document.getElementById('bilgiSayfalama').innerHTML = olusturSayfalamaButonlari(bilgiSayfa, toplamSayfa, 'bilgiSayfaGit');
+  }
+
+  function olusturSayfalamaButonlari(aktif, toplam, fnAdi) {
+    if (toplam <= 1) return '';
+    let html = `<button class="filter-btn" onclick="${fnAdi}(1)" ${aktif===1?'disabled':''}>«</button>`;
+    html += `<button class="filter-btn" onclick="${fnAdi}(${aktif-1})" ${aktif===1?'disabled':''}>‹</button>`;
+    const sayfalar = [];
+    if (toplam <= 7) {
+      for (let s = 1; s <= toplam; s++) sayfalar.push(s);
+    } else {
+      sayfalar.push(1);
+      if (aktif > 3) sayfalar.push('...');
+      const bas = Math.max(2, aktif - 1);
+      const bit = Math.min(toplam - 1, aktif + 1);
+      for (let s = bas; s <= bit; s++) sayfalar.push(s);
+      if (aktif < toplam - 2) sayfalar.push('...');
+      sayfalar.push(toplam);
     }
-    document.getElementById('bilgiSayfalama').innerHTML = sayfaHTML;
+    for (const s of sayfalar) {
+      if (s === '...') {
+        html += `<span style="color:#94a3b8;padding:0 4px;">...</span>`;
+      } else {
+        html += `<button class="filter-btn ${s===aktif?'active':''}" onclick="${fnAdi}(${s})">${s}</button>`;
+      }
+    }
+    html += `<button class="filter-btn" onclick="${fnAdi}(${aktif+1})" ${aktif===toplam?'disabled':''}>›</button>`;
+    html += `<button class="filter-btn" onclick="${fnAdi}(${toplam})" ${aktif===toplam?'disabled':''}>»</button>`;
+    return html;
+  }
+
+  async function osmIsletmeleriCek() {
+    const btn = document.getElementById('osmSyncBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'OpenStreetMap Verileri Çekiliyor...';
+    }
+    try {
+      const res = await fetch(API_BASE + '/api/osm-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        invalidateStoreCache('isletmeler');
+        alert(`OpenStreetMap (Overpass API) senkronizasyonu tamamlandı! Yeni eklenen: ${data.addedCount}, Toplam işletme: ${data.totalCount}`);
+        sekmeVerisiniYukle(aktifTabAdi);
+      } else {
+        alert('Hata: ' + (data.error || 'İşletmeler çekilemedi.'));
+      }
+    } catch (e) {
+      alert('Sunucu bağlantı hatası: ' + e.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "OpenStreetMap'ten İşletmeleri Çek";
+      }
+    }
   }
 
   function bilgiSayfaGit(sayfa) {
@@ -1497,23 +1728,31 @@
   let duzenlenenUyeIdx = null;
 
   function uyeleriYukle() {
-    const tumUyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
-    let uyeler = [...tumUyeler];
+    const tumUyeler = getParsedStore('kullanicilar');
     const tbody = document.getElementById('uyelerTableBody');
     const emptyMsg = document.getElementById('uyelerEmptyMsg');
 
-    document.getElementById('uyeStatToplam').textContent = tumUyeler.length;
-    document.getElementById('uyeStatUye').textContent = tumUyeler.filter(u => u.yetki === 'uye').length;
-    document.getElementById('uyeStatOwner').textContent = tumUyeler.filter(u => u.yetki === 'owner').length;
-
     const aramaMetni = document.getElementById('uyeAra') ? document.getElementById('uyeAra').value.trim().toLowerCase() : '';
-    if (aramaMetni) {
-      uyeler = uyeler.filter(u => {
+
+    let uyeCount = 0, ownerCount = 0;
+    const uyeler = [];
+
+    for (let idx = 0; idx < tumUyeler.length; idx++) {
+      const u = tumUyeler[idx];
+      if (u.yetki === 'owner') ownerCount++;
+      else uyeCount++;
+
+      if (aramaMetni) {
         const ad = (u.ad || '').toLowerCase();
         const eposta = (u.e_posta || '').toLowerCase();
-        return ad.includes(aramaMetni) || eposta.includes(aramaMetni);
-      });
+        if (!ad.includes(aramaMetni) && !eposta.includes(aramaMetni)) continue;
+      }
+      uyeler.push({ u, idx });
     }
+
+    document.getElementById('uyeStatToplam').textContent = tumUyeler.length;
+    document.getElementById('uyeStatUye').textContent = uyeCount;
+    document.getElementById('uyeStatOwner').textContent = ownerCount;
 
     if (uyeler.length === 0) {
       emptyMsg.style.display = 'block';
@@ -1528,33 +1767,22 @@
     const sayfaVerisi = uyeler.slice(baslangic, baslangic + sayfaBasina);
 
     emptyMsg.style.display = 'none';
-    tbody.innerHTML = sayfaVerisi.map(u => {
+    tbody.innerHTML = sayfaVerisi.map(({ u, idx }) => {
       const sifreCoz = cozdur(u.sifre);
       const badgeClass = u.yetki === 'owner' ? 'badge-onaylandi' : 'badge-beklemede';
-      const orijinalIdx = tumUyeler.findIndex(x => x.e_posta === u.e_posta);
       return `<tr>
         <td>${u.ad || '-'}</td>
         <td>${u.e_posta || '-'}</td>
         <td>${sifreCoz}</td>
         <td><span class="badge ${badgeClass}">${u.yetki || 'uye'}</span></td>
         <td>
-          <button class="btn-onayla" onclick="uyeDuzenle(${orijinalIdx})">Düzenle</button>
-          <button class="btn-reddet" onclick="uyeSil(${orijinalIdx})">Sil</button>
+          <button class="btn-onayla" onclick="uyeDuzenle(${idx})">Düzenle</button>
+          <button class="btn-reddet" onclick="uyeSil(${idx})">Sil</button>
         </td>
       </tr>`;
     }).join('');
 
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(1)" ${uyeSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${uyeSayfa-1})" ${uyeSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===uyeSayfa?'active':''}" onclick="uyeSayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${uyeSayfa+1})" ${uyeSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="uyeSayfaGit(${toplamSayfa})" ${uyeSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    document.getElementById('uyeSayfalama').innerHTML = sayfaHTML;
+    document.getElementById('uyeSayfalama').innerHTML = olusturSayfalamaButonlari(uyeSayfa, toplamSayfa, 'uyeSayfaGit');
   }
 
   function uyeSayfaGit(sayfa) {
@@ -1566,16 +1794,14 @@
     const confirmMsg = window.t ? window.t('Bu üyeyi silmek istediğinizden emin misiniz?') : 'Bu üyeyi silmek istediğinizden emin misiniz?';
     if (!confirm(confirmMsg)) return;
 
-    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const uyeler = getParsedStore('kullanicilar');
     const silinenUye = uyeler[idx];
     if (!silinenUye) return;
 
-    // 1. Üyeyi kullanıcılar listesinden sil
     uyeler.splice(idx, 1);
-    localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+    setParsedStore('kullanicilar', uyeler);
 
-    // 2. Üyeye ait tüm yorumları bul ve sil
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const etkilenenIsletmeler = new Set();
 
     const kalanYorumlar = yorumlar.filter(y => {
@@ -1587,30 +1813,22 @@
         if (y.isletme_ismi) {
           etkilenenIsletmeler.add(y.isletme_ismi);
         }
-        return false; // Yorumu sil
+        return false;
       }
-      return true; // Yorumu koru
+      return true;
     });
 
-    localStorage.setItem('yorumlar', JSON.stringify(kalanYorumlar));
+    setParsedStore('yorumlar', kalanYorumlar);
 
-    // 3. Yorumları silinen işletmelerin ortalama puanlarını yeniden hesapla
     etkilenenIsletmeler.forEach(isletmeIsmi => {
-      isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi);
+      isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi, false);
     });
 
-    // 4. Tabloları güncelle
     uyeleriYukle();
-    if (typeof yorumTablosuYukle === 'function') {
-      yorumTablosuYukle();
-    }
-    if (typeof benimYorumTablosuYukle === 'function' && window.aktifKullanici) {
-      benimYorumTablosuYukle();
-    }
   }
 
   function uyeDuzenle(idx) {
-    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const uyeler = getParsedStore('kullanicilar');
     const uye = uyeler[idx];
     if (!uye) return;
 
@@ -1632,7 +1850,7 @@
 
   document.getElementById('duzKaydet').addEventListener('click', function() {
     if (duzenlenenUyeIdx === null) return;
-    const uyeler = JSON.parse(localStorage.getItem('kullanicilar') || '[]');
+    const uyeler = getParsedStore('kullanicilar');
     const eskiUye = uyeler[duzenlenenUyeIdx];
     const eskiAd = eskiUye ? eskiUye.ad : null;
     const eskiEposta = eskiUye ? eskiUye.e_posta : null;
@@ -1644,23 +1862,36 @@
     uyeler[duzenlenenUyeIdx].e_posta = yeniEposta;
     uyeler[duzenlenenUyeIdx].sifre = sifrele(document.getElementById('duzSifre').value.trim());
     uyeler[duzenlenenUyeIdx].yetki = document.getElementById('duzYetki').value;
-    localStorage.setItem('kullanicilar', JSON.stringify(uyeler));
+    setParsedStore('kullanicilar', uyeler);
 
-    // Üye adı veya e-postası değiştiyse yorumlarındaki bilgileri de güncelle
+    if (aktifKullanici && aktifKullanici.e_posta === eskiEposta) {
+      aktifKullanici = uyeler[duzenlenenUyeIdx];
+      document.getElementById('adminBaslik').textContent = 'Tamircim Nerede — ' + (aktifKullanici.isim_soyisim || aktifKullanici.ad || '');
+      const mevcutPanel = panelOturumGecerliMi();
+      if (mevcutPanel) {
+        localStorage.setItem('panelOturum', JSON.stringify({
+          e_posta: aktifKullanici.e_posta,
+          kullanici: aktifKullanici,
+          girisZamani: mevcutPanel.girisZamani
+        }));
+      }
+      localStorage.setItem('aktifOturum', JSON.stringify(aktifKullanici));
+    }
+
     if (eskiAd && (eskiAd !== yeniAd || eskiEposta !== yeniEposta)) {
-      const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+      const yorumlar = getParsedStore('yorumlar');
       let degisti = false;
-      yorumlar.forEach(y => {
+      for (let k = 0; k < yorumlar.length; k++) {
+        const y = yorumlar[k];
         const ayniUyeMi = y.kullanici_eposta ? (y.kullanici_eposta === eskiEposta) : (y.yorum_isim === eskiAd);
         if (ayniUyeMi) {
           y.yorum_isim = yeniAd;
           y.kullanici_eposta = yeniEposta;
           degisti = true;
         }
-      });
+      }
       if (degisti) {
-        localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
-        if (typeof yorumTablosuYukle === 'function') yorumTablosuYukle();
+        setParsedStore('yorumlar', yorumlar);
       }
     }
 
@@ -1668,8 +1899,9 @@
     uyeleriYukle();
   });
 
-  cikisBtn.addEventListener('click', function() {
+  function paneldenCikisYap() {
     aktifKullanici = null;
+    localStorage.removeItem('panelOturum');
     adminPanel.classList.remove('visible');
     loginBox.style.display = 'block';
     usernameInput.value = '';
@@ -1682,21 +1914,18 @@
     document.getElementById('sidebarYorumlar').style.display = 'none';
     document.getElementById('sidebarYaptigimYorumlar').style.display = 'none';
     if (document.getElementById('sidebarSikayetler')) document.getElementById('sidebarSikayetler').style.display = 'none';
-  });
+  }
+
+  cikisBtn.addEventListener('click', paneldenCikisYap);
 
   document.querySelectorAll('.admin-sidebar-item').forEach(item => {
     item.addEventListener('click', function() {
       document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      document.getElementById('tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1)).classList.add('active');
-
-      if (this.dataset.tab === 'harita') {
-        initAdminMap();
-      }
-      if (this.dataset.tab === 'sikayetler') {
-        sikayetlerTablosuYukle();
-      }
+      const tab = this.dataset.tab;
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+      sekmeVerisiniYukle(tab);
     });
   });
 
@@ -1705,7 +1934,7 @@
   function basvuruFiltrele(filtre, btn) {
     aktifFiltre = filtre;
     aktifSayfa = 1;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#tabBasvurular .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     tabloyuYukle();
   }
@@ -1718,73 +1947,56 @@
   const sayfaBasina = 10;
 
   function tabloyuYukle() {
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
 
     const aramaMetni = document.getElementById('filtreIsletmeAra') ? document.getElementById('filtreIsletmeAra').value.trim().toLowerCase() : '';
     const filtreCihaz = document.getElementById('filtreCihazTuru') ? document.getElementById('filtreCihazTuru').value : '';
     const filtreMarka = document.getElementById('filtreMarka') ? document.getElementById('filtreMarka').value : '';
     const filtreServis = document.getElementById('filtreServisTuru') ? document.getElementById('filtreServisTuru').value : '';
 
-    let filtreli = isletmeler;
+    let bekleyen = 0, onaylanan = 0, reddedilen = 0;
+    const sirali = [];
 
-    if (aktifFiltre !== 'tumu') {
-      filtreli = filtreli.filter(i => i.onay_durumu === aktifFiltre);
-    }
+    // Tek geçişli (O(N)) istatistik hesaplama ve filtreleme (indexOf O(N^2) darboğazını tamamen kaldırır)
+    for (let idx = 0; idx < isletmeler.length; idx++) {
+      const i = isletmeler[idx];
+      const durum = i.onay_durumu;
+      if (durum === 'beklemede') bekleyen++;
+      else if (durum === 'onaylandi') onaylanan++;
+      else if (durum === 'reddedildi') reddedilen++;
 
-    if (aramaMetni) {
-      filtreli = filtreli.filter(i => {
+      if (aktifFiltre !== 'tumu' && durum !== aktifFiltre) continue;
+      if (filtreServis && i.yetkili_servis_ozel_servis !== filtreServis) continue;
+
+      if (aramaMetni) {
         const ad = (i.isletme_adi || '').toLowerCase();
         const eposta = (i.e_posta || '').toLowerCase();
         const kayit = (i.kayit_eposta || '').toLowerCase();
-        return ad.includes(aramaMetni) || eposta.includes(aramaMetni) || kayit.includes(aramaMetni);
-      });
+        if (!ad.includes(aramaMetni) && !eposta.includes(aramaMetni) && !kayit.includes(aramaMetni)) continue;
+      }
+
+      if (!cihazFiltreEslesiyorMu(i.cihaz_turu, filtreCihaz)) continue;
+      if (!markaFiltreEslesiyorMu(i.markalar, filtreMarka)) continue;
+
+      sirali.push({ i, idx });
     }
 
-    if (filtreCihaz) {
-      filtreli = filtreli.filter(i => {
-        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
-        if (filtreCihaz === 'Diğer') {
-          const bilinenCihazlar = Object.values(cihazToKey);
-          return cihazlar.some(c => !bilinenCihazlar.includes(c));
-        }
-        return cihazlar.some(c => c === filtreCihaz);
-      });
-    }
+    document.getElementById('statToplam').textContent = isletmeler.length;
+    document.getElementById('statBekleyen').textContent = bekleyen;
+    document.getElementById('statOnaylanan').textContent = onaylanan;
+    document.getElementById('statReddedilen').textContent = reddedilen;
 
-    if (filtreMarka) {
-      filtreli = filtreli.filter(i => {
-        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
-        if (filtreMarka === 'Diğer') {
-          const tumMarkalar = Object.values(brandData).flat();
-          return markalar.some(m => !tumMarkalar.includes(m));
-        }
-        return markalar.some(m => m === filtreMarka);
-      });
-    }
-
-    if (filtreServis) {
-      filtreli = filtreli.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
-    }
-
-    const sirali = filtreli.map((i) => ({ i, idx: isletmeler.indexOf(i) }))
-      .sort((a, b) => {
-        const oncelik = { 'beklemede': 0, 'reddedildi': 1, 'onaylandi': 2 };
-        return (oncelik[a.i.onay_durumu] ?? 3) - (oncelik[b.i.onay_durumu] ?? 3);
-      });
     const tbody = document.getElementById('tableBody');
     const emptyMsg = document.getElementById('emptyMsg');
 
-    document.getElementById('statToplam').textContent = isletmeler.length;
-    document.getElementById('statBekleyen').textContent = isletmeler.filter(i => i.onay_durumu === 'beklemede').length;
-    document.getElementById('statOnaylanan').textContent = isletmeler.filter(i => i.onay_durumu === 'onaylandi').length;
-    document.getElementById('statReddedilen').textContent = isletmeler.filter(i => i.onay_durumu === 'reddedildi').length;
-
-    if (filtreli.length === 0) {
+    if (sirali.length === 0) {
       emptyMsg.style.display = 'block';
       tbody.innerHTML = '';
       document.getElementById('sayfalama').innerHTML = '';
       return;
     }
+
+    sirali.sort((a, b) => (DURUM_ONCELIK[a.i.onay_durumu] ?? 3) - (DURUM_ONCELIK[b.i.onay_durumu] ?? 3));
 
     const toplamSayfa = Math.ceil(sirali.length / sayfaBasina);
     if (aktifSayfa > toplamSayfa) aktifSayfa = toplamSayfa;
@@ -1793,12 +2005,12 @@
 
     emptyMsg.style.display = 'none';
     tbody.innerHTML = sayfaVerisi.map(({ i, idx }) => {
-      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : i.cihaz_turu;
-      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : i.markalar;
-      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
+      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : (i.cihaz_turu || '-');
+      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : (i.markalar || '-');
+      const konumStr = i.konum && typeof i.konum.enlem === 'number' ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
       let badgeClass = 'badge-beklemede', badgeText = 'Beklemede';
       if (i.onay_durumu === 'onaylandi') { badgeClass = 'badge-onaylandi'; badgeText = 'Onaylandı'; }
-      if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
+      else if (i.onay_durumu === 'reddedildi') { badgeClass = 'badge-reddedildi'; badgeText = 'Reddedildi'; }
       const tarih = i.tarih ? new Date(i.tarih).toLocaleDateString('tr-TR') : '-';
       const islemBtns = i.onay_durumu === 'beklemede'
         ? `<button class="btn-onayla" onclick="durumGuncelle(${idx},'onaylandi')">Onayla</button><button class="btn-reddet" onclick="durumGuncelle(${idx},'reddedildi')">Reddet</button>`
@@ -1810,17 +2022,7 @@
       </tr>`;
     }).join('');
 
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(1)" ${aktifSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${aktifSayfa-1})" ${aktifSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===aktifSayfa?'active':''}" onclick="sayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${aktifSayfa+1})" ${aktifSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="sayfaGit(${toplamSayfa})" ${aktifSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    document.getElementById('sayfalama').innerHTML = sayfaHTML;
+    document.getElementById('sayfalama').innerHTML = olusturSayfalamaButonlari(aktifSayfa, toplamSayfa, 'sayfaGit');
   }
 
   function sayfaGit(sayfa) {
@@ -1829,15 +2031,25 @@
   }
 
   function durumGuncelle(idx, yeniDurum) {
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     const i = isletmeler[idx];
-    if (i.onay_durumu !== yeniDurum) {
+    if (i && i.onay_durumu !== yeniDurum) {
       i.onay_durumu = yeniDurum;
-      localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+      setParsedStore('isletmeler', isletmeler);
+
+      // Tekil hızlı durum güncelleme uç noktasına da bildir (80 byte, anında kaydedilir)
+      fetch(API_BASE + '/api/isletmeler/durum', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idx, isletme_adi: i.isletme_adi, onay_durumu: yeniDurum }),
+        keepalive: true
+      }).catch(() => {});
       
-      const emailToSend = i.e_posta || i.kayit_eposta;
+      // OpenStreetMap'ten toplu çekilen ve işletme e-postası olmayan kayıtlarda admin'in kendi adresine gereksiz mail atma
+      const isOsmAutoRecord = (!i.e_posta && i.ad_soyad === 'Emincan Ortaköy' && i.kayit_eposta === 'ortakoyemincan@gmail.com');
+      const emailToSend = i.e_posta || (!isOsmAutoRecord ? i.kayit_eposta : '');
       if (emailToSend) {
-        fetch('http://' + window.location.hostname + ':3000/api/notify-business-status', {
+        fetch(API_BASE + '/api/notify-business-status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isletmeAdi: i.isletme_adi, status: yeniDurum, email: emailToSend })
@@ -1845,7 +2057,6 @@
       }
     }
     tabloyuYukle();
-    haritaTablosuYukle();
   }
 
   function initAdminMap() {
@@ -1853,9 +2064,10 @@
   }
 
   function haritaIsletmeleriYukle() {
+    if (!adminMap) return;
     adminMarkers.forEach(m => m.remove());
     adminMarkers = [];
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     const onaylilar = isletmeler.filter(i => i.onay_durumu === 'onaylandi' && i.konum);
     onaylilar.forEach(i => {
       const el = document.createElement('div');
@@ -1874,7 +2086,6 @@
         .addTo(adminMap);
       adminMarkers.push(marker);
     });
-    haritaTablosuYukle();
   }
 
   function haritaFiltreMarkaGuncelle() {
@@ -1882,66 +2093,44 @@
     const seciliCihaz = document.getElementById('haritaFiltreCihaz').value;
     const markaSelect = document.getElementById('haritaFiltreMarka');
     const onceki = markaSelect.value;
-    markaSelect.innerHTML = '<option value="">Tümü</option>';
 
     if (!seciliCihaz || seciliCihaz === 'Diğer') {
-      markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+      markaSelect.innerHTML = '<option value="">Tümü</option><option value="Diğer">Diğer</option>';
       markaSelect.value = onceki === 'Diğer' ? 'Diğer' : '';
       haritaTablosuYukle();
       return;
     }
 
     const key = cihazToKey[seciliCihaz];
-    const brands = new Set();
-    if (key && brandData[key]) {
-      brandData[key].forEach(b => brands.add(b));
+    const sorted = key && brandData[key] ? [...new Set(brandData[key])].sort() : [];
+    let opts = '<option value="">Tümü</option>';
+    for (let i = 0; i < sorted.length; i++) {
+      opts += '<option value="' + sorted[i] + '">' + sorted[i] + '</option>';
     }
-    const sorted = [...brands].sort();
-    sorted.forEach(b => {
-      markaSelect.innerHTML += '<option value="' + b + '">' + b + '</option>';
-    });
-    markaSelect.innerHTML += '<option value="Diğer">Diğer</option>';
+    opts += '<option value="Diğer">Diğer</option>';
+    markaSelect.innerHTML = opts;
     markaSelect.value = sorted.includes(onceki) || onceki === 'Diğer' ? onceki : '';
     haritaTablosuYukle();
   }
 
   function haritaTablosuYukle() {
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
-    let onaylilar = isletmeler.filter(i => i.onay_durumu === 'onaylandi');
+    const isletmeler = getParsedStore('isletmeler');
 
     const aramaMetni = document.getElementById('haritaAra') ? document.getElementById('haritaAra').value.trim().toLowerCase() : '';
     const filtreCihaz = document.getElementById('haritaFiltreCihaz') ? document.getElementById('haritaFiltreCihaz').value : '';
     const filtreMarka = document.getElementById('haritaFiltreMarka') ? document.getElementById('haritaFiltreMarka').value : '';
     const filtreServis = document.getElementById('haritaFiltreServis') ? document.getElementById('haritaFiltreServis').value : '';
 
-    if (aramaMetni) {
-      onaylilar = onaylilar.filter(i => {
-        const ad = (i.isletme_adi || '').toLowerCase();
-        return ad.includes(aramaMetni);
-      });
-    }
-    if (filtreCihaz) {
-      onaylilar = onaylilar.filter(i => {
-        const cihazlar = Array.isArray(i.cihaz_turu) ? i.cihaz_turu : (i.cihaz_turu ? [i.cihaz_turu] : []);
-        if (filtreCihaz === 'Diğer') {
-          const bilinenCihazlar = Object.values(cihazToKey);
-          return cihazlar.some(c => !bilinenCihazlar.includes(c));
-        }
-        return cihazlar.some(c => c === filtreCihaz);
-      });
-    }
-    if (filtreMarka) {
-      onaylilar = onaylilar.filter(i => {
-        const markalar = Array.isArray(i.markalar) ? i.markalar : (i.markalar ? [i.markalar] : []);
-        if (filtreMarka === 'Diğer') {
-          const tumMarkalar = Object.values(brandData).flat();
-          return markalar.some(m => !tumMarkalar.includes(m));
-        }
-        return markalar.some(m => m === filtreMarka);
-      });
-    }
-    if (filtreServis) {
-      onaylilar = onaylilar.filter(i => i.yetkili_servis_ozel_servis === filtreServis);
+    const onaylilar = [];
+    for (let idx = 0; idx < isletmeler.length; idx++) {
+      const i = isletmeler[idx];
+      if (i.onay_durumu !== 'onaylandi') continue;
+      if (filtreServis && i.yetkili_servis_ozel_servis !== filtreServis) continue;
+      if (aramaMetni && !(i.isletme_adi || '').toLowerCase().includes(aramaMetni)) continue;
+      if (!cihazFiltreEslesiyorMu(i.cihaz_turu, filtreCihaz)) continue;
+      if (!markaFiltreEslesiyorMu(i.markalar, filtreMarka)) continue;
+
+      onaylilar.push({ i, idx });
     }
 
     const tbody = document.getElementById('haritaTableBody');
@@ -1960,30 +2149,19 @@
     const sayfaVerisi = onaylilar.slice(baslangic, baslangic + sayfaBasina);
 
     emptyMsg.style.display = 'none';
-    tbody.innerHTML = sayfaVerisi.map(i => {
-      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : i.cihaz_turu;
-      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : i.markalar;
-      const konumStr = i.konum ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
-      const orijinalIdx = isletmeler.indexOf(i);
+    tbody.innerHTML = sayfaVerisi.map(({ i, idx }) => {
+      const cihazStr = Array.isArray(i.cihaz_turu) ? i.cihaz_turu.join(', ') : (i.cihaz_turu || '-');
+      const markaStr = Array.isArray(i.markalar) ? i.markalar.join(', ') : (i.markalar || '-');
+      const konumStr = i.konum && typeof i.konum.enlem === 'number' ? i.konum.enlem.toFixed(4) + ', ' + i.konum.boylam.toFixed(4) : '-';
       return `<tr>
         <td>${i.isletme_adi}</td><td>${i.ad_soyad}</td><td>${i.telefon}</td><td>${i.e_posta || '-'}</td>
         <td>${cihazStr}</td><td>${markaStr}</td><td>${i.yetkili_servis_ozel_servis}</td><td>${konumStr}</td>
         <td>${i.ortalama_puan ? parseFloat(i.ortalama_puan).toFixed(1) : '0.0'}</td>
-        <td><button class="btn-onayla" onclick="isletmeDuzenle(${orijinalIdx})">Düzenle</button><button class="btn-sil" onclick="isletmeSil(${orijinalIdx})">Sil</button></td>
+        <td><button class="btn-onayla" onclick="isletmeDuzenle(${idx})">Düzenle</button><button class="btn-sil" onclick="isletmeSil(${idx})">Sil</button></td>
       </tr>`;
     }).join('');
 
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(1)" ${haritaSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${haritaSayfa-1})" ${haritaSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===haritaSayfa?'active':''}" onclick="haritaSayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${haritaSayfa+1})" ${haritaSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="haritaSayfaGit(${toplamSayfa})" ${haritaSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    document.getElementById('haritaSayfalama').innerHTML = sayfaHTML;
+    document.getElementById('haritaSayfalama').innerHTML = olusturSayfalamaButonlari(haritaSayfa, toplamSayfa, 'haritaSayfaGit');
   }
 
   function haritaSayfaGit(sayfa) {
@@ -1994,19 +2172,17 @@
   function isletmeSil(idx) {
     const confirmMsg = window.t ? window.t('Bu işletmeyi silmek istediğinizden emin misiniz?') : 'Bu işletmeyi silmek istediğinizden emin misiniz?';
     if (!confirm(confirmMsg)) return;
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     isletmeler.splice(idx, 1);
-    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
-    tabloyuYukle();
-    haritaTablosuYukle();
-    bilgilerimTablosuYukle();
+    setParsedStore('isletmeler', isletmeler);
+    sekmeVerisiniYukle(aktifTabAdi);
     haritaIsletmeleriYukle();
   }
 
   let duzenlenenIsletmeIdx = null;
 
   function isletmeDuzenle(idx) {
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     const i = isletmeler[idx];
     if (!i) return;
     duzenlenenIsletmeIdx = idx;
@@ -2032,8 +2208,9 @@
 
   document.getElementById('isletmeDuzenleKaydet').addEventListener('click', function() {
     if (duzenlenenIsletmeIdx === null) return;
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     const i = isletmeler[duzenlenenIsletmeIdx];
+    if (!i) return;
     
     i.isletme_adi = document.getElementById('duzIsletmeAdi').value.trim();
     i.telefon = document.getElementById('duzIsletmeTelefon').value.trim();
@@ -2061,16 +2238,16 @@
       i.onay_durumu = durumSelect.value;
     }
     
-    localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
+    setParsedStore('isletmeler', isletmeler);
     isletmeDuzenleKapat();
-    tabloyuYukle();
-    haritaTablosuYukle();
+    sekmeVerisiniYukle(aktifTabAdi);
     haritaIsletmeleriYukle();
     
     if (durumDegisti) {
-      const emailToSend = i.e_posta || i.kayit_eposta;
+      const isOsmAutoRecord = (!i.e_posta && i.ad_soyad === 'Emincan Ortaköy' && i.kayit_eposta === 'ortakoyemincan@gmail.com');
+      const emailToSend = i.e_posta || (!isOsmAutoRecord ? i.kayit_eposta : '');
       if (emailToSend) {
-        fetch('http://' + window.location.hostname + ':3000/api/notify-business-status', {
+        fetch(API_BASE + '/api/notify-business-status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isletmeAdi: i.isletme_adi, status: yeniDurum, email: emailToSend })
@@ -2089,17 +2266,17 @@
   let duzenlenenYorumIdx = null;
 
   function yorumTablosuYukle() {
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
-    let filtered = [...yorumlar];
+    const yorumlar = getParsedStore('yorumlar');
     
     const isletmeAra = document.getElementById('yorumAraIsletme').value.trim().toLowerCase();
     const kullaniciAra = document.getElementById('yorumAraKullanici').value.trim().toLowerCase();
     
-    if (isletmeAra) {
-      filtered = filtered.filter(y => (y.isletme_ismi || '').toLowerCase().includes(isletmeAra));
-    }
-    if (kullaniciAra) {
-      filtered = filtered.filter(y => (y.yorum_isim || '').toLowerCase().includes(kullaniciAra));
+    const filtered = [];
+    for (let idx = 0; idx < yorumlar.length; idx++) {
+      const y = yorumlar[idx];
+      if (isletmeAra && !(y.isletme_ismi || '').toLowerCase().includes(isletmeAra)) continue;
+      if (kullaniciAra && !(y.yorum_isim || '').toLowerCase().includes(kullaniciAra)) continue;
+      filtered.push({ y, idx });
     }
     
     const tbody = document.getElementById('yorumlarTableBody');
@@ -2118,8 +2295,7 @@
     const sayfaVerisi = filtered.slice(baslangic, baslangic + yorumSayfaBasina);
     
     emptyMsg.style.display = 'none';
-    tbody.innerHTML = sayfaVerisi.map(y => {
-      const orijinalIdx = yorumlar.indexOf(y);
+    tbody.innerHTML = sayfaVerisi.map(({ y, idx }) => {
       const durumStr = y.gizli ? '<span style="color:#ef4444;">Gizli</span>' : '<span style="color:#22c55e;">Görünür</span>';
       return `<tr>
         <td>${y.isletme_ismi}</td>
@@ -2128,23 +2304,13 @@
         <td><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${y.yorum}">${y.yorum}</div></td>
         <td>${durumStr}</td>
         <td>
-          <button class="btn-onayla" onclick="yorumDuzenle(${orijinalIdx})">Düzenle</button>
-          <button class="btn-sil" onclick="yorumSil(${orijinalIdx})">Sil</button>
+          <button class="btn-onayla" onclick="yorumDuzenle(${idx})">Düzenle</button>
+          <button class="btn-sil" onclick="yorumSil(${idx})">Sil</button>
         </td>
       </tr>`;
     }).join('');
     
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(1)" ${yorumSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${yorumSayfa-1})" ${yorumSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===yorumSayfa?'active':''}" onclick="yorumSayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${yorumSayfa+1})" ${yorumSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="yorumSayfaGit(${toplamSayfa})" ${yorumSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    document.getElementById('yorumSayfalama').innerHTML = sayfaHTML;
+    document.getElementById('yorumSayfalama').innerHTML = olusturSayfalamaButonlari(yorumSayfa, toplamSayfa, 'yorumSayfaGit');
   }
   
   window.yorumSayfaGit = function(sayfa) {
@@ -2155,18 +2321,18 @@
   window.yorumSil = function(idx) {
     const confirmMsg = window.t ? window.t('Bu yorumu silmek istediğinizden emin misiniz?') : 'Bu yorumu silmek istediğinizden emin misiniz?';
     if (!confirm(confirmMsg)) return;
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const islemGoren = yorumlar[idx];
+    if (!islemGoren) return;
     yorumlar.splice(idx, 1);
-    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    setParsedStore('yorumlar', yorumlar);
     
-    isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi);
-    
+    isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi, false);
     yorumTablosuYukle();
   };
   
   window.yorumDuzenle = function(idx) {
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const y = yorumlar[idx];
     if (!y) return;
     duzenlenenYorumIdx = idx;
@@ -2187,41 +2353,41 @@
   
   document.getElementById('yorumDuzenleKaydet').addEventListener('click', function() {
     if (duzenlenenYorumIdx === null) return;
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const y = yorumlar[duzenlenenYorumIdx];
+    if (!y) return;
     
     y.puan = parseFloat(document.getElementById('duzYorumPuan').value) || 0;
     y.yorum = document.getElementById('duzYorumMetin').value.trim();
     y.gizli = document.getElementById('duzYorumGizli').value === 'true';
     
-    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
-    
-    isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi);
+    setParsedStore('yorumlar', yorumlar);
+    isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi, false);
     
     yorumDuzenleKapat();
     yorumTablosuYukle();
   });
   
-  function isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi) {
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
-    const gecerliYorumlar = yorumlar.filter(y => y.isletme_ismi === isletmeIsmi && !y.gizli);
-    
-    let ortalama = 0;
-    if (gecerliYorumlar.length > 0) {
-      const toplam = gecerliYorumlar.reduce((acc, y) => acc + parseFloat(y.puan), 0);
-      ortalama = Math.floor((toplam / gecerliYorumlar.length) * 10) / 10;
+  function isletmeOrtalamaPuanGuncelleAdmin(isletmeIsmi, renderActive = true) {
+    const yorumlar = getParsedStore('yorumlar');
+    let toplam = 0, adet = 0;
+    for (let k = 0; k < yorumlar.length; k++) {
+      const y = yorumlar[k];
+      if (y.isletme_ismi === isletmeIsmi && !y.gizli) {
+        toplam += parseFloat(y.puan) || 0;
+        adet++;
+      }
     }
+    const ortalama = adet > 0 ? Math.floor((toplam / adet) * 10) / 10 : 0;
     
-    const isletmeler = JSON.parse(localStorage.getItem('isletmeler') || '[]');
+    const isletmeler = getParsedStore('isletmeler');
     const i = isletmeler.find(is => is.isletme_adi === isletmeIsmi);
     if (i) {
       i.ortalama_puan = ortalama;
-      localStorage.setItem('isletmeler', JSON.stringify(isletmeler));
-      
-      // Update tables in UI
-      haritaTablosuYukle();
-      tabloyuYukle();
-      bilgilerimTablosuYukle();
+      setParsedStore('isletmeler', isletmeler);
+      if (renderActive) {
+        sekmeVerisiniYukle(aktifTabAdi);
+      }
     }
   }
 
@@ -2247,63 +2413,30 @@
       .replace(/[ö]/g, 'ö');
 
     const patterns = [
-      // sik, siktir, sikim, sikik, sikimsonik, sikeyim, sikti, sikiş, sikko, hassiktir
-      // Must NOT match: eksik, kesik, lastik, plastik, trafik, fizik, klasik, pratik, tebrik, sık, sıkıntı, sıktı
       /(?<![\p{L}\p{N}])(has+)?s+i+k+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])s[\s._\-*]+i[\s._\-*]+k+[\p{L}\p{N}]*/u,
-      // sokuk, sokayım
       /(?<![\p{L}\p{N}])s+o+k+(u+k+|a+y+[ıi]+m+)[\p{L}\p{N}]*/u,
-
-      // yarrak, yarak, yarram, yarrağım, dalyarak, dalyarrak
-      // Must NOT match: yarar, yara, yaramaz, yaralandı
       /(?<![\p{L}\p{N}])(dal+)?y+a+r+r*a+[kğgq]([\p{L}\p{N}]*)/u,
       /(?<![\p{L}\p{N}])y+a+r+r+a+m+([\p{L}\p{N}]*)/u,
       /(?<![\p{L}\p{N}])y[\s._\-]+a[\s._\-]+r[\s._\-]+r*[\s._\-]*a[\s._\-]+[kğgq][\p{L}\p{N}]*/u,
-
-      // amk, aq, amq, a.m.k, a.q, a m k
-      // Must NOT match: tamam, damla, akşam, kamu
       /(?<![\p{L}\p{N}])a+[\s._\-*]*m+[\s._\-*]*[kq]+(?![\p{L}\p{N}])/u,
       /(?<![\p{L}\p{N}])a+[\s._\-*]*q+(?![\p{L}\p{N}])/u,
-
-      // amcık, amcik, amcığı, amına, amınakoyim
-      // Must NOT match: amca, amcam
       /(?<![\p{L}\p{N}])a+m+c+[ıi]+[kğg]([\p{L}\p{N}]*)/u,
       /(?<![\p{L}\p{N}])a+m+[ıi]+n+a+([\p{L}\p{N}]*)/u,
-
-      // oç, o.ç, oc, orospu, orospuçocuğu, ospu
       /(?<![\p{L}\p{N}])o+[\s._\-*]*[çc]+(?![\p{L}\p{N}])/u,
       /(?<![\p{L}\p{N}])(o+r+o+s+p+u+|o+s+p+u+)[\p{L}\p{N}]*/u,
-
-      // piç, pic
       /(?<![\p{L}\p{N}])p+[iı]+[çc]+([\p{L}\p{N}]*)/u,
-
-      // şerefsiz, serefsiz
       /(?<![\p{L}\p{N}])[şs]+e+r+e+f+s+[iı]+z+[\p{L}\p{N}]*/u,
-
-      // pezevenk, pezeveng, pezo
       /(?<![\p{L}\p{N}])p+e+z+e+v+e+n+[kg]+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])p+e+z+o+(?![\p{L}\p{N}])/u,
-
-      // göt, götü, göte, götlek, götveren
-      // Must NOT match: götür, götürmek, götürdüm, götürür, götürecek
       /(?<![\p{L}\p{N}])g+[öo]+t+(?![üu]r[\p{L}]*)[\p{L}\p{N}]*/u,
-
-      // bok, boktan, boku, boklu
-      // Must NOT match: boks, boksör, boxer
       /(?<![\p{L}\p{N}])b+[o0]+k+(?![söe][\p{L}]*)[\p{L}\p{N}]*/u,
-
-      // taşşak, daşşak, taşak, daşak
-      // Must NOT match: taşıt, taşımacılık, taslak, taşra
       /(?<![\p{L}\p{N}])[td]+a+[şs]{1,2}a+[kğg]+[\p{L}\p{N}]*/u,
-
-      // ibne, kahpe, puşt, gavat, kavat, yavşak
       /(?<![\p{L}\p{N}])[iı]+b+n+e+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])k+a+h+p+e+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])p+[uü]+[şs]+t+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])[gk]+a+v+a+t+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])y+a+v+[şs]+a+[kğg]+[\p{L}\p{N}]*/u,
-
-      // aptal, salak, gerizekalı, ahmak, embesil, haysiyetsiz
       /(?<![\p{L}\p{N}])a+p+t+a+l+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])s+a+l+a+k+[\p{L}\p{N}]*/u,
       /(?<![\p{L}\p{N}])g+e+r+[iı]+z+e+k+a+l+[ıi]+[\p{L}\p{N}]*/u,
@@ -2323,13 +2456,16 @@
   function benimYorumTablosuYukle() {
     if (!aktifKullanici) return;
     
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
-    let filtered = yorumlar.filter(y => y.yorum_isim === aktifKullanici.ad);
-    
+    const yorumlar = getParsedStore('yorumlar');
     const isletmeAra = document.getElementById('benimYorumAraIsletme').value.trim().toLowerCase();
-    
-    if (isletmeAra) {
-      filtered = filtered.filter(y => (y.isletme_ismi || '').toLowerCase().includes(isletmeAra));
+    const kullaniciAd = aktifKullanici.ad || aktifKullanici.isim_soyisim;
+
+    const filtered = [];
+    for (let idx = 0; idx < yorumlar.length; idx++) {
+      const y = yorumlar[idx];
+      if (y.yorum_isim !== kullaniciAd) continue;
+      if (isletmeAra && !(y.isletme_ismi || '').toLowerCase().includes(isletmeAra)) continue;
+      filtered.push({ y, idx });
     }
     
     const tbody = document.getElementById('benimYorumlarTableBody');
@@ -2348,8 +2484,7 @@
     const sayfaVerisi = filtered.slice(baslangic, baslangic + benimYorumSayfaBasina);
     
     emptyMsg.style.display = 'none';
-    tbody.innerHTML = sayfaVerisi.map(y => {
-      const orijinalIdx = yorumlar.indexOf(y);
+    tbody.innerHTML = sayfaVerisi.map(({ y, idx }) => {
       let durumStr = '<span style="color:#22c55e;">Yayında</span>';
       if(y.gizli) {
         durumStr = '<span style="color:#ef4444;" title="Yorumunuz kurallarımıza uymadığı için gizlenmiştir.">Gizli (İnceleniyor)</span>';
@@ -2360,23 +2495,13 @@
         <td><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${y.yorum}">${y.yorum}</div></td>
         <td>${durumStr}</td>
         <td>
-          <button class="btn-onayla" onclick="benimYorumDuzenle(${orijinalIdx})">Düzenle</button>
-          <button class="btn-sil" onclick="benimYorumSil(${orijinalIdx})">Sil</button>
+          <button class="btn-onayla" onclick="benimYorumDuzenle(${idx})">Düzenle</button>
+          <button class="btn-sil" onclick="benimYorumSil(${idx})">Sil</button>
         </td>
       </tr>`;
     }).join('');
     
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(1)" ${benimYorumSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${benimYorumSayfa-1})" ${benimYorumSayfa===1?'disabled':''}>‹</button>`;
-      for (let s = 1; s <= toplamSayfa; s++) {
-        sayfaHTML += `<button class="filter-btn ${s===benimYorumSayfa?'active':''}" onclick="benimYorumSayfaGit(${s})">${s}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${benimYorumSayfa+1})" ${benimYorumSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="benimYorumSayfaGit(${toplamSayfa})" ${benimYorumSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    document.getElementById('benimYorumSayfalama').innerHTML = sayfaHTML;
+    document.getElementById('benimYorumSayfalama').innerHTML = olusturSayfalamaButonlari(benimYorumSayfa, toplamSayfa, 'benimYorumSayfaGit');
   }
   
   window.benimYorumSayfaGit = function(sayfa) {
@@ -2387,25 +2512,25 @@
   window.benimYorumSil = function(idx) {
     const confirmMsg = window.t ? window.t('Bu yorumunuzu silmek istediğinizden emin misiniz?') : 'Bu yorumunuzu silmek istediğinizden emin misiniz?';
     if (!confirm(confirmMsg)) return;
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const islemGoren = yorumlar[idx];
-    if(islemGoren.yorum_isim !== aktifKullanici.ad) {
+    const kullaniciAd = aktifKullanici.ad || aktifKullanici.isim_soyisim;
+    if (!islemGoren || islemGoren.yorum_isim !== kullaniciAd) {
       alert("Bu yorumu silme yetkiniz yok.");
       return;
     }
     yorumlar.splice(idx, 1);
-    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
+    setParsedStore('yorumlar', yorumlar);
     
-    if(typeof isletmeOrtalamaPuanGuncelleAdmin === 'function') {
-      isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi);
-    }
+    isletmeOrtalamaPuanGuncelleAdmin(islemGoren.isletme_ismi, false);
     benimYorumTablosuYukle();
   };
   
   window.benimYorumDuzenle = function(idx) {
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const y = yorumlar[idx];
-    if (!y || y.yorum_isim !== aktifKullanici.ad) return;
+    const kullaniciAd = aktifKullanici.ad || aktifKullanici.isim_soyisim;
+    if (!y || y.yorum_isim !== kullaniciAd) return;
     duzenlenenBenimYorumIdx = idx;
     
     document.getElementById('duzBenimYorumIsletme').value = y.isletme_ismi || '';
@@ -2437,10 +2562,11 @@
     
     const gizliDurum = kufurIceriyorMuPanel(metin);
     
-    const yorumlar = JSON.parse(localStorage.getItem('yorumlar') || '[]');
+    const yorumlar = getParsedStore('yorumlar');
     const y = yorumlar[duzenlenenBenimYorumIdx];
+    const kullaniciAd = aktifKullanici.ad || aktifKullanici.isim_soyisim;
     
-    if(y.yorum_isim !== aktifKullanici.ad) {
+    if(!y || y.yorum_isim !== kullaniciAd) {
       alert("Bu yorumu düzenleme yetkiniz yok.");
       return;
     }
@@ -2449,11 +2575,8 @@
     y.yorum = metin;
     y.gizli = gizliDurum;
     
-    localStorage.setItem('yorumlar', JSON.stringify(yorumlar));
-    
-    if(typeof isletmeOrtalamaPuanGuncelleAdmin === 'function') {
-      isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi);
-    }
+    setParsedStore('yorumlar', yorumlar);
+    isletmeOrtalamaPuanGuncelleAdmin(y.isletme_ismi, false);
     
     benimYorumDuzenleKapat();
     benimYorumTablosuYukle();
@@ -2463,7 +2586,6 @@
   let sikayetSayfa = 1;
   const sikayetSayfaBasina = 10;
   let sikayetAktifFiltre = 'tumu';
-  let tumSikayetlerCache = [];
 
   window.sikayetFiltrele = function(durum, btn) {
     sikayetAktifFiltre = durum;
@@ -2473,55 +2595,61 @@
       tabEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     }
     if (btn) btn.classList.add('active');
-    sikayetlerTablosuYukle();
+    sikayetlerTablosuYukle(false);
   };
 
-  async function sikayetleriYukleVeri() {
+  async function sikayetleriYukleVeri(forceRefresh = false) {
+    if (!forceRefresh && sikayetlerLoaded) {
+      return tumSikayetlerCache;
+    }
     try {
-      const res = await fetch('http://' + window.location.hostname + ':3000/api/sikayetler');
+      const res = await fetch(API_BASE + '/api/sikayetler');
       if (res.ok) {
         tumSikayetlerCache = await res.json();
+        sikayetlerLoaded = true;
         return tumSikayetlerCache;
       }
     } catch (e) {
       console.warn('API error fetching sikayetler, reading from localStorage:', e);
     }
-    tumSikayetlerCache = JSON.parse(localStorage.getItem('sikayetler') || '[]');
+    tumSikayetlerCache = getParsedStore('sikayetler');
+    sikayetlerLoaded = true;
     return tumSikayetlerCache;
   }
 
-  window.sikayetlerTablosuYukle = async function() {
+  window.sikayetlerTablosuYukle = async function(forceRefresh = false) {
     if (!aktifKullanici || aktifKullanici.yetki !== 'owner') return;
 
-    const sikayetler = await sikayetleriYukleVeri();
+    const sikayetler = await sikayetleriYukleVeri(forceRefresh);
 
-    // Stats
+    const aramaMetni = document.getElementById('sikayetAraIsletme') ? document.getElementById('sikayetAraIsletme').value.trim().toLowerCase() : '';
+    const filtreKonu = document.getElementById('sikayetFiltreKonu') ? document.getElementById('sikayetFiltreKonu').value : '';
+
+    let bekleyen = 0, onaylanan = 0, reddedilen = 0;
+    const filtered = [];
+
+    for (let idx = 0; idx < sikayetler.length; idx++) {
+      const s = sikayetler[idx];
+      if (s.durum === 'beklemede') bekleyen++;
+      else if (s.durum === 'onaylandi') onaylanan++;
+      else if (s.durum === 'reddedildi') reddedilen++;
+
+      if (sikayetAktifFiltre !== 'tumu' && s.durum !== sikayetAktifFiltre) continue;
+      if (aramaMetni && !(s.sikayet_isletme || '').toLowerCase().includes(aramaMetni)) continue;
+      if (filtreKonu && !(s.sikayet_konu || '').includes(filtreKonu)) continue;
+
+      filtered.push(s);
+    }
+
     const statToplam = document.getElementById('sikayetStatToplam');
     const statBekleyen = document.getElementById('sikayetStatBekleyen');
     const statOnaylanan = document.getElementById('sikayetStatOnaylanan');
     const statReddedilen = document.getElementById('sikayetStatReddedilen');
 
     if (statToplam) statToplam.textContent = sikayetler.length;
-    if (statBekleyen) statBekleyen.textContent = sikayetler.filter(s => s.durum === 'beklemede').length;
-    if (statOnaylanan) statOnaylanan.textContent = sikayetler.filter(s => s.durum === 'onaylandi').length;
-    if (statReddedilen) statReddedilen.textContent = sikayetler.filter(s => s.durum === 'reddedildi').length;
-
-    const aramaMetni = document.getElementById('sikayetAraIsletme') ? document.getElementById('sikayetAraIsletme').value.trim().toLowerCase() : '';
-    const filtreKonu = document.getElementById('sikayetFiltreKonu') ? document.getElementById('sikayetFiltreKonu').value : '';
-
-    let filtered = sikayetler;
-
-    if (sikayetAktifFiltre !== 'tumu') {
-      filtered = filtered.filter(s => s.durum === sikayetAktifFiltre);
-    }
-
-    if (aramaMetni) {
-      filtered = filtered.filter(s => (s.sikayet_isletme || '').toLowerCase().includes(aramaMetni));
-    }
-
-    if (filtreKonu) {
-      filtered = filtered.filter(s => (s.sikayet_konu || '').includes(filtreKonu));
-    }
+    if (statBekleyen) statBekleyen.textContent = bekleyen;
+    if (statOnaylanan) statOnaylanan.textContent = onaylanan;
+    if (statReddedilen) statReddedilen.textContent = reddedilen;
 
     const tbody = document.getElementById('sikayetlerTableBody');
     const emptyMsg = document.getElementById('sikayetlerEmptyMsg');
@@ -2573,22 +2701,12 @@
       </tr>`;
     }).join('');
 
-    let sayfaHTML = '';
-    if (toplamSayfa > 1) {
-      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(1)" ${sikayetSayfa===1?'disabled':''}>«</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${sikayetSayfa-1})" ${sikayetSayfa===1?'disabled':''}>‹</button>`;
-      for (let i = 1; i <= toplamSayfa; i++) {
-        sayfaHTML += `<button class="filter-btn ${sikayetSayfa===i?'active':''}" onclick="sikayetSayfaGit(${i})">${i}</button>`;
-      }
-      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${sikayetSayfa+1})" ${sikayetSayfa===toplamSayfa?'disabled':''}>›</button>`;
-      sayfaHTML += `<button class="filter-btn" onclick="sikayetSayfaGit(${toplamSayfa})" ${sikayetSayfa===toplamSayfa?'disabled':''}>»</button>`;
-    }
-    sayfalama.innerHTML = sayfaHTML;
+    sayfalama.innerHTML = olusturSayfalamaButonlari(sikayetSayfa, toplamSayfa, 'sikayetSayfaGit');
   };
 
   window.sikayetSayfaGit = function(s) {
     sikayetSayfa = s;
-    sikayetlerTablosuYukle();
+    sikayetlerTablosuYukle(false);
   };
 
   window.sikayetDurumGuncelle = async function(id, yeniDurum) {
@@ -2596,7 +2714,7 @@
     if (!confirm(onayMsg)) return;
 
     try {
-      const res = await fetch('http://' + window.location.hostname + ':3000/api/sikayetler/' + id + '/durum', {
+      const res = await fetch(API_BASE + '/api/sikayetler/' + id + '/durum', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: yeniDurum })
@@ -2608,15 +2726,10 @@
       console.warn('Network error updating status:', e);
     }
 
-    // Update local cache and localStorage
-    const localSikayetler = JSON.parse(localStorage.getItem('sikayetler') || '[]');
-    const target = localSikayetler.find(s => s.id === id);
-    if (target) {
-      target.durum = yeniDurum;
-      localStorage.setItem('sikayetler', JSON.stringify(localSikayetler));
-    }
+    const cachedItem = tumSikayetlerCache.find(s => s.id === id);
+    if (cachedItem) cachedItem.durum = yeniDurum;
 
-    sikayetlerTablosuYukle();
+    sikayetlerTablosuYukle(false);
   };
 
   window.sikayetDetayGoster = function(id) {
@@ -2643,22 +2756,65 @@
     document.getElementById('sikayetDetayOverlay').style.display = 'none';
   };
 
-  // Otomatik çıkış kontrolü (hesap silinme durumu)
+  // Sayfa yenilendiğinde (veya tekrar açıldığında) 24 saat dolmadıysa ve harita oturumu açıksa oturumu koru
+  (function oturumGeriYukle() {
+    const kayitli = panelOturumGecerliMi();
+    if (!kayitli || !kayitli.kullanici) return;
+
+    // Giriş ekranı görünmeden paneli hemen aç
+    oturumAcUI(kayitli.kullanici, false, false);
+
+    // Arka plan verisi yüklendiğinde kullanıcıyı doğrula ve aktif sekmeyi çiz
+    preloadPromise.then(() => {
+      if (!aktifKullanici) return;
+      kullanicilarDB = [adminKullanici, ...girisKullanicilariOku()];
+      const guncel = kullanicilarDB.find(k => k.e_posta === kayitli.e_posta);
+      if (!guncel) {
+        paneldenCikisYap();
+        return;
+      }
+      aktifKullanici = guncel;
+      document.getElementById('adminBaslik').textContent = 'Tamircim Nerede — ' + (guncel.isim_soyisim || guncel.ad || '');
+      sekmeVerisiniYukle(aktifTabAdi);
+    }).catch(() => {
+      if (aktifKullanici) sekmeVerisiniYukle(aktifTabAdi);
+    });
+  })();
+
+  // Harita sisteminden (başka sekmeden) çıkış yapılırsa üye panelinden de anında çıkış yap
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'aktifOturum' || e.key === 'panelOturum') {
+      if (aktifKullanici && !panelOturumGecerliMi()) {
+        paneldenCikisYap();
+      }
+    }
+  });
+
+  // Otomatik çıkış kontrolü (24 saat süre dolumu, harita çıkışı veya hesap silinme durumu)
   setInterval(async () => {
-    if (aktifKullanici && aktifKullanici.e_posta !== 'emincanlarRL') {
+    if (!aktifKullanici) return;
+
+    if (!panelOturumGecerliMi()) {
+      paneldenCikisYap();
+      return;
+    }
+
+    if (aktifKullanici.e_posta !== 'emincanlarRL') {
       try {
-        const res = await fetch('http://' + window.location.hostname + ':3000/api/store/kullanicilar');
+        const res = await fetch(API_BASE + '/api/store/kullanicilar');
         if (res.ok) {
           const kullanicilar = await res.json();
+          _storeParsedCache['kullanicilar'] = kullanicilar;
+          _storeTimeCache['kullanicilar'] = Date.now();
           if (!kullanicilar.find(x => x.e_posta === aktifKullanici.e_posta)) {
-            aktifKullanici = null;
+            paneldenCikisYap();
             alert('Hesabınız sistemden silindiği için oturumunuz otomatik olarak sonlandırıldı.');
             window.location.reload();
           }
         }
       } catch (e) { }
     }
-  }, 5000);
+  }, 10000);
 </script>
 
 </body>

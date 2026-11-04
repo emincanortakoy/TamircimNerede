@@ -1,0 +1,3 @@
+tamircimnerede.emincanortakoy.com {
+    reverse_proxy localhost:3000
+}

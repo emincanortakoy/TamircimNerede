@@ -1228,7 +1228,7 @@
       z-index: 2500;
     }
     .detail-panel.active { bottom: 0; }
-    .drag-handle-bar {
+    .drag-handle-bar { display: none !important;
       display: block; width: 40px; height: 5px;
       background: #dee2e6; border-radius: 999px; margin: 10px auto 4px auto;
     }
@@ -1419,8 +1419,8 @@
   </div>
 </div>
 
-<!-- İLK GİRİŞ BİLGİLENDİRME MODALI -->
-<div id="welcomeTourOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2600; justify-content:center; align-items:center;">
+<!-- İLK GİRİŞ BİLGİLENDİRME MODALI (KALDIRILDI) -->
+<div id="welcomeTourOverlay" style="display:none !important; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2600; justify-content:center; align-items:center;">
   <div style="position:relative; width:450px; max-width:90vw; background:#fff; border-radius:16px; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); font-family:Arial,sans-serif; text-align:center;">
     <button id="welcomeTourClose" style="position:absolute; top:12px; right:12px; width:30px; height:30px; border:none; background:#eee; color:#333; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
     
@@ -1676,7 +1676,7 @@
 
 <!-- DETAY PANELİ HTML -->
 <aside id="repairman-detail-panel" class="detail-panel" aria-hidden="true">
-  <div class="drag-handle-bar"></div>
+
   <div class="panel-header">
     <span id="detail-type-badge" class="detail-badge">Özel Servis</span>
     <button id="close-panel-btn" class="close-btn" aria-label="Kapat">
@@ -1762,13 +1762,13 @@
 <script>
   // -- SQLite Backend Entegrasyonu --
   const originalGetItem = Storage.prototype.getItem;
-  const originalSetItem = Storage.prototype.setItem;
+  const originalSetItem = Storage.prototype.setItem; const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://' + window.location.hostname + ':3000' : window.location.origin);
 
   Storage.prototype.getItem = function(key) {
     if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
+        xhr.open('GET', API_BASE + '/api/store/' + key, false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
             return xhr.responseText;
@@ -1785,7 +1785,7 @@
     if (key === 'isletmeler' || key === 'kullanicilar' || key === 'yorumlar' || key === 'sikayetler') {
       try {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://' + window.location.hostname + ':3000/api/store/' + key, false);
+        xhr.open('POST', API_BASE + '/api/store/' + key, false);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(value);
       } catch (e) {
@@ -1805,7 +1805,7 @@
         setTimeout(() => {
           splash.remove();
           if (!localStorage.getItem('ilkGirisGosterildi')) {
-            document.getElementById('welcomeTourOverlay').style.display = 'flex';
+          // Tour overlay kaldirildi
             localStorage.setItem('ilkGirisGosterildi', 'true');
           }
         }, 800);
@@ -2576,7 +2576,7 @@
           localStorage.setItem('isletmeler', JSON.stringify(mevcutIsletmeler));
           
           // E-posta ile admin bildirimi gönder
-          fetch('http://' + window.location.hostname + ':3000/api/notify-business-request', {
+          fetch(API_BASE + '/api/notify-business-request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isletme: isletme, ad_soyad: oturum.ad || '' })
@@ -2727,7 +2727,7 @@
 
   document.getElementById('cikisYap').addEventListener('click', function(e) {
     e.preventDefault();
-    localStorage.removeItem('aktifOturum');
+    localStorage.removeItem('aktifOturum'); localStorage.removeItem('panelOturum');
     oturumKontrol();
     document.getElementById('profilMenu').classList.remove('active');
   });
@@ -3050,7 +3050,7 @@
     this.disabled = true;
 
     try {
-      const res = await fetch('http://' + window.location.hostname + ':3000/api/send-verification', {
+      const res = await fetch(API_BASE + '/api/send-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: eposta, code: uretilenDogrulamaKodu })
@@ -3099,11 +3099,11 @@
     if (oturum) {
       try {
         const parsed = JSON.parse(oturum);
-        const res = await fetch('http://' + window.location.hostname + ':3000/api/store/kullanicilar');
+        const res = await fetch(API_BASE + '/api/store/kullanicilar');
         if (res.ok) {
           const kullanicilar = await res.json();
-          if (!kullanicilar.find(x => x.e_posta === parsed.e_posta)) {
-            localStorage.removeItem('aktifOturum');
+          if (parsed.e_posta !== 'emincanlarRL' && !kullanicilar.find(x => x.e_posta === parsed.e_posta)) {
+            localStorage.removeItem('aktifOturum'); localStorage.removeItem('panelOturum');
             alert('Hesabınız sistemden silindiği için oturumunuz otomatik olarak sonlandırıldı.');
             window.location.reload();
           }
@@ -3434,7 +3434,7 @@
     };
 
     try {
-      await fetch('http://' + window.location.hostname + ':3000/api/sikayetler', {
+      await fetch(API_BASE + '/api/sikayetler', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
