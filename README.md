@@ -55,7 +55,7 @@ Websitesinde İşletme başvuruları ile ilgili e-posta ile bilgilendirme sistem
 
 kodundaki user kısmını kendi mailiniz ile, pass kısmını ise uygulama şifresi ile değiştirin
 
-### demo: [http://185.23.17.147:3000](http://185.23.17.147:3000)
+### demo: [(https://tamircimnerede.emincanortakoy.com)](https://tamircimnerede.emincanortakoy.com)
 
 #### Not: Şu an websitenin temel işlevleri tamamlanmış olup ileriki zamanda güncelleme getirilmeye devam edilecektir.
 
@@ -120,6 +120,6 @@ The website includes an email notification system for business listing applicati
 
 Replace `user` with your email address and `pass` with your generated app password.
 
-### demo: [http://185.23.17.147:3000](http://185.23.17.147:3000)
+### demo: [https://tamircimnerede.emincanortakoy.com](https://tamircimnerede.emincanortakoy.com)
 
 #### Note: The core functionalities of the website are currently complete, and updates will continue to be rolled out in the future.
